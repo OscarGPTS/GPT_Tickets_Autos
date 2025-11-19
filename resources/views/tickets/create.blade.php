@@ -3,15 +3,15 @@
 @section('title', 'Nueva Solicitud de Vehículo')
 
 @section('content')
-<div class="max-w-3xl mx-auto">
-    <div class="mb-6">
-        <a href="{{ route('tickets.index') }}" class="text-blue-600 hover:text-blue-800 font-medium">
+<div class="w-full max-w-full mx-auto px-2 sm:px-4">
+    <div class="mb-4 sm:mb-6">
+        <a href="{{ route('tickets.index') }}" class="text-blue-600 hover:text-blue-800 font-medium text-sm sm:text-base">
             <i class="fas fa-arrow-left mr-2"></i>Volver a Solicitudes
         </a>
     </div>
 
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Nueva Solicitud de Vehículo</h1>
+    <div class="bg-white rounded-lg shadow-md p-3 sm:p-6">
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-6">Nueva Solicitud de Vehículo</h1>
 
         @if($errors->any())
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -23,35 +23,60 @@
         </div>
         @endif
 
-        <form action="{{ route('tickets.store') }}" method="POST">
+        <form action="{{ route('tickets.store') }}" method="POST" id="ticketForm" onsubmit="return validateForm()">
             @csrf
 
-            <table class="w-full mb-6 border border-gray-200 rounded-lg">
+            <div class="overflow-x-auto -mx-3 sm:mx-0">
+            <table class="w-full mb-6 border border-gray-200 rounded-lg min-w-max">
                 <tr>
-                    <td class="border border-gray-200 p-2">Destino</td>
-                    <td class="border border-gray-200 p-2" colspan="3"></td>
-                    <td class="border border-gray-200 p-2">Modelo</td>
-                    <td class="border border-gray-200 p-2" colspan="3"></td>
-                    <td class="border border-gray-200 p-2">Folio</td>
-                    <td class="border border-gray-200 p-2" colspan="3"></td>
+                    <td class="border border-gray-200 p-2 font-semibold">Destino</td>
+                    <td class="border border-gray-200 p-2" colspan="3">
+                        <input type="text" name="destino" value="{{ old('destino') }}" class="w-full border-gray-300 rounded px-2 py-1" required>
+                    </td>
+                    <td class="border border-gray-200 p-2 font-semibold">Modelo</td>
+                    <td class="border border-gray-200 p-2" colspan="3">
+                        <input type="text" name="modelo" value="{{ old('modelo') }}" class="w-full border-gray-300 rounded px-2 py-1" required>
+                    </td>
+                    <td class="border border-gray-200 p-2 font-semibold">Marca</td>
+                    <td class="border border-gray-200 p-2" colspan="3">
+                        <input type="text" name="marca" value="{{ old('marca') }}" class="w-full border-gray-300 rounded px-2 py-1" required>
+                    </td>
                 </tr>
 
                 <tr>
-                    <td class="border border-gray-200 p-2">Hora de Salida</td>
-                    <td class="border border-gray-200 p-2" colspan="3"></td>
-                    <td class="border border-gray-200 p-2">Hora de entrada</td>
-                    <td class="border border-gray-200 p-2" colspan="3"></td>
-                    <td class="border border-gray-200 p-2">Fecha</td>
-                    <td class="border border-gray-200 p-2" colspan="3"></td>
+                    <td class="border border-gray-200 p-2 font-semibold">Hora de Salida</td>
+                    <td class="border border-gray-200 p-2" colspan="3">
+                        <input type="time" name="hora_salida" value="{{ old('hora_salida') }}" class="w-full border-gray-300 rounded px-2 py-1" required>
+                    </td>
+                    <td class="border border-gray-200 p-2 font-semibold">Hora de Entrada</td>
+                    <td class="border border-gray-200 p-2" colspan="3">
+                        <input type="time" name="hora_entrada" value="{{ old('hora_entrada') }}" class="w-full border-gray-300 rounded px-2 py-1">
+                    </td>
+                    <td class="border border-gray-200 p-2 font-semibold">Fecha</td>
+                    <td class="border border-gray-200 p-2" colspan="3">
+                        <input type="date" name="fecha" value="{{ old('fecha', now()->toDateString()) }}" class="w-full border-gray-300 rounded px-2 py-1" required>
+                    </td>
                 </tr>
 
                 <tr>
-                    <td class="border border-gray-200 p-2">Kilometraje Inicial</td>
-                    <td class="border border-gray-200 p-2" colspan="3"></td>
-                    <td class="border border-gray-200 p-2">Nivel de combustible Inicial</td>
-                    <td class="border border-gray-200 p-2" colspan="3"></td>
-                    <td class="border border-gray-200 p-2">Placas</td>
-                    <td class="border border-gray-200 p-2" colspan="3"></td>
+                    <td class="border border-gray-200 p-2 font-semibold">Kilometraje Inicial</td>
+                    <td class="border border-gray-200 p-2" colspan="3">
+                        <input type="number" step="0.01" name="kilometraje_inicial" value="{{ old('kilometraje_inicial') }}" class="w-full border-gray-300 rounded px-2 py-1" required>
+                    </td>
+                    <td class="border border-gray-200 p-2 font-semibold">Nivel de Combustible Inicial</td>
+                    <td class="border border-gray-200 p-2" colspan="3">
+                        <select name="nivel_combustible_inicial" class="w-full border-gray-300 rounded px-2 py-1" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="1/4" {{ old('nivel_combustible_inicial') == '1/4' ? 'selected' : '' }}>1/4</option>
+                            <option value="1/2" {{ old('nivel_combustible_inicial') == '1/2' ? 'selected' : '' }}>1/2</option>
+                            <option value="3/4" {{ old('nivel_combustible_inicial') == '3/4' ? 'selected' : '' }}>3/4</option>
+                            <option value="Lleno" {{ old('nivel_combustible_inicial') == 'Lleno' ? 'selected' : '' }}>Lleno</option>
+                        </select>
+                    </td>
+                    <td class="border border-gray-200 p-2 font-semibold">Placas</td>
+                    <td class="border border-gray-200 p-2" colspan="3">
+                        <input type="text" name="placas" value="{{ old('placas') }}" class="w-full border-gray-300 rounded px-2 py-1" required>
+                    </td>
                 </tr>
 
                 <tr>
@@ -71,124 +96,124 @@
 
                 <tr>
                     <td class="border border-gray-200 p-2">Delantera derecha</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="llanta_delantera_derecha" value="1" {{ old('llanta_delantera_derecha') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="llanta_delantera_derecha" value="0" {{ old('llanta_delantera_derecha') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Parabrisas</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="parabrisas" value="1" {{ old('parabrisas') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="parabrisas" value="0" {{ old('parabrisas') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Tablero Indicadores</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="tablero_indicadores" value="1" {{ old('tablero_indicadores') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="tablero_indicadores" value="0" {{ old('tablero_indicadores') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Nivel aceite motor</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="nivel_aceite_motor" value="1" {{ old('nivel_aceite_motor') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="nivel_aceite_motor" value="0" {{ old('nivel_aceite_motor') == '0' ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 p-2">Delantera izquierda</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="llanta_delantera_izquierda" value="1" {{ old('llanta_delantera_izquierda') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="llanta_delantera_izquierda" value="0" {{ old('llanta_delantera_izquierda') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Cofre</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="cofre" value="1" {{ old('cofre') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="cofre" value="0" {{ old('cofre') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Switch de encendido</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="switch_encendido" value="1" {{ old('switch_encendido') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="switch_encendido" value="0" {{ old('switch_encendido') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Nivel anticongelante</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="nivel_anticongelante" value="1" {{ old('nivel_anticongelante') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="nivel_anticongelante" value="0" {{ old('nivel_anticongelante') == '0' ? 'checked' : '' }}></td>
                 </tr>
 
 
                 <tr>
                     <td class="border border-gray-200 p-2">Vida</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="llanta_vida_delantera" value="1" {{ old('llanta_vida_delantera') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="llanta_vida_delantera" value="0" {{ old('llanta_vida_delantera') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Parrilla</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="parrilla" value="1" {{ old('parrilla') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="parrilla" value="0" {{ old('parrilla') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Controles A/C</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="controles_ac" value="1" {{ old('controles_ac') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="controles_ac" value="0" {{ old('controles_ac') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Nivel liquido frenos</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="nivel_liquido_frenos" value="1" {{ old('nivel_liquido_frenos') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="nivel_liquido_frenos" value="0" {{ old('nivel_liquido_frenos') == '0' ? 'checked' : '' }}></td>
                 </tr>
 
 
                 <tr>
                     <td class="border border-gray-200 p-2">Trasera derecha</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="llanta_trasera_derecha" value="1" {{ old('llanta_trasera_derecha') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="llanta_trasera_derecha" value="0" {{ old('llanta_trasera_derecha') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Defensa</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="defensa" value="1" {{ old('defensa') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="defensa" value="0" {{ old('defensa') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Defroster</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="defroster" value="1" {{ old('defroster') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="defroster" value="0" {{ old('defroster') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Batería</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="bateria" value="1" {{ old('bateria') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="bateria" value="0" {{ old('bateria') == '0' ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 p-2">Trasera izquierda</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="llanta_trasera_izquierda" value="1" {{ old('llanta_trasera_izquierda') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="llanta_trasera_izquierda" value="0" {{ old('llanta_trasera_izquierda') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Molduras</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="molduras" value="1" {{ old('molduras') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="molduras" value="0" {{ old('molduras') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Radio</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="radio" value="1" {{ old('radio') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="radio" value="0" {{ old('radio') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Bayoneta de aceite motor</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="bayoneta_aceite" value="1" {{ old('bayoneta_aceite') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="bayoneta_aceite" value="0" {{ old('bayoneta_aceite') == '0' ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 p-2">Vida</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="llanta_vida_trasera" value="1" {{ old('llanta_vida_trasera') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="llanta_vida_trasera" value="0" {{ old('llanta_vida_trasera') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Placa</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="placa" value="1" {{ old('placa') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="placa" value="0" {{ old('placa') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Volante</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="volante" value="1" {{ old('volante') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="volante" value="0" {{ old('volante') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Tapones</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="tapones" value="1" {{ old('tapones') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="tapones" value="0" {{ old('tapones') == '0' ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 p-2">Llanta de refacción</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="llanta_refaccion" value="1" {{ old('llanta_refaccion') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="llanta_refaccion" value="0" {{ old('llanta_refaccion') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Salpicadera</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="salpicadera" value="1" {{ old('salpicadera') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="salpicadera" value="0" {{ old('salpicadera') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Bolsa de aire</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="bolsa_aire" value="1" {{ old('bolsa_aire') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="bolsa_aire" value="0" {{ old('bolsa_aire') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Bocina claxon</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="bocina_claxon" value="1" {{ old('bocina_claxon') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="bocina_claxon" value="0" {{ old('bocina_claxon') == '0' ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 p-2">Presión Adecuada</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="presion_adecuada" value="1" {{ old('presion_adecuada') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="presion_adecuada" value="0" {{ old('presion_adecuada') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Antena</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="antena" value="1" {{ old('antena') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="antena" value="0" {{ old('antena') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Cinturón de seguridad</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="cinturon_seguridad" value="1" {{ old('cinturon_seguridad') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="cinturon_seguridad" value="0" {{ old('cinturon_seguridad') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Radiador</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="radiador" value="1" {{ old('radiador') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="radiador" value="0" {{ old('radiador') == '0' ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
@@ -199,8 +224,8 @@
                     <td class="border border-gray-200 p-2">Si</td>
                     <td class="border border-gray-200 p-2">No</td>
                     <td class="border border-gray-200 p-2">Coderas</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="coderas" value="1" {{ old('coderas') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="coderas" value="0" {{ old('coderas') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Herramienta</td>
                     <td class="border border-gray-200 p-2">Si</td>
                     <td class="border border-gray-200 p-2">No</td>
@@ -208,89 +233,89 @@
 
                 <tr>
                     <td class="border border-gray-200 p-2">Intermitentes</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="intermitentes" value="1" {{ old('intermitentes') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="intermitentes" value="0" {{ old('intermitentes') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Mata Chispas</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="mata_chispas" value="1" {{ old('mata_chispas') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="mata_chispas" value="0" {{ old('mata_chispas') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Espejo interior</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="espejo_interior" value="1" {{ old('espejo_interior') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="espejo_interior" value="0" {{ old('espejo_interior') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Gato</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="gato" value="1" {{ old('gato') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="gato" value="0" {{ old('gato') == '0' ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 p-2">Direccional Derecha</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="direccional_derecha" value="1" {{ old('direccional_derecha') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="direccional_derecha" value="0" {{ old('direccional_derecha') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Alarma</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="alarma" value="1" {{ old('alarma') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="alarma" value="0" {{ old('alarma') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Freno de mano</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="freno_mano" value="1" {{ old('freno_mano') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="freno_mano" value="0" {{ old('freno_mano') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Llave de ruedas</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="llave_ruedas" value="1" {{ old('llave_ruedas') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="llave_ruedas" value="0" {{ old('llave_ruedas') == '0' ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 p-2">Direccional Izquierda</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="direccional_izquierda" value="1" {{ old('direccional_izquierda') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="direccional_izquierda" value="0" {{ old('direccional_izquierda') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Extintor</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="extintor" value="1" {{ old('extintor') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="extintor" value="0" {{ old('extintor') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Encendedor</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="encendedor" value="1" {{ old('encendedor') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="encendedor" value="0" {{ old('encendedor') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Cables pasa corrientes</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="cables_pasa_corrientes" value="1" {{ old('cables_pasa_corrientes') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="cables_pasa_corrientes" value="0" {{ old('cables_pasa_corrientes') == '0' ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 p-2">Luz stop</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2">Botiquín</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="luz_stop" value="1" {{ old('luz_stop') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="luz_stop" value="0" {{ old('luz_stop') == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2">Botiquin</td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="botiquin" value="1" {{ old('botiquin') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="botiquin" value="0" {{ old('botiquin') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Guantera</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="guantera" value="1" {{ old('guantera') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="guantera" value="0" {{ old('guantera') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Caja o bolsa de herramientas</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="caja_herramientas" value="1" {{ old('caja_herramientas') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="caja_herramientas" value="0" {{ old('caja_herramientas') == '0' ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 p-2">Faros</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="faros" value="1" {{ old('faros') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="faros" value="0" {{ old('faros') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Tarjeta de circulación</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="tarjeta_circulacion" value="1" {{ old('tarjeta_circulacion') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="tarjeta_circulacion" value="0" {{ old('tarjeta_circulacion') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Manijas interiores</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="manijas_interiores" value="1" {{ old('manijas_interiores') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="manijas_interiores" value="0" {{ old('manijas_interiores') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Dado o birlo de seguridad</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="dado_birlo_seguridad" value="1" {{ old('dado_birlo_seguridad') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="dado_birlo_seguridad" value="0" {{ old('dado_birlo_seguridad') == '0' ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 p-2">Luces Altas</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="luces_altas" value="1" {{ old('luces_altas') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="luces_altas" value="0" {{ old('luces_altas') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Licencia de Conductor Vigente</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="licencia_vigente" value="1" {{ old('licencia_vigente') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="licencia_vigente" value="0" {{ old('licencia_vigente') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Seguros</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="seguros" value="1" {{ old('seguros') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="seguros" value="0" {{ old('seguros') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Calcomanías</td>
                     <td class="border border-gray-200 p-2">Si</td>
                     <td class="border border-gray-200 p-2">No</td>
@@ -298,282 +323,132 @@
 
                 <tr>
                     <td class="border border-gray-200 p-2">Luz Interior</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="luz_interior" value="1" {{ old('luz_interior') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="luz_interior" value="0" {{ old('luz_interior') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Póliza de seguro</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="poliza_seguro" value="1" {{ old('poliza_seguro') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="poliza_seguro" value="0" {{ old('poliza_seguro') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Asientos</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="asientos" value="1" {{ old('asientos') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="asientos" value="0" {{ old('asientos') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Calcomanías de permisos</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="calcomanias_permisos" value="1" {{ old('calcomanias_permisos') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="calcomanias_permisos" value="0" {{ old('calcomanias_permisos') == '0' ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 p-2">Calaveras buen estado</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="calaveras" value="1" {{ old('calaveras') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="calaveras" value="0" {{ old('calaveras') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Triangulo de Emergencia</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="triangulo_emergencia" value="1" {{ old('triangulo_emergencia') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="triangulo_emergencia" value="0" {{ old('triangulo_emergencia') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Tapetes delanteros y traseros</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="tapetes" value="1" {{ old('tapetes') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="tapetes" value="0" {{ old('tapetes') == '0' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 p-2">Calcomanías velocidad máxima</td>
-                    <td class="border border-gray-200 p-2"></td>
-                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="calcomanias_velocidad" value="1" {{ old('calcomanias_velocidad') == '1' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 p-2 text-center"><input type="radio" name="calcomanias_velocidad" value="0" {{ old('calcomanias_velocidad') == '0' ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
-                    <td class="border border-gray-200 p-2" colspan="12" >Mantenimiento Preventivo</td>
+                    <td class="border border-gray-200 p-2 font-semibold" colspan="12">Mantenimiento Preventivo</td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-200 p-2" colspan="12">
+                        <textarea name="mantenimiento_preventivo" rows="3" class="w-full border-gray-300 rounded px-2 py-1" placeholder="Describa el mantenimiento preventivo realizado...">{{ old('mantenimiento_preventivo') }}</textarea>
+                    </td>
                 </tr>
 
                 <tr>
-                    <td class="border border-gray-200 p-2" colspan="12" >Mantenimiento Correctivo</td>
+                    <td class="border border-gray-200 p-2 font-semibold" colspan="12">Mantenimiento Correctivo</td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-200 p-2" colspan="12">
+                        <textarea name="mantenimiento_correctivo" rows="3" class="w-full border-gray-300 rounded px-2 py-1" placeholder="Describa el mantenimiento correctivo realizado...">{{ old('mantenimiento_correctivo') }}</textarea>
+                    </td>
                 </tr>
 
                 <tr>
-                    <td class="border border-gray-200 p-2" colspan="12" >Condicion de Carrocería</td>
+                    <td class="border border-gray-200 p-2 font-semibold" colspan="12">Condición de Carrocería</td>
                 </tr>
                 <tr>
-                    <td class="border border-gray-200 p-2" colspan="6" >Responsable de recibo o uso:</td>
-                    <td class="border border-gray-200 p-2" colspan="6" >Responsable de entrega:</td>
+                    <td class="border border-gray-200 p-2" colspan="12">
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Marcar Daños en el Vehículo (Dibuja sobre la imagen)</label>
+                            
+                            <!-- Botón fullscreen -->
+                            <div class="mb-3 flex justify-end">
+                                <button type="button" onclick="toggleFullscreen()" class="bg-purple-600 text-white px-3 py-2 sm:px-4 sm:py-2 rounded hover:bg-purple-700 text-sm">
+                                    <i class="fas fa-expand mr-1"></i><span id="fullscreenText">Pantalla Completa</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Contenedor del canvas -->
+                            <div id="canvasContainer" class="border-2 border-gray-300 rounded bg-white relative">
+                                <canvas id="carDamageCanvas" class="w-full h-auto touch-none" style="display: block; max-width: 100%;"></canvas>
+                                
+                                <!-- Controles del canvas -->
+                                <div id="canvasControls" class="mt-2 sm:mt-3 flex flex-wrap gap-2 items-center p-2 bg-gray-50 rounded">
+                                    <button type="button" onclick="clearCanvas()" class="bg-red-500 text-white px-2 py-1.5 sm:px-3 sm:py-2 rounded hover:bg-red-600 text-xs sm:text-sm flex items-center gap-1">
+                                        <i class="fas fa-trash"></i><span class="hidden sm:inline">Limpiar</span>
+                                    </button>
+                                    <button type="button" onclick="undoLastStroke()" class="bg-yellow-500 text-white px-2 py-1.5 sm:px-3 sm:py-2 rounded hover:bg-yellow-600 text-xs sm:text-sm flex items-center gap-1">
+                                        <i class="fas fa-undo"></i><span class="hidden sm:inline">Deshacer</span>
+                                    </button>
+                                    <select id="drawColor" class="border rounded px-2 py-1.5 text-xs sm:text-sm flex-grow sm:flex-grow-0">
+                                        <option value="#ff0000">🔴 Severo</option>
+                                        <option value="#ff8800">🟠 Moderado</option>
+                                        <option value="#ffff00">🟡 Leve</option>
+                                        <option value="#0088ff">🔵 Abolladura</option>
+                                        <option value="#00ff00">🟢 Desgaste</option>
+                                    </select>
+                                    <label class="text-xs sm:text-sm flex items-center gap-1">
+                                        <i class="fas fa-paint-brush"></i>
+                                        <input type="range" id="lineWidth" min="2" max="20" value="5" class="w-16 sm:w-24">
+                                        <span id="lineWidthValue" class="font-mono w-6 text-xs sm:text-sm">5</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <input type="hidden" name="condicion_carroceria_imagen" id="carDamageImageData">
+                        </div>
+                        <textarea name="condicion_carroceria" rows="3" class="w-full border-gray-300 rounded px-2 py-1" placeholder="Describa detalladamente los daños marcados en la imagen (ej: 1. Rayón en puerta delantera izquierda, 2. Abolladura en cofre...)">{{ old('condicion_carroceria') }}</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-200 p-2 font-semibold" colspan="6">Responsable de recibo o uso:</td>
+                    <td class="border border-gray-200 p-2 font-semibold" colspan="6">Responsable de entrega:</td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-200 p-2" colspan="6">
+                        <input type="text" name="responsable_recibo_uso" value="{{ old('responsable_recibo_uso') }}" class="w-full border-gray-300 rounded px-2 py-1" placeholder="Nombre del responsable" required>
+                    </td>
+                    <td class="border border-gray-200 p-2" colspan="6">
+                        <input type="text" name="responsable_entrega" value="{{ old('responsable_entrega') }}" class="w-full border-gray-300 rounded px-2 py-1" placeholder="Nombre del responsable" required>
+                    </td>
+                </tr>
+                
+                <!-- Campos de entrega (se llenan al regresar el vehículo) -->
+                <tr>
+                    <td class="border border-gray-200 p-2 font-semibold" colspan="6">Kilometraje Final (al entregar)</td>
+                    <td class="border border-gray-200 p-2 font-semibold" colspan="6">Nivel de Combustible Final (al entregar)</td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-200 p-2" colspan="6">
+                        <input type="number" step="0.01" name="kilometraje_final" value="{{ old('kilometraje_final') }}" class="w-full border-gray-300 rounded px-2 py-1" placeholder="Se llenará al entregar el vehículo">
+                    </td>
+                    <td class="border border-gray-200 p-2" colspan="6">
+                        <select name="nivel_combustible_final" class="w-full border-gray-300 rounded px-2 py-1">
+                            <option value="">Se llenará al entregar el vehículo</option>
+                            <option value="1/4" {{ old('nivel_combustible_final') == '1/4' ? 'selected' : '' }}>1/4</option>
+                            <option value="1/2" {{ old('nivel_combustible_final') == '1/2' ? 'selected' : '' }}>1/2</option>
+                            <option value="3/4" {{ old('nivel_combustible_final') == '3/4' ? 'selected' : '' }}>3/4</option>
+                            <option value="Lleno" {{ old('nivel_combustible_final') == 'Lleno' ? 'selected' : '' }}>Lleno</option>
+                        </select>
+                    </td>
                 </tr>
             </table>
-
-            <!-- Destino -->
-
-            <div class="grid grid-cols-3">
-                <div class="mb-4">
-                    <label for="destination" class="block text-sm font-medium text-gray-700 mb-2">
-                        Destino <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                        id="destination" 
-                        name="destination" 
-                        value="{{ old('destination') }}"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('destination') border-red-500 @enderror"
-                        placeholder="Ej: Ciudad de México, CDMX"
-                        required>
-                    @error('destination')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="model" class="block text-sm font-medium text-gray-700 mb-2">
-                        Modelo <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                        id="model" 
-                        name="model" 
-                        value="{{ old('model') }}"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('model') border-red-500 @enderror"
-                        placeholder="Ej: Aveo"
-                        required>
-                    @error('model')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="folio" class="block text-sm font-medium text-gray-700 mb-2">
-                        Folio <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                        id="folio" 
-                        name="folio" 
-                        value="{{ old('folio') }}"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('folio') border-red-500 @enderror"
-                        placeholder="Ej: Aveo"
-                        required>
-                    @error('folio')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="departure_time" class="block text-sm font-medium text-gray-700 mb-2">
-                        Hora de salida <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                        id="departure_time" 
-                        name="departure_time" 
-                        value="{{ old('departure_time') }}"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('departure_time') border-red-500 @enderror"
-                        placeholder="Ej: Aveo"
-                        required>
-                    @error('departure_time')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="arrival_time" class="block text-sm font-medium text-gray-700 mb-2">
-                        Hora de entrada <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                        id="arrival_time" 
-                        name="arrival_time" 
-                        value="{{ old('arrival_time') }}"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('arrival_time') border-red-500 @enderror"
-                        placeholder="Ej: Aveo"
-                        required>
-                    @error('arrival_time')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="date" class="block text-sm font-medium text-gray-700 mb-2">
-                        Fecha <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                        id="date" 
-                        name="date" 
-                        value="{{ old('date') }}"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('date') border-red-500 @enderror"
-                        placeholder="Ej: Aveo"
-                        required>
-                    @error('date')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="initial_mileage" class="block text-sm font-medium text-gray-700 mb-2">
-                        Kilometraje inicial <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                        id="initial_mileage" 
-                        name="initial_mileage" 
-                        value="{{ old('initial_mileage') }}"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('initial_mileage') border-red-500 @enderror"
-                        placeholder="Ej: Aveo"
-                        required>
-                    @error('initial_mileage')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="initial_fuel_level" class="block text-sm font-medium text-gray-700 mb-2">
-                        Nivel de combustible inicial <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                        id="initial_fuel_level" 
-                        name="initial_fuel_level" 
-                        value="{{ old('initial_fuel_level') }}"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('initial_fuel_level') border-red-500 @enderror"
-                        placeholder="Ej: Aveo"
-                        required>
-                    @error('initial_fuel_level')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="license_plate" class="block text-sm font-medium text-gray-700 mb-2">
-                        Placas <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                        id="license_plate" 
-                        name="license_plate" 
-                        value="{{ old('license_plate') }}"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('license_plate') border-red-500 @enderror"
-                        placeholder="Ej: Aveo"
-                        required>
-                    @error('license_plate')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="final_mileage" class="block text-sm font-medium text-gray-700 mb-2">
-                        Kilometraje Final <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                        id="final_mileage" 
-                        name="final_mileage" 
-                        value="{{ old('final_mileage') }}"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('final_mileage') border-red-500 @enderror"
-                        placeholder="Ej: Aveo"
-                        required>
-                    @error('final_mileage')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-
-                <div class="mb-4">
-                    <label for="final_fuel_level" class="block text-sm font-medium text-gray-700 mb-2">
-                        Nivel de combustible Final <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                        id="final_fuel_level" 
-                        name="final_fuel_level" 
-                        value="{{ old('final_fuel_level') }}"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('final_fuel_level') border-red-500 @enderror"
-                        placeholder="Ej: Aveo"
-                        required>
-                    @error('final_fuel_level')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="brand" class="block text-sm font-medium text-gray-700 mb-2">
-                        Marca <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                        id="brand" 
-                        name="brand" 
-                        value="{{ old('brand') }}"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('brand') border-red-500 @enderror"
-                        placeholder="Ej: Aveo"
-                        required>
-                    @error('brand')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-            </div>
-            
-
-            <!-- Propósito -->
-            
-
-            <!-- Fechas -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                
-
-                <div>
-                    <label for="requested_time_start" class="block text-sm font-medium text-gray-700 mb-2">
-                        Hora de Salida <span class="text-red-500">*</span>
-                    </label>
-                    <input type="time" 
-                           id="requested_time_start" 
-                           name="requested_time_start" 
-                           value="{{ old('requested_time_start') }}"
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('requested_time_start') border-red-500 @enderror"
-                           required>
-                    @error('requested_time_start')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-            </div>
-
-            <div class="mb-4">
-                <label for="requested_time_end" class="block text-sm font-medium text-gray-700 mb-2">
-                    Hora de Regreso Estimada
-                </label>
-                <input type="time" 
-                       id="requested_time_end" 
-                       name="requested_time_end" 
-                       value="{{ old('requested_time_end') }}"
-                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
             </div>
 
             <!-- Número de Pasajeros -->
@@ -615,16 +490,16 @@
                     @if(auth()->user()->driverLicense)
                     <p><strong>Licencia:</strong> {{ auth()->user()->driverLicense->license_number }} (Vence: {{ \Carbon\Carbon::parse(auth()->user()->driverLicense->expiration_date)->format('d/m/Y') }})</p>
                     @else
-                    <p class="text-red-600"><strong>⚠️ No tienes licencia de conducir registrada</strong></p>
+                    <p class="text-amber-600"><strong>ℹ️ No tienes licencia de conducir registrada</strong></p>
                     @endif
                 </div>
             </div>
 
             @if(!auth()->user()->driverLicense)
-            <div class="bg-yellow-50 border border-yellow-400 text-yellow-800 px-4 py-3 rounded mb-4">
+            <div class="bg-blue-50 border border-blue-400 text-blue-800 px-4 py-3 rounded mb-4">
                 <p class="text-sm">
-                    <i class="fas fa-exclamation-triangle mr-2"></i>
-                    <strong>Importante:</strong> Es necesario registrar tu licencia de conducir antes de que tu solicitud sea aprobada. Contacta al administrador.
+                    <i class="fas fa-info-circle mr-2"></i>
+                    <strong>Nota:</strong> Puedes crear la solicitud sin licencia registrada. El encargado revisará tu documentación al aprobar.
                 </p>
             </div>
             @endif
@@ -659,11 +534,11 @@
 
 <script>
     // Validar que la fecha de regreso sea posterior a la de salida
-    document.getElementById('departure_date').addEventListener('change', function() {
+    document.getElementById('departure_date')?.addEventListener('change', function() {
         const departureDate = new Date(this.value);
         const returnDateInput = document.getElementById('return_date');
         
-        if (returnDateInput.value) {
+        if (returnDateInput?.value) {
             const returnDate = new Date(returnDateInput.value);
             if (returnDate <= departureDate) {
                 alert('La fecha de regreso debe ser posterior a la fecha de salida');
@@ -672,11 +547,11 @@
         }
     });
 
-    document.getElementById('return_date').addEventListener('change', function() {
+    document.getElementById('return_date')?.addEventListener('change', function() {
         const returnDate = new Date(this.value);
         const departureDateInput = document.getElementById('departure_date');
         
-        if (departureDateInput.value) {
+        if (departureDateInput?.value) {
             const departureDate = new Date(departureDateInput.value);
             if (returnDate <= departureDate) {
                 alert('La fecha de regreso debe ser posterior a la fecha de salida');
@@ -684,5 +559,208 @@
             }
         }
     });
+
+    // Canvas para dibujar sobre el vehículo
+    const canvas = document.getElementById('carDamageCanvas');
+    const ctx = canvas.getContext('2d');
+    const canvasContainer = document.getElementById('canvasContainer');
+    let vehicleImage = new Image();
+    let imageLoaded = false;
+    
+    // Variables para el dibujo de líneas
+    let isDrawing = false;
+    let strokes = []; // Array de trazos
+    let currentStroke = []; // Trazo actual
+    
+    // Cargar imagen del vehículo
+    function loadVehicleImage() {
+        imageLoaded = false;
+        vehicleImage = new Image();
+        vehicleImage.crossOrigin = 'anonymous';
+        vehicleImage.onload = function() {
+            imageLoaded = true;
+            canvas.width = vehicleImage.width;
+            canvas.height = vehicleImage.height;
+            redrawCanvas();
+        };
+        vehicleImage.onerror = function() {
+            console.error('Error al cargar la imagen del vehículo');
+        };
+        vehicleImage.src = '{{ asset('images/autos.png') }}';
+    }
+
+    function redrawCanvas() {
+        if (!imageLoaded) return;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(vehicleImage, 0, 0, canvas.width, canvas.height);
+        
+        // Redibujar todos los trazos
+        strokes.forEach(stroke => {
+            if (stroke.points.length < 2) return;
+            
+            ctx.beginPath();
+            ctx.strokeStyle = stroke.color;
+            ctx.lineWidth = stroke.width;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+            for (let i = 1; i < stroke.points.length; i++) {
+                ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+            }
+            ctx.stroke();
+        });
+    }
+
+    function getCanvasPoint(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        
+        let clientX, clientY;
+        
+        if (e.touches && e.touches.length > 0) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+        
+        return {
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
+        };
+    }
+
+    function startDrawing(e) {
+        if (!imageLoaded) return;
+        e.preventDefault();
+        
+        isDrawing = true;
+        const point = getCanvasPoint(e);
+        const color = document.getElementById('drawColor').value;
+        const width = parseInt(document.getElementById('lineWidth').value);
+        
+        currentStroke = {
+            points: [point],
+            color: color,
+            width: width
+        };
+    }
+
+    function draw(e) {
+        if (!isDrawing || !imageLoaded) return;
+        e.preventDefault();
+        
+        const point = getCanvasPoint(e);
+        currentStroke.points.push(point);
+        
+        // Dibujar el segmento actual
+        ctx.beginPath();
+        ctx.strokeStyle = currentStroke.color;
+        ctx.lineWidth = currentStroke.width;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
+        const prevPoint = currentStroke.points[currentStroke.points.length - 2];
+        ctx.moveTo(prevPoint.x, prevPoint.y);
+        ctx.lineTo(point.x, point.y);
+        ctx.stroke();
+    }
+
+    function stopDrawing(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        
+        isDrawing = false;
+        if (currentStroke.points.length > 0) {
+            strokes.push(currentStroke);
+            saveCanvasData();
+        }
+        currentStroke = [];
+    }
+
+    // Event listeners para mouse
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+
+    // Event listeners para touch (móvil)
+    canvas.addEventListener('touchstart', startDrawing);
+    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('touchend', stopDrawing);
+    canvas.addEventListener('touchcancel', stopDrawing);
+
+    function clearCanvas() {
+        if (strokes.length === 0) return;
+        
+        if (confirm('¿Estás seguro de que quieres borrar todos los trazos?')) {
+            strokes = [];
+            redrawCanvas();
+            saveCanvasData();
+        }
+    }
+
+    function undoLastStroke() {
+        if (strokes.length > 0) {
+            strokes.pop();
+            redrawCanvas();
+            saveCanvasData();
+        }
+    }
+
+    function saveCanvasData() {
+        if (!imageLoaded) return;
+        const dataURL = canvas.toDataURL('image/png');
+        document.getElementById('carDamageImageData').value = dataURL;
+    }
+
+    // Actualizar valor del grosor de línea
+    document.getElementById('lineWidth').addEventListener('input', function(e) {
+        document.getElementById('lineWidthValue').textContent = e.target.value;
+    });
+
+    // Pantalla completa
+    let isFullscreen = false;
+    function toggleFullscreen() {
+        const container = canvasContainer;
+        const controls = document.getElementById('canvasControls');
+        const fullscreenText = document.getElementById('fullscreenText');
+        
+        isFullscreen = !isFullscreen;
+        
+        if (isFullscreen) {
+            container.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; margin: 0; border-radius: 0; display: flex; flex-direction: column; padding: 1rem; background: white;';
+            controls.style.cssText = 'position: absolute; bottom: 1rem; left: 1rem; right: 1rem; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10000; border-radius: 0.5rem;';
+            canvas.style.cssText = 'width: 100%; height: calc(100% - 80px); object-fit: contain; touch-action: none;';
+            fullscreenText.textContent = 'Salir';
+            document.body.style.overflow = 'hidden';
+        } else {
+            container.style.cssText = '';
+            controls.style.cssText = '';
+            canvas.style.cssText = 'display: block; max-width: 100%; width: 100%; height: auto; touch-action: none;';
+            fullscreenText.textContent = 'Pantalla Completa';
+            document.body.style.overflow = '';
+            
+            // Redibujar después de salir de fullscreen
+            setTimeout(() => redrawCanvas(), 100);
+        }
+    }
+
+    // Validar formulario antes de enviar
+    function validateForm() {
+        // Asegurar que la imagen del canvas se guarde antes de enviar
+        if (imageLoaded && strokes.length > 0) {
+            saveCanvasData();
+            console.log('Imagen del vehículo guardada correctamente');
+        }
+        return true;
+    }
+
+    // Inicializar al cargar la página
+    loadVehicleImage();
 </script>
 @endsection
