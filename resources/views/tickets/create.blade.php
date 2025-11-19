@@ -26,55 +26,528 @@
         <form action="{{ route('tickets.store') }}" method="POST">
             @csrf
 
+            <table class="w-full mb-6 border border-gray-200 rounded-lg">
+                <tr>
+                    <td class="border border-gray-200 p-2">Destino</td>
+                    <td class="border border-gray-200 p-2" colspan="3"></td>
+                    <td class="border border-gray-200 p-2">Modelo</td>
+                    <td class="border border-gray-200 p-2" colspan="3"></td>
+                    <td class="border border-gray-200 p-2">Folio</td>
+                    <td class="border border-gray-200 p-2" colspan="3"></td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Hora de Salida</td>
+                    <td class="border border-gray-200 p-2" colspan="3"></td>
+                    <td class="border border-gray-200 p-2">Hora de entrada</td>
+                    <td class="border border-gray-200 p-2" colspan="3"></td>
+                    <td class="border border-gray-200 p-2">Fecha</td>
+                    <td class="border border-gray-200 p-2" colspan="3"></td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Kilometraje Inicial</td>
+                    <td class="border border-gray-200 p-2" colspan="3"></td>
+                    <td class="border border-gray-200 p-2">Nivel de combustible Inicial</td>
+                    <td class="border border-gray-200 p-2" colspan="3"></td>
+                    <td class="border border-gray-200 p-2">Placas</td>
+                    <td class="border border-gray-200 p-2" colspan="3"></td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Llantas</td>
+                    <td class="border border-gray-200 p-2">Si</td>
+                    <td class="border border-gray-200 p-2">No</td>
+                    <td class="border border-gray-200 p-2">Frontal</td>
+                    <td class="border border-gray-200 p-2">Si</td>
+                    <td class="border border-gray-200 p-2">No</td>
+                    <td class="border border-gray-200 p-2">Interior</td>
+                    <td class="border border-gray-200 p-2">Si</td>
+                    <td class="border border-gray-200 p-2">No</td>
+                    <td class="border border-gray-200 p-2">Motor</td>
+                    <td class="border border-gray-200 p-2">Si</td>
+                    <td class="border border-gray-200 p-2">No</td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Delantera derecha</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Parabrisas</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Tablero Indicadores</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Nivel aceite motor</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Delantera izquierda</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Cofre</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Switch de encendido</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Nivel anticongelante</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                </tr>
+
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Vida</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Parrilla</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Controles A/C</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Nivel liquido frenos</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                </tr>
+
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Trasera derecha</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Defensa</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Defroster</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Batería</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Trasera izquierda</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Molduras</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Radio</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Bayoneta de aceite motor</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Vida</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Placa</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Volante</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Tapones</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Llanta de refacción</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Salpicadera</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Bolsa de aire</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Bocina claxon</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Presión Adecuada</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Antena</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Cinturón de seguridad</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Radiador</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Luces</td>
+                    <td class="border border-gray-200 p-2">Si</td>
+                    <td class="border border-gray-200 p-2">No</td>
+                    <td class="border border-gray-200 p-2">Otros</td>
+                    <td class="border border-gray-200 p-2">Si</td>
+                    <td class="border border-gray-200 p-2">No</td>
+                    <td class="border border-gray-200 p-2">Coderas</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Herramienta</td>
+                    <td class="border border-gray-200 p-2">Si</td>
+                    <td class="border border-gray-200 p-2">No</td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Intermitentes</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Mata Chispas</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Espejo interior</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Gato</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Direccional Derecha</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Alarma</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Freno de mano</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Llave de ruedas</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Direccional Izquierda</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Extintor</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Encendedor</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Cables pasa corrientes</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Luz stop</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Botiquín</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Guantera</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Caja o bolsa de herramientas</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Faros</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Tarjeta de circulación</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Manijas interiores</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Dado o birlo de seguridad</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Luces Altas</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Licencia de Conductor Vigente</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Seguros</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Calcomanías</td>
+                    <td class="border border-gray-200 p-2">Si</td>
+                    <td class="border border-gray-200 p-2">No</td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Luz Interior</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Póliza de seguro</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Asientos</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Calcomanías de permisos</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2">Calaveras buen estado</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Triangulo de Emergencia</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Tapetes delanteros y traseros</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2">Calcomanías velocidad máxima</td>
+                    <td class="border border-gray-200 p-2"></td>
+                    <td class="border border-gray-200 p-2"></td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2" colspan="12" >Mantenimiento Preventivo</td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2" colspan="12" >Mantenimiento Correctivo</td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 p-2" colspan="12" >Condicion de Carrocería</td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-200 p-2" colspan="6" >Responsable de recibo o uso:</td>
+                    <td class="border border-gray-200 p-2" colspan="6" >Responsable de entrega:</td>
+                </tr>
+            </table>
+
             <!-- Destino -->
-            <div class="mb-4">
-                <label for="destination" class="block text-sm font-medium text-gray-700 mb-2">
-                    Destino <span class="text-red-500">*</span>
-                </label>
-                <input type="text" 
-                       id="destination" 
-                       name="destination" 
-                       value="{{ old('destination') }}"
-                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('destination') border-red-500 @enderror"
-                       placeholder="Ej: Ciudad de México, CDMX"
-                       required>
-                @error('destination')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
 
-            <!-- Propósito -->
-            <div class="mb-4">
-                <label for="purpose" class="block text-sm font-medium text-gray-700 mb-2">
-                    Propósito del Viaje <span class="text-red-500">*</span>
-                </label>
-                <textarea id="purpose" 
-                          name="purpose" 
-                          rows="3"
-                          class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('purpose') border-red-500 @enderror"
-                          placeholder="Describe el motivo de tu viaje..."
-                          required>{{ old('purpose') }}</textarea>
-                @error('purpose')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- Fechas -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label for="requested_date" class="block text-sm font-medium text-gray-700 mb-2">
-                        Fecha de Salida <span class="text-red-500">*</span>
+            <div class="grid grid-cols-3">
+                <div class="mb-4">
+                    <label for="destination" class="block text-sm font-medium text-gray-700 mb-2">
+                        Destino <span class="text-red-500">*</span>
                     </label>
-                    <input type="date" 
-                           id="requested_date" 
-                           name="requested_date" 
-                           value="{{ old('requested_date') }}"
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('requested_date') border-red-500 @enderror"
-                           required>
-                    @error('requested_date')
+                    <input type="text" 
+                        id="destination" 
+                        name="destination" 
+                        value="{{ old('destination') }}"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('destination') border-red-500 @enderror"
+                        placeholder="Ej: Ciudad de México, CDMX"
+                        required>
+                    @error('destination')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
+
+                <div class="mb-4">
+                    <label for="model" class="block text-sm font-medium text-gray-700 mb-2">
+                        Modelo <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                        id="model" 
+                        name="model" 
+                        value="{{ old('model') }}"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('model') border-red-500 @enderror"
+                        placeholder="Ej: Aveo"
+                        required>
+                    @error('model')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label for="folio" class="block text-sm font-medium text-gray-700 mb-2">
+                        Folio <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                        id="folio" 
+                        name="folio" 
+                        value="{{ old('folio') }}"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('folio') border-red-500 @enderror"
+                        placeholder="Ej: Aveo"
+                        required>
+                    @error('folio')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label for="departure_time" class="block text-sm font-medium text-gray-700 mb-2">
+                        Hora de salida <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                        id="departure_time" 
+                        name="departure_time" 
+                        value="{{ old('departure_time') }}"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('departure_time') border-red-500 @enderror"
+                        placeholder="Ej: Aveo"
+                        required>
+                    @error('departure_time')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label for="arrival_time" class="block text-sm font-medium text-gray-700 mb-2">
+                        Hora de entrada <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                        id="arrival_time" 
+                        name="arrival_time" 
+                        value="{{ old('arrival_time') }}"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('arrival_time') border-red-500 @enderror"
+                        placeholder="Ej: Aveo"
+                        required>
+                    @error('arrival_time')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label for="date" class="block text-sm font-medium text-gray-700 mb-2">
+                        Fecha <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                        id="date" 
+                        name="date" 
+                        value="{{ old('date') }}"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('date') border-red-500 @enderror"
+                        placeholder="Ej: Aveo"
+                        required>
+                    @error('date')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label for="initial_mileage" class="block text-sm font-medium text-gray-700 mb-2">
+                        Kilometraje inicial <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                        id="initial_mileage" 
+                        name="initial_mileage" 
+                        value="{{ old('initial_mileage') }}"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('initial_mileage') border-red-500 @enderror"
+                        placeholder="Ej: Aveo"
+                        required>
+                    @error('initial_mileage')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label for="initial_fuel_level" class="block text-sm font-medium text-gray-700 mb-2">
+                        Nivel de combustible inicial <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                        id="initial_fuel_level" 
+                        name="initial_fuel_level" 
+                        value="{{ old('initial_fuel_level') }}"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('initial_fuel_level') border-red-500 @enderror"
+                        placeholder="Ej: Aveo"
+                        required>
+                    @error('initial_fuel_level')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label for="license_plate" class="block text-sm font-medium text-gray-700 mb-2">
+                        Placas <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                        id="license_plate" 
+                        name="license_plate" 
+                        value="{{ old('license_plate') }}"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('license_plate') border-red-500 @enderror"
+                        placeholder="Ej: Aveo"
+                        required>
+                    @error('license_plate')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label for="final_mileage" class="block text-sm font-medium text-gray-700 mb-2">
+                        Kilometraje Final <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                        id="final_mileage" 
+                        name="final_mileage" 
+                        value="{{ old('final_mileage') }}"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('final_mileage') border-red-500 @enderror"
+                        placeholder="Ej: Aveo"
+                        required>
+                    @error('final_mileage')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+
+                <div class="mb-4">
+                    <label for="final_fuel_level" class="block text-sm font-medium text-gray-700 mb-2">
+                        Nivel de combustible Final <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                        id="final_fuel_level" 
+                        name="final_fuel_level" 
+                        value="{{ old('final_fuel_level') }}"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('final_fuel_level') border-red-500 @enderror"
+                        placeholder="Ej: Aveo"
+                        required>
+                    @error('final_fuel_level')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label for="brand" class="block text-sm font-medium text-gray-700 mb-2">
+                        Marca <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                        id="brand" 
+                        name="brand" 
+                        value="{{ old('brand') }}"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('brand') border-red-500 @enderror"
+                        placeholder="Ej: Aveo"
+                        required>
+                    @error('brand')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+            </div>
+            
+
+            <!-- Propósito -->
+            
+
+            <!-- Fechas -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                
 
                 <div>
                     <label for="requested_time_start" class="block text-sm font-medium text-gray-700 mb-2">
