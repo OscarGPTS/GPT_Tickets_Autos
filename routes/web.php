@@ -49,6 +49,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{ticket}/approve', [TicketController::class, 'approve'])->name('approve');
         Route::post('/{ticket}/reject', [TicketController::class, 'reject'])->name('reject');
         
+        // Asignar despachador (solo encargados)
+        Route::post('/{ticket}/assign-dispatcher', [TicketController::class, 'assignDispatcher'])->name('assign.dispatcher');
+        
         // Calificación del servicio (solo usuarios)
         Route::get('/{ticket}/rate', function ($ticket) {
             return view('tickets.rate', compact('ticket'));

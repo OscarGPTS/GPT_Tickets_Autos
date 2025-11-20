@@ -15,11 +15,13 @@ class Ticket extends Model
 
     protected $fillable = [
         'folio',
+        'requisicion',
         'user_id',
         'vehicle_id',
         'dispatcher_id',
         'approved_by',
         'destination',
+        'cliente',
         'purpose',
         'requested_date',
         'requested_time_start',

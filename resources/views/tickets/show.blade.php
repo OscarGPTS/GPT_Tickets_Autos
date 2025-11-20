@@ -52,14 +52,23 @@
             <div class="mb-6">
                 <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Información del Viaje</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    @if($ticket->requisicion)
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Requisición</p>
+                        <p class="text-lg font-semibold text-gray-900">{{ $ticket->requisicion }}</p>
+                    </div>
+                    @endif
                     <div>
                         <p class="text-sm text-gray-600 mb-1">Destino</p>
                         <p class="text-lg font-semibold text-gray-900">{{ $ticket->destination }}</p>
                     </div>
+                    @if($ticket->cliente)
                     <div>
-                        <p class="text-sm text-gray-600 mb-1">Número de Pasajeros</p>
-                        <p class="text-lg font-semibold text-gray-900">{{ $ticket->passenger_count }} persona(s)</p>
+                        <p class="text-sm text-gray-600 mb-1">Cliente</p>
+                        <p class="text-lg font-semibold text-gray-900">{{ $ticket->cliente }}</p>
                     </div>
+                    @endif
+
                     <div>
                         <p class="text-sm text-gray-600 mb-1">Fecha de Salida</p>
                         <p class="text-lg font-semibold text-gray-900">{{ \Carbon\Carbon::parse($ticket->requested_date)->format('d/m/Y') }}</p>
@@ -79,12 +88,7 @@
                     <p class="text-sm text-gray-600 mb-1">Propósito del Viaje</p>
                     <p class="text-gray-900">{{ $ticket->purpose }}</p>
                 </div>
-                @if($ticket->additional_notes)
-                <div class="mt-4">
-                    <p class="text-sm text-gray-600 mb-1">Notas Adicionales</p>
-                    <p class="text-gray-900">{{ $ticket->additional_notes }}</p>
-                </div>
-                @endif
+
             </div>
 
             <!-- Información del Solicitante -->
@@ -130,6 +134,38 @@
                         <p class="text-lg font-semibold text-gray-900">{{ $ticket->vehicle->capacity }} pasajeros</p>
                     </div>
                 </div>
+            </div>
+            @endif
+
+            <!-- Asignar Despachador (Solo para encargados) -->
+            @if(auth()->user()->hasRole('encargado') || auth()->user()->hasRole('admin'))
+                @if($ticket->status === 'aprobado' && !$ticket->dispatcher_id)
+                <div class="bg-blue-50 border border-blue-300 rounded-lg p-4 mb-6">
+                    <h3 class="text-sm font-semibold text-blue-800 mb-3">
+                        <i class="fas fa-user-tie mr-2"></i>Asignar Despachador
+                    </h3>
+                    <form action="{{ route('tickets.assign.dispatcher', $ticket) }}" method="POST" class="flex flex-col sm:flex-row gap-3">
+                        @csrf
+                        <select name="dispatcher_id" class="flex-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
+                            <option value="">Seleccionar despachador...</option>
+                            @foreach($dispatchers as $dispatcher)
+                                <option value="{{ $dispatcher->id }}">{{ $dispatcher->name }}</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+                            <i class="fas fa-check mr-2"></i>Asignar
+                        </button>
+                    </form>
+                </div>
+                @endif
+            @endif
+
+            @if($ticket->dispatcher)
+            <div class="bg-green-50 rounded-lg p-3 mb-6">
+                <p class="text-sm text-green-800">
+                    <i class="fas fa-user-check mr-2"></i>
+                    <strong>Despachador asignado:</strong> {{ $ticket->dispatcher->name }}
+                </p>
             </div>
             @endif
 
@@ -182,6 +218,59 @@
             </div>
             @endif
 
+            <!-- Formulario de Aprobación (Encargados) -->
+            @can('approve', $ticket)
+            @if($ticket->status === 'pendiente')
+            <div id="approvalForm" class="hidden bg-green-50 border-2 border-green-300 rounded-lg p-6 mb-6">
+                <h3 class="text-lg font-bold text-green-800 mb-4">
+                    <i class="fas fa-check-circle mr-2"></i>Aprobar Requisición y Asignar Recursos
+                </h3>
+                <form action="{{ route('tickets.approve', $ticket) }}" method="POST">
+                    @csrf
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="vehicle_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                Vehículo <span class="text-red-500">*</span>
+                            </label>
+                            <select name="vehicle_id" id="vehicle_id" class="w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500" required>
+                                <option value="">Seleccionar vehículo...</option>
+                                @foreach(\App\Models\Vehicle::where('status', 'disponible')->get() as $vehicle)
+                                    <option value="{{ $vehicle->id }}">
+                                        {{ $vehicle->brand }} {{ $vehicle->model }} - {{ $vehicle->license_plate }} (Cap: {{ $vehicle->capacity }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label for="dispatcher_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                Despachador <span class="text-red-500">*</span>
+                            </label>
+                            <select name="dispatcher_id" id="dispatcher_id" class="w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500" required>
+                                @foreach($dispatchers as $dispatcher)
+                                    <option value="{{ $dispatcher->id }}">{{ $dispatcher->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="conductor_name" class="block text-sm font-medium text-gray-700 mb-2">
+                            Nombre del Conductor (Opcional)
+                        </label>
+                        <input type="text" name="conductor_name" id="conductor_name" value="{{ $ticket->user->name }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500" placeholder="Nombre completo del conductor">
+                    </div>
+                    <div class="flex gap-3">
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">
+                            <i class="fas fa-check mr-2"></i>Aprobar y Asignar
+                        </button>
+                        <button type="button" onclick="document.getElementById('approvalForm').classList.add('hidden')" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold py-2 px-6 rounded-lg transition duration-200">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+            @endif
+            @endcan
+
             <!-- Acciones -->
             <div class="flex flex-wrap gap-3 pt-6 border-t">
                 @can('update', $ticket)
@@ -194,12 +283,9 @@
 
                 @can('approve', $ticket)
                 @if($ticket->status === 'pendiente')
-                <form action="{{ route('tickets.approve', $ticket) }}" method="POST" class="inline">
-                    @csrf
-                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200" onclick="return confirm('¿Aprobar esta solicitud?')">
-                        <i class="fas fa-check-circle mr-2"></i>Aprobar
-                    </button>
-                </form>
+                <button type="button" onclick="document.getElementById('approvalForm').classList.toggle('hidden')" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+                    <i class="fas fa-check-circle mr-2"></i>Aprobar y Asignar
+                </button>
                 <form action="{{ route('tickets.reject', $ticket) }}" method="POST" class="inline" onsubmit="return handleReject(event)">
                     @csrf
                     <input type="hidden" name="rejection_reason" id="rejection_reason">

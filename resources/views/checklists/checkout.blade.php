@@ -49,15 +49,15 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Marca <span class="text-red-500">*</span></label>
-                    <input type="text" name="marca" value="{{ old('marca', $ticket->vehicle->brand) }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-purple-500 focus:ring-purple-500" required>
+                    <input type="text" name="marca" value="{{ old('marca', $ticket->vehicle->brand) }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-purple-500 focus:ring-purple-500 bg-gray-50" readonly required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Modelo <span class="text-red-500">*</span></label>
-                    <input type="text" name="modelo" value="{{ old('modelo', $ticket->vehicle->model) }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-purple-500 focus:ring-purple-500" required>
+                    <input type="text" name="modelo" value="{{ old('modelo', $ticket->vehicle->model) }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-purple-500 focus:ring-purple-500 bg-gray-50" readonly required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Placas <span class="text-red-500">*</span></label>
-                    <input type="text" name="placas" value="{{ old('placas', $ticket->vehicle->license_plate) }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-purple-500 focus:ring-purple-500" required>
+                    <input type="text" name="placas" value="{{ old('placas', $ticket->vehicle->license_plate) }}" class="w-full border-gray-300 rounded-md shadow-sm focus:border-purple-500 focus:ring-purple-500 bg-gray-50" readonly required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Kilometraje Inicial <span class="text-red-500">*</span></label>

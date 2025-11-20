@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Checklist;
 use App\Models\Ticket;
+use App\Models\User;
+use App\Mail\ChecklistCompletado;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class ChecklistController extends Controller
@@ -72,8 +75,11 @@ class ChecklistController extends Controller
             'status' => 'en_uso',
         ]);
 
+        // Enviar correo a solicitante y encargados notificando el check-out
+        $this->notifyChecklistCompletado($ticket, $checklist, 'salida');
+
         return redirect()->route('tickets.show', $ticket)
-            ->with('success', 'Checkout realizado exitosamente.');
+            ->with('success', 'Checkout realizado exitosamente. Se han enviado notificaciones por correo.');
     }
 
     /**
@@ -142,11 +148,14 @@ class ChecklistController extends Controller
             'status' => 'disponible',
         ]);
 
+        // Enviar correo a solicitante y encargados notificando el check-in
+        $this->notifyChecklistCompletado($ticket, $checklist, 'entrada');
+
         // Notificar al usuario para que califique
         $ticket->user->notify(new \App\Notifications\CheckinCompleted($ticket));
 
         return redirect()->route('tickets.show', $ticket)
-            ->with('success', 'Checkin realizado exitosamente. El usuario puede calificar el servicio.');
+            ->with('success', 'Checkin realizado exitosamente. Se han enviado notificaciones por correo.');
     }
 
     /**
@@ -248,5 +257,23 @@ class ChecklistController extends Controller
         }
 
         return $request->validate($rules);
+    }
+
+    /**
+     * Notificar por correo cuando se completa un checklist
+     */
+    private function notifyChecklistCompletado(Ticket $ticket, Checklist $checklist, string $tipo): void
+    {
+        // Enviar correo al solicitante
+        Mail::to($ticket->user->email)->send(new ChecklistCompletado($ticket, $checklist, $tipo));
+
+        // Enviar correo a encargados
+        $encargados = User::whereHas('roles', function ($query) {
+            $query->where('name', 'encargado');
+        })->get();
+
+        foreach ($encargados as $encargado) {
+            Mail::to($encargado->email)->send(new ChecklistCompletado($ticket, $checklist, $tipo));
+        }
     }
 }

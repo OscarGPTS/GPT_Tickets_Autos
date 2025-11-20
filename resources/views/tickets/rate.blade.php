@@ -29,9 +29,15 @@
             <h3 class="font-semibold text-gray-700 mb-2">Resumen del Viaje</h3>
             <div class="text-sm text-gray-600 space-y-1">
                 <p><strong>Destino:</strong> {{ $ticket->destination }}</p>
+                @if($ticket->vehicle)
                 <p><strong>Vehículo:</strong> {{ $ticket->vehicle->brand }} {{ $ticket->vehicle->model }} ({{ $ticket->vehicle->license_plate }})</p>
+                @endif
+                @if($ticket->departure_date)
                 <p><strong>Salida:</strong> {{ \Carbon\Carbon::parse($ticket->departure_date)->format('d/m/Y H:i') }}</p>
+                @endif
+                @if($ticket->return_date)
                 <p><strong>Regreso:</strong> {{ \Carbon\Carbon::parse($ticket->return_date)->format('d/m/Y H:i') }}</p>
+                @endif
             </div>
         </div>
 
