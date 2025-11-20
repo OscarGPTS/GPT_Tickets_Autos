@@ -3,8 +3,11 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ChecklistController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DriverLicenseController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\VehicleDocumentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -71,6 +74,35 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::resource('vehicles', VehicleController::class);
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Vehicle Documents Routes (CRUD - solo encargados)
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('vehicles/{vehicle}/documents')->name('vehicle-documents.')->group(function () {
+        Route::get('/', [VehicleDocumentController::class, 'index'])->name('index');
+        Route::get('/create', [VehicleDocumentController::class, 'create'])->name('create');
+        Route::post('/', [VehicleDocumentController::class, 'store'])->name('store');
+        Route::get('/{document}', [VehicleDocumentController::class, 'show'])->name('show');
+        Route::get('/{document}/edit', [VehicleDocumentController::class, 'edit'])->name('edit');
+        Route::put('/{document}', [VehicleDocumentController::class, 'update'])->name('update');
+        Route::delete('/{document}', [VehicleDocumentController::class, 'destroy'])->name('destroy');
+    });
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Driver Licenses Routes (CRUD - solo encargados)
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('driver-licenses', DriverLicenseController::class);
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Users Routes (CRUD - solo admin/encargados)
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('users', UserController::class);
     
     /*
     |--------------------------------------------------------------------------

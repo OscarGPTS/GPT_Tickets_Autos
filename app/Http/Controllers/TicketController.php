@@ -15,9 +15,12 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TicketController extends Controller
 {
+    use AuthorizesRequests;
+    
     /**
      * Listar tickets
      */
@@ -57,7 +60,8 @@ class TicketController extends Controller
      */
     public function create(): View
     {
-        return view('tickets.create');
+        $vehicles = \App\Models\Vehicle::where('status', 'disponible')->get();
+        return view('tickets.create', compact('vehicles'));
     }
 
     /**
@@ -71,12 +75,12 @@ class TicketController extends Controller
             'requested_date' => 'nullable|date',
             'requested_time_start' => 'nullable',
             'requested_time_end' => 'nullable',
-            'passenger_count' => 'required|integer|min:1',
             'conductor_name' => 'nullable|string|max:255',
             'conductor_phone' => 'nullable|string|max:20',
-            'additional_notes' => 'nullable|string',
             
             // Campos del checklist
+            'vehicle_id' => 'required|exists:vehicles,id',
+            'folio' => 'nullable|string|max:50',
             'destino' => 'required|string|max:255',
             'modelo' => 'required|string|max:255',
             'marca' => 'required|string|max:255',
@@ -84,9 +88,7 @@ class TicketController extends Controller
             'hora_entrada' => 'nullable',
             'fecha' => 'required|date',
             'kilometraje_inicial' => 'required|numeric',
-            'kilometraje_final' => 'nullable|numeric',
             'nivel_combustible_inicial' => 'required|string',
-            'nivel_combustible_final' => 'nullable|string',
             'placas' => 'required|string|max:20',
             
             // Campos booleanos del checklist (radio buttons)
@@ -169,15 +171,14 @@ class TicketController extends Controller
         // Crear el ticket primero (con campos básicos)
         $ticketData = [
             'user_id' => Auth::id(),
+            'vehicle_id' => $validated['vehicle_id'],
             'destination' => $validated['destino'] ?? $validated['destination'] ?? null,
             'purpose' => $validated['purpose'] ?? 'Solicitud de vehículo',
             'requested_date' => $validated['fecha'] ?? $validated['requested_date'] ?? now(),
             'requested_time_start' => $validated['hora_salida'] ?? $validated['requested_time_start'] ?? null,
             'requested_time_end' => $validated['hora_entrada'] ?? $validated['requested_time_end'] ?? null,
-            'passenger_count' => $validated['passenger_count'] ?? 1,
             'conductor_name' => $validated['conductor_name'] ?? null,
             'conductor_phone' => $validated['conductor_phone'] ?? null,
-            'additional_notes' => $validated['additional_notes'] ?? null,
         ];
 
         $ticket = Ticket::create($ticketData);
@@ -185,7 +186,7 @@ class TicketController extends Controller
         // Crear el checklist asociado con todos los campos
         $checklistData = [
             'ticket_id' => $ticket->id,
-            'folio' => $ticket->id, // Usar el ID del ticket como folio
+            'folio' => $validated['folio'] ?? $ticket->id, // Usar el ID del ticket como folio si no se proporciona
             'fecha' => $validated['fecha'],
             'destino' => $validated['destino'],
             'modelo' => $validated['modelo'],
@@ -194,10 +195,8 @@ class TicketController extends Controller
             'hora_salida' => $validated['hora_salida'],
             'hora_entrada' => $validated['hora_entrada'] ?? null,
             'kilometraje_inicial' => $validated['kilometraje_inicial'],
-            'kilometraje_final' => $validated['kilometraje_final'] ?? null,
             'nivel_combustible_inicial' => $validated['nivel_combustible_inicial'],
-            'nivel_combustible_final' => $validated['nivel_combustible_final'] ?? null,
-            'tipo_inspeccion' => 'Checkout', // Por defecto es checkout al crear
+            'tipo_inspeccion' => 'salida', // Checkout al crear el ticket
             
             // Llantas
             'llanta_delantera_derecha' => $validated['llanta_delantera_derecha'] ?? false,
@@ -299,6 +298,16 @@ class TicketController extends Controller
         ];
 
         $ticket->checklists()->create($checklistData);
+
+        // Actualizar el kilometraje del vehículo con el kilometraje inicial registrado
+        if (isset($validated['vehicle_id']) && isset($validated['kilometraje_inicial'])) {
+            $vehicle = \App\Models\Vehicle::find($validated['vehicle_id']);
+            if ($vehicle) {
+                $vehicle->update([
+                    'current_mileage' => $validated['kilometraje_inicial']
+                ]);
+            }
+        }
 
         // Notificar a los encargados
         $this->notifyEncargados($ticket);

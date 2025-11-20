@@ -24,8 +24,6 @@ class Ticket extends Model
         'requested_date',
         'requested_time_start',
         'requested_time_end',
-        'passenger_count',
-        'additional_notes',
         'conductor_name',
         'conductor_phone',
         'conductor_license_id',
@@ -48,7 +46,6 @@ class Ticket extends Model
         'checkout_at' => 'datetime',
         'checkin_at' => 'datetime',
         'completed_at' => 'datetime',
-        'passenger_count' => 'integer',
         'service_rating' => 'integer',
         'vehicle_rating' => 'integer',
     ];

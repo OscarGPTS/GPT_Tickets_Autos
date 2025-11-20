@@ -22,9 +22,7 @@ class Checklist extends Model
         'hora_salida',
         'hora_entrada',
         'kilometraje_inicial',
-        'kilometraje_final',
         'nivel_combustible_inicial',
-        'nivel_combustible_final',
         // Llantas
         'llanta_delantera_derecha',
         'llanta_delantera_izquierda',
@@ -106,7 +104,6 @@ class Checklist extends Model
     protected $casts = [
         'fecha' => 'date',
         'kilometraje_inicial' => 'decimal:2',
-        'kilometraje_final' => 'decimal:2',
         'condicion_carroceria_log' => 'array',
         // Todos los campos boolean
         'llanta_delantera_derecha' => 'boolean',
@@ -205,8 +202,8 @@ class Checklist extends Model
         $excludedFields = [
             'id', 'ticket_id', 'tipo_inspeccion', 'folio', 'fecha', 'destino',
             'modelo', 'placas', 'marca', 'hora_salida', 'hora_entrada',
-            'kilometraje_inicial', 'kilometraje_final', 'nivel_combustible_inicial',
-            'nivel_combustible_final', 'mantenimiento_preventivo', 'mantenimiento_correctivo',
+            'kilometraje_inicial', 'nivel_combustible_inicial',
+            'mantenimiento_preventivo', 'mantenimiento_correctivo',
             'condicion_carroceria_log', 'responsable_recibo_uso', 'responsable_entrega',
             'created_at', 'updated_at'
         ];
