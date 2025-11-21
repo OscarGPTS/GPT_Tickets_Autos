@@ -10,8 +10,28 @@
         </a>
     </div>
 
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Editar Solicitud #{{ $ticket->id }}</h1>
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-4">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h1 class="text-2xl font-bold text-white">Requisición #{{ $ticket->folio }}</h1>
+                </div>
+                <div>
+                    @php
+                        $statusColors = [
+                            'pendiente' => 'bg-yellow-100 text-yellow-800 border-yellow-300',
+                            'aprobado' => 'bg-green-100 text-green-800 border-green-300',
+                            'rechazado' => 'bg-red-100 text-red-800 border-red-300',
+                            'en_uso' => 'bg-blue-100 text-blue-800 border-blue-300',
+                            'completado' => 'bg-gray-100 text-gray-800 border-gray-300',
+                        ];
+                    @endphp
+                    <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full border-2 {{ $statusColors[$ticket->status] ?? 'bg-gray-100 text-gray-800' }}">
+                        {{ strtoupper($ticket->status) }}
+                    </span>
+                </div>
+            </div>
+        </div>
 
         @if($errors->any())
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -23,7 +43,7 @@
         </div>
         @endif
 
-        <form action="{{ route('tickets.update', $ticket) }}" method="POST">
+        <form action="{{ route('tickets.update', $ticket) }}" method="POST" class="p-6">
             @csrf
             @method('PUT')
 
@@ -36,109 +56,67 @@
                        id="destination" 
                        name="destination" 
                        value="{{ old('destination', $ticket->destination) }}"
-                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('destination') border-red-500 @enderror"
+                       class="w-full p-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('destination') border-red-500 @enderror"
                        required>
                 @error('destination')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
 
-            <!-- Propósito -->
-            <div class="mb-4">
-                <label for="purpose" class="block text-sm font-medium text-gray-700 mb-2">
+
+            <div class="md:col-span-2 mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Cliente (Opcional)
+                    </label>
+                    <input type="text" name="cliente" value="{{ old('cliente', $ticket->cliente) }}" 
+                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" 
+                           placeholder="Ingrese el cliente al que visitará">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full mb-4">
+                <div class="w-full">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Fecha de salida <span class="text-red-500">*</span>
+                    </label>
+                    <input type="date" name="requested_date" value="{{ old('requested_date', now()->toDateString()) }}" 
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" 
+                        required>
+                </div>
+
+                <div class="w-full">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Hora Estimada de Salida <span class="text-red-500">*</span>
+                    </label>
+                    <input type="time" name="requested_time_start" value="{{ old('requested_time_start', $ticket->requested_time_start) }}" 
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" 
+                        required>
+                </div>
+
+                <div class="w-full">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Hora Estimadade Regreso 
+                    </label>
+                    <input type="time" name="requested_time_end" value="{{ old('requested_time_end', $ticket->requested_time_end) }}" 
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2">
+                </div>
+            </div>
+                
+            <div class="md:col-span-2 mb-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
                     Propósito del Viaje <span class="text-red-500">*</span>
                 </label>
-                <textarea id="purpose" 
-                          name="purpose" 
-                          rows="3"
-                          class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('purpose') border-red-500 @enderror"
-                          required>{{ old('purpose', $ticket->purpose) }}</textarea>
-                @error('purpose')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                <textarea name="purpose" rows="3" 
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" 
+                            placeholder="Ingrese el propósito del viaje" required>{{ old('purpose' , $ticket->purpose) }}</textarea>
             </div>
 
-            <!-- Fechas -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label for="requested_date" class="block text-sm font-medium text-gray-700 mb-2">
-                        Fecha de Salida <span class="text-red-500">*</span>
-                    </label>
-                    <input type="date" 
-                           id="requested_date" 
-                           name="requested_date" 
-                           value="{{ old('requested_date', \Carbon\Carbon::parse($ticket->requested_date)->format('Y-m-d')) }}"
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('requested_date') border-red-500 @enderror"
-                           required>
-                    @error('requested_date')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div>
-                    <label for="requested_time_start" class="block text-sm font-medium text-gray-700 mb-2">
-                        Hora de Salida <span class="text-red-500">*</span>
-                    </label>
-                    <input type="time" 
-                           id="requested_time_start" 
-                           name="requested_time_start" 
-                           value="{{ old('requested_time_start', $ticket->requested_time_start) }}"
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('requested_time_start') border-red-500 @enderror"
-                           required>
-                    @error('requested_time_start')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-            </div>
-
-            <div class="mb-4">
-                <label for="requested_time_end" class="block text-sm font-medium text-gray-700 mb-2">
-                    Hora de Regreso Estimada
-                </label>
-                <input type="time" 
-                       id="requested_time_end" 
-                       name="requested_time_end" 
-                       value="{{ old('requested_time_end', $ticket->requested_time_end) }}"
-                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-            </div>
-
-            <!-- Número de Pasajeros -->
-            <div class="mb-4">
-                <label for="passenger_count" class="block text-sm font-medium text-gray-700 mb-2">
-                    Número de Pasajeros <span class="text-red-500">*</span>
-                </label>
-                <input type="number" 
-                       id="passenger_count" 
-                       name="passenger_count" 
-                       value="{{ old('passenger_count', $ticket->passenger_count) }}"
-                       min="1" 
-                       max="20"
-                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 @error('passenger_count') border-red-500 @enderror"
-                       required>
-                @error('passenger_count')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- Notas Adicionales -->
-            <div class="mb-6">
-                <label for="additional_notes" class="block text-sm font-medium text-gray-700 mb-2">
-                    Notas Adicionales
-                </label>
-                <textarea id="additional_notes" 
-                          name="additional_notes" 
-                          rows="3"
-                          class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ old('additional_notes', $ticket->additional_notes) }}</textarea>
-            </div>
-
-            <!-- Botones -->
-            <div class="flex justify-end gap-4">
+            <div class="flex flex-col sm:flex-row gap-3 pt-6 text-center">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">
+                    Guardar cambios
+                </button>
                 <a href="{{ route('tickets.show', $ticket) }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded-lg transition duration-200">
                     Cancelar
                 </a>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200">
-                    <i class="fas fa-save mr-2"></i>Guardar Cambios
-                </button>
             </div>
         </form>
     </div>

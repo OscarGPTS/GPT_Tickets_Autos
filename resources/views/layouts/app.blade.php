@@ -119,7 +119,7 @@
     @endauth
     
     <!-- Flash Messages -->
-    @if(session('success'))
+    {{-- @if(session('success'))
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
         <div class="bg-green-50 border-l-4 border-green-400 p-4">
             <div class="flex">
@@ -141,7 +141,7 @@
             </div>
         </div>
     </div>
-    @endif
+    @endif --}}
     
     <!-- Page Content -->
     <main class="py-8">

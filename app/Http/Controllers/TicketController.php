@@ -64,9 +64,7 @@ class TicketController extends Controller
      */
     public function create(): View
     {
-        // Usuarios normales: formulario simple de requisición
-        // Despachadores: formulario completo con checklist (para tickets aprobados)
-        $vehicles = \App\Models\Vehicle::where('status', 'disponible')->get();
+        $vehicles = Vehicle::where('status', 'disponible')->get();
         return view('tickets.create', compact('vehicles'));
     }
 
@@ -75,8 +73,8 @@ class TicketController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        
         $validated = $request->validate([
-            'requisicion' => 'required|string|max:100',
             'destination' => 'required|string|max:255',
             'cliente' => 'nullable|string|max:255',
             'requested_date' => 'required|date',
@@ -85,10 +83,9 @@ class TicketController extends Controller
             'purpose' => 'required|string',
         ]);
 
-        // Crear solo el ticket (sin checklist)
         $ticket = Ticket::create([
             'folio' => Ticket::generateFolio(),
-            'requisicion' => $validated['requisicion'],
+            'requisicion' => "",
             'user_id' => Auth::id(),
             'destination' => $validated['destination'],
             'cliente' => $validated['cliente'] ?? null,
@@ -99,11 +96,9 @@ class TicketController extends Controller
             'status' => 'pendiente',
         ]);
 
-        // Notificar a los encargados
         $this->notifyEncargados($ticket);
 
-        return redirect()->route('tickets.show', $ticket)
-            ->with('success', 'Requisición enviada exitosamente. Los encargados la revisarán pronto.');
+        return redirect()->route('tickets.show', $ticket)->with('success', 'Requisición enviada exitosamente. Los encargados la revisarán pronto.');
     }
 
     /**
@@ -161,7 +156,6 @@ class TicketController extends Controller
             'requested_date' => 'required|date|after_or_equal:today',
             'requested_time_start' => 'required',
             'requested_time_end' => 'nullable',
-            'passenger_count' => 'required|integer|min:1',
             'conductor_name' => 'nullable|string|max:255',
             'conductor_phone' => 'nullable|string|max:20',
             'additional_notes' => 'nullable|string',
@@ -367,7 +361,11 @@ class TicketController extends Controller
 
         // Enviar correo a cada encargado
         foreach ($encargados as $encargado) {
-            Mail::to($encargado->email)->send(new SolicitudCreada($ticket));
+            try {
+                Mail::to($encargado->email)->send(new SolicitudCreada($ticket));
+            } catch (\Exception $e) {
+                Log::error('Error al enviar correo a encargado: ' . $e->getMessage());
+            }
         }
 
         // También usar el sistema de notificaciones interno (opcional)
@@ -375,7 +373,11 @@ class TicketController extends Controller
 
         // También notificar al jefe inmediato si existe
         if ($ticket->user->immediateBoss) {
-            Mail::to($ticket->user->immediateBoss->email)->send(new SolicitudCreada($ticket));
+            try {
+                Mail::to($ticket->user->immediateBoss->email)->send(new SolicitudCreada($ticket));
+            } catch (\Exception $e) {
+                Log::error('Error al enviar correo al jefe inmediato: ' . $e->getMessage());
+            }
             $ticket->user->immediateBoss->notify(new TicketCreated($ticket));
         }
     }

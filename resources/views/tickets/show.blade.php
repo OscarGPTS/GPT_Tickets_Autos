@@ -27,8 +27,7 @@
         <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-4">
             <div class="flex justify-between items-start">
                 <div>
-                    <h1 class="text-2xl font-bold text-white">Solicitud #{{ $ticket->id }}</h1>
-                    <p class="text-blue-100 mt-1">Creada el {{ \Carbon\Carbon::parse($ticket->created_at)->format('d/m/Y H:i') }}</p>
+                    <h1 class="text-2xl font-bold text-white">Requisición #{{ $ticket->folio }}</h1>
                 </div>
                 <div>
                     @php
@@ -86,33 +85,23 @@
                 </div>
                 <div class="mt-4">
                     <p class="text-sm text-gray-600 mb-1">Propósito del Viaje</p>
-                    <p class="text-gray-900">{{ $ticket->purpose }}</p>
+                    <p class="text-lg font-semibold text-gray-900">{{ $ticket->purpose }}</p>
                 </div>
 
             </div>
 
             <!-- Información del Solicitante -->
             <div class="mb-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Solicitante</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Vehículo Asignado</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <p class="text-sm text-gray-600 mb-1">Nombre</p>
-                        <p class="text-lg font-semibold text-gray-900">{{ $ticket->user->name }}</p>
+                        <p class="text-sm text-gray-600 mb-1">Vehiculo</p>
+                        <p class="text-lg font-semibold text-gray-900">{{ $ticket->vehicle ? $ticket->vehicle->brand . ' ' . $ticket->vehicle->model : 'Pendiente de asignar' }}</p>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-600 mb-1">Email</p>
-                        <p class="text-lg font-semibold text-gray-900">{{ $ticket->user->email }}</p>
+                        <p class="text-sm text-gray-600 mb-1">Despachador</p>
+                        <p class="text-lg font-semibold text-gray-900">{{ $ticket->dispatcher ? $ticket->dispatcher->name : 'Pendiente de asignar' }}</p>
                     </div>
-                    @if($ticket->user->driverLicense)
-                    <div>
-                        <p class="text-sm text-gray-600 mb-1">Licencia de Conducir</p>
-                        <p class="text-lg font-semibold text-gray-900">{{ $ticket->user->driverLicense->license_number }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-600 mb-1">Fecha de Expiración</p>
-                        <p class="text-lg font-semibold text-gray-900">{{ \Carbon\Carbon::parse($ticket->user->driverLicense->expiration_date)->format('d/m/Y') }}</p>
-                    </div>
-                    @endif
                 </div>
             </div>
 

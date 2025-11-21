@@ -97,6 +97,7 @@ class Checklist extends Model
         'mantenimiento_preventivo',
         'mantenimiento_correctivo',
         'condicion_carroceria_log',
+        'condicion_carroceria_imagen',
         'responsable_recibo_uso',
         'responsable_entrega',
     ];
@@ -204,7 +205,8 @@ class Checklist extends Model
             'modelo', 'placas', 'marca', 'hora_salida', 'hora_entrada',
             'kilometraje_inicial', 'nivel_combustible_inicial',
             'mantenimiento_preventivo', 'mantenimiento_correctivo',
-            'condicion_carroceria_log', 'responsable_recibo_uso', 'responsable_entrega',
+            'condicion_carroceria_log', 'condicion_carroceria_imagen',
+            'responsable_recibo_uso', 'responsable_entrega',
             'created_at', 'updated_at'
         ];
         
