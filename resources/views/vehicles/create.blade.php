@@ -3,206 +3,224 @@
 @section('title', 'Registrar Nuevo Vehículo')
 
 @section('content')
-<style>
-    .form-wrapper {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 0 1rem;
-    }
-</style>
-
-<div class="form-wrapper">
-    <div class="mb-4 sm:mb-6">
-        <a href="{{ route('vehicles.index') }}" class="text-blue-600 hover:text-blue-800 font-medium text-sm sm:text-base">
-            <i class="fas fa-arrow-left mr-2"></i>Volver a Vehículos
-        </a>
-    </div>
-
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">Registrar Nuevo Vehículo</h1>
-
-        @if($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            <ul class="list-disc list-inside">
-                @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8 flex items-center">
+            <a href="{{ route('vehicles.index') }}"
+                class="mr-4 p-2 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-blue-600 hover:border-blue-300 transition-all duration-200 shadow-sm">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Registrar Nuevo Vehículo</h1>
+                <p class="mt-2 text-gray-600">Complete la información para dar de alta una nueva unidad</p>
+            </div>
         </div>
-        @endif
 
-        <form action="{{ route('vehicles.store') }}" method="POST">
-            @csrf
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <form action="{{ route('vehicles.store') }}" method="POST" class="p-8">
+                @csrf
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Información General -->
-                <div class="md:col-span-2">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">
-                        <i class="fas fa-info-circle mr-2"></i>Información General
-                    </h2>
+                <!-- Sección 1: Información Básica -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100 flex items-center">
+                        <span
+                            class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">1</span>
+                        Información Básica
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Código Interno -->
+                        <div>
+                            <label for="internal_code" class="block text-sm font-medium text-gray-700 mb-1">Código Interno
+                                <span class="text-red-500">*</span></label>
+                            <input type="text" name="internal_code" id="internal_code" value="{{ old('internal_code') }}"
+                                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3"
+                                placeholder="Ej. VH-001" required>
+                            @error('internal_code')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Tipo de Vehículo -->
+                        <div>
+                            <label for="vehicle_type" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Vehículo
+                                <span class="text-red-500">*</span></label>
+                            <select name="vehicle_type" id="vehicle_type"
+                                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3"
+                                required>
+                                <option value="">Seleccione un tipo</option>
+                                <option value="sedan" {{ old('vehicle_type') == 'sedan' ? 'selected' : '' }}>Sedán</option>
+                                <option value="suv" {{ old('vehicle_type') == 'suv' ? 'selected' : '' }}>SUV</option>
+                                <option value="pickup" {{ old('vehicle_type') == 'pickup' ? 'selected' : '' }}>Pickup
+                                </option>
+                                <option value="van" {{ old('vehicle_type') == 'van' ? 'selected' : '' }}>Van</option>
+                                <option value="camioneta" {{ old('vehicle_type') == 'camioneta' ? 'selected' : '' }}>
+                                    Camioneta</option>
+                                <option value="motocicleta" {{ old('vehicle_type') == 'motocicleta' ? 'selected' : '' }}>
+                                    Motocicleta</option>
+                            </select>
+                            @error('vehicle_type')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Marca -->
+                        <div>
+                            <label for="brand" class="block text-sm font-medium text-gray-700 mb-1">Marca <span
+                                    class="text-red-500">*</span></label>
+                            <input type="text" name="brand" id="brand" value="{{ old('brand') }}"
+                                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3"
+                                placeholder="Ej. Toyota" required>
+                            @error('brand')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Modelo -->
+                        <div>
+                            <label for="model" class="block text-sm font-medium text-gray-700 mb-1">Modelo <span
+                                    class="text-red-500">*</span></label>
+                            <input type="text" name="model" id="model" value="{{ old('model') }}"
+                                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3"
+                                placeholder="Ej. Corolla" required>
+                            @error('model')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Año -->
+                        <div>
+                            <label for="year" class="block text-sm font-medium text-gray-700 mb-1">Año <span
+                                    class="text-red-500">*</span></label>
+                            <input type="number" name="year" id="year" value="{{ old('year') }}" min="1900"
+                                max="{{ date('Y') + 1 }}"
+                                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3"
+                                placeholder="Ej. 2023" required>
+                            @error('year')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Color -->
+                        <div>
+                            <label for="color" class="block text-sm font-medium text-gray-700 mb-1">Color</label>
+                            <input type="text" name="color" id="color" value="{{ old('color') }}"
+                                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3"
+                                placeholder="Ej. Blanco">
+                            @error('color')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Código Interno -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Código Interno <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" name="internal_code" value="{{ old('internal_code') }}" 
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" 
-                           placeholder="Ej: VEH-001" required>
+                <!-- Sección 2: Detalles Técnicos -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100 flex items-center">
+                        <span
+                            class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">2</span>
+                        Detalles Técnicos
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Placas -->
+                        <div>
+                            <label for="plates" class="block text-sm font-medium text-gray-700 mb-1">Placas <span
+                                    class="text-red-500">*</span></label>
+                            <input type="text" name="plates" id="plates" value="{{ old('plates') }}"
+                                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3 uppercase"
+                                placeholder="Ej. ABC-123-D" required>
+                            @error('plates')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Kilometraje Inicial -->
+                        <div>
+                            <label for="current_mileage" class="block text-sm font-medium text-gray-700 mb-1">Kilometraje
+                                Actual <span class="text-red-500">*</span></label>
+                            <div class="relative rounded-md shadow-sm">
+                                <input type="number" name="current_mileage" id="current_mileage"
+                                    value="{{ old('current_mileage', 0) }}" min="0"
+                                    class="block w-full rounded-xl border-gray-300 pl-3 pr-12 focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5"
+                                    required>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">km</span>
+                                </div>
+                            </div>
+                            @error('current_mileage')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- VIN -->
+                        <div>
+                            <label for="vin" class="block text-sm font-medium text-gray-700 mb-1">VIN (Número de
+                                Serie)</label>
+                            <input type="text" name="vin" id="vin" value="{{ old('vin') }}"
+                                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3 uppercase"
+                                placeholder="Número de identificación vehicular">
+                            @error('vin')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Número de Motor -->
+                        <div>
+                            <label for="engine_number" class="block text-sm font-medium text-gray-700 mb-1">Número de
+                                Motor</label>
+                            <input type="text" name="engine_number" id="engine_number"
+                                value="{{ old('engine_number') }}"
+                                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3 uppercase"
+                                placeholder="Número de serie del motor">
+                            @error('engine_number')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Tarjeta de Circulación -->
+                        <div class="md:col-span-2">
+                            <label for="circulation_card" class="block text-sm font-medium text-gray-700 mb-1">Tarjeta de
+                                Circulación</label>
+                            <input type="text" name="circulation_card" id="circulation_card"
+                                value="{{ old('circulation_card') }}"
+                                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3"
+                                placeholder="Folio de la tarjeta de circulación">
+                            @error('circulation_card')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Placas -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Placas <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" name="plates" value="{{ old('plates') }}" 
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" 
-                           placeholder="Ej: ABC-1234" required>
+                <!-- Sección 3: Notas Adicionales -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100 flex items-center">
+                        <span
+                            class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">3</span>
+                        Notas Adicionales
+                    </h3>
+                    <div>
+                        <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Observaciones</label>
+                        <textarea name="notes" id="notes" rows="4"
+                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3"
+                            placeholder="Cualquier detalle adicional sobre el vehículo...">{{ old('notes') }}</textarea>
+                        @error('notes')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
-                <!-- Marca -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Marca <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" name="brand" value="{{ old('brand') }}" 
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" 
-                           placeholder="Ej: Toyota, Ford, Nissan" required>
+                <!-- Botones de Acción -->
+                <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-100">
+                    <a href="{{ route('vehicles.index') }}"
+                        class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                        Cancelar
+                    </a>
+                    <button type="submit"
+                        class="inline-flex items-center px-6 py-3 border border-transparent shadow-lg text-base font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:-translate-y-0.5">
+                        <i class="fas fa-save mr-2"></i> Guardar Vehículo
+                    </button>
                 </div>
-
-                <!-- Modelo -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Modelo <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" name="model" value="{{ old('model') }}" 
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" 
-                           placeholder="Ej: Corolla, F-150, Sentra" required>
-                </div>
-
-                <!-- Año -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Año <span class="text-red-500">*</span>
-                    </label>
-                    <input type="number" name="year" value="{{ old('year', date('Y')) }}" 
-                           min="1900" max="{{ date('Y') + 1 }}"
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" 
-                           placeholder="Ej: 2024" required>
-                </div>
-
-                <!-- Número de Serie -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Número de Serie (VIN)
-                    </label>
-                    <input type="text" name="serial_number" value="{{ old('serial_number') }}" 
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" 
-                           placeholder="Ej: 1HGBH41JXMN109186">
-                </div>
-
-                <!-- Color -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Color
-                    </label>
-                    <input type="text" name="color" value="{{ old('color') }}" 
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" 
-                           placeholder="Ej: Blanco, Negro, Gris">
-                </div>
-
-                <!-- Tipo de Vehículo -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Tipo de Vehículo <span class="text-red-500">*</span>
-                    </label>
-                    <select name="vehicle_type" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" required>
-                        <option value="">Seleccione un tipo</option>
-                        <option value="sedan" {{ old('vehicle_type') == 'sedan' ? 'selected' : '' }}>Sedán</option>
-                        <option value="suv" {{ old('vehicle_type') == 'suv' ? 'selected' : '' }}>SUV</option>
-                        <option value="pickup" {{ old('vehicle_type') == 'pickup' ? 'selected' : '' }}>Pickup</option>
-                        <option value="van" {{ old('vehicle_type') == 'van' ? 'selected' : '' }}>Van</option>
-                        <option value="camioneta" {{ old('vehicle_type') == 'camioneta' ? 'selected' : '' }}>Camioneta</option>
-                    </select>
-                </div>
-
-                <!-- Especificaciones Técnicas -->
-                <div class="md:col-span-2 mt-4">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">
-                        <i class="fas fa-cogs mr-2"></i>Especificaciones Técnicas
-                    </h2>
-                </div>
-
-                <!-- Capacidad de Pasajeros -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Capacidad de Pasajeros <span class="text-red-500">*</span>
-                    </label>
-                    <input type="number" name="capacity_passengers" value="{{ old('capacity_passengers', 5) }}" 
-                           min="1" max="50"
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" 
-                           required>
-                </div>
-
-                <!-- Capacidad de Carga -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Capacidad de Carga (kg)
-                    </label>
-                    <input type="number" name="capacity_cargo" value="{{ old('capacity_cargo') }}" 
-                           min="0" step="0.01"
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" 
-                           placeholder="Ej: 500">
-                </div>
-
-                <!-- Tipo de Combustible -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Tipo de Combustible <span class="text-red-500">*</span>
-                    </label>
-                    <select name="fuel_type" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" required>
-                        <option value="">Seleccione un tipo</option>
-                        <option value="gasolina" {{ old('fuel_type') == 'gasolina' ? 'selected' : '' }}>Gasolina</option>
-                        <option value="diesel" {{ old('fuel_type') == 'diesel' ? 'selected' : '' }}>Diésel</option>
-                        <option value="electrico" {{ old('fuel_type') == 'electrico' ? 'selected' : '' }}>Eléctrico</option>
-                        <option value="hibrido" {{ old('fuel_type') == 'hibrido' ? 'selected' : '' }}>Híbrido</option>
-                    </select>
-                </div>
-
-                <!-- Kilometraje Actual -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Kilometraje Actual <span class="text-red-500">*</span>
-                    </label>
-                    <input type="number" name="current_mileage" value="{{ old('current_mileage', 0) }}" 
-                           min="0" step="0.01"
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" 
-                           placeholder="Ej: 15000" required>
-                </div>
-
-                <!-- Notas -->
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        Notas / Observaciones
-                    </label>
-                    <textarea name="notes" rows="3" 
-                              class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" 
-                              placeholder="Información adicional sobre el vehículo">{{ old('notes') }}</textarea>
-                </div>
-            </div>
-
-            <!-- Botones -->
-            <div class="flex flex-col sm:flex-row gap-3 pt-6 mt-6 border-t">
-                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
-                    <i class="fas fa-save mr-2"></i>Registrar Vehículo
-                </button>
-                <a href="{{ route('vehicles.index') }}" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-6 rounded-lg transition duration-200 text-center">
-                    <i class="fas fa-times mr-2"></i>Cancelar
-                </a>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
 @endsection
