@@ -88,7 +88,7 @@ class ChecklistController extends Controller
         ]);
 
         $ticket->update([
-            'status' => 'en_uso',
+            'status' => 'en_curso',
             'checkout_at' => now(),
         ]);
 
@@ -110,8 +110,6 @@ class ChecklistController extends Controller
      */
     public function checkinForm(Ticket $ticket): View
     {
-        $this->authorize('checkin', $ticket);
-
         if (!$ticket->canCheckin()) {
             abort(403, 'No se puede realizar checkin en este ticket.');
         }
@@ -126,8 +124,6 @@ class ChecklistController extends Controller
      */
     public function processCheckin(Request $request, Ticket $ticket): RedirectResponse
     {
-        $this->authorize('checkin', $ticket);
-
         if (!$ticket->canCheckin()) {
             return back()->with('error', 'No se puede realizar checkin en este ticket.');
         }
@@ -137,6 +133,28 @@ class ChecklistController extends Controller
         // Usar el mismo folio del checkout
         $checkoutChecklist = $ticket->checkoutChecklist;
         $folio = $checkoutChecklist ? $checkoutChecklist->folio : (now()->format('Ymd') . str_pad($ticket->id, 6, '0', STR_PAD_LEFT));
+
+        // Guardar imagen del canvas si existe
+        $imagePath = null;
+        if ($request->has('condicion_carroceria_imagen') && !empty($request->input('condicion_carroceria_imagen'))) {
+            $imageData = $request->input('condicion_carroceria_imagen');
+            
+            // Decodificar la imagen base64
+            if (preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) {
+                $imageData = substr($imageData, strpos($imageData, ',') + 1);
+                $type = strtolower($type[1]); // jpg, png, gif
+                
+                $imageData = base64_decode($imageData);
+                
+                if ($imageData !== false) {
+                    $fileName = 'checkin_' . $ticket->id . '_' . time() . '.' . $type;
+                    $path = 'checklists/' . $fileName;
+                    
+                    Storage::disk('public')->put($path, $imageData);
+                    $imagePath = $path;
+                }
+            }
+        }
 
         $checklist = Checklist::create([
             'ticket_id' => $ticket->id,
@@ -157,6 +175,7 @@ class ChecklistController extends Controller
             'mantenimiento_preventivo' => $request->input('mantenimiento_preventivo'),
             'mantenimiento_correctivo' => $request->input('mantenimiento_correctivo'),
             'condicion_carroceria_log' => $request->input('condicion_carroceria_log'),
+            'condicion_carroceria_imagen' => $imagePath,
             ...$validated,
         ]);
 
@@ -179,6 +198,36 @@ class ChecklistController extends Controller
 
         return redirect()->route('tickets.show', $ticket)
             ->with('success', 'Checkin realizado exitosamente. Se han enviado notificaciones por correo.');
+    }
+
+    /**
+     * Ver checklist de checkout completado (solo lectura)
+     */
+    public function viewCheckout(Ticket $ticket): View
+    {
+        $checklist = $ticket->checkoutChecklist;
+        
+        if (!$checklist) {
+            abort(404, 'No se ha realizado el checkout para este ticket.');
+        }
+
+        return view('checklists.view-checkout', compact('ticket', 'checklist'));
+    }
+
+    /**
+     * Ver checklist de checkin completado (solo lectura)
+     */
+    public function viewCheckin(Ticket $ticket): View
+    {
+        $checklist = $ticket->checkinChecklist;
+        
+        if (!$checklist) {
+            abort(404, 'No se ha realizado el checkin para este ticket.');
+        }
+
+        $checkoutChecklist = $ticket->checkoutChecklist;
+
+        return view('checklists.view-checkin', compact('ticket', 'checklist', 'checkoutChecklist'));
     }
 
     /**
@@ -272,7 +321,6 @@ class ChecklistController extends Controller
             'mantenimiento_preventivo' => 'nullable|string',
             'mantenimiento_correctivo' => 'nullable|string',
             'condicion_carroceria_log' => 'nullable|string',
-            'condicion_carroceria_imagen' => 'nullable|string',
         ];
 
         if ($tipo === 'entrada') {
@@ -289,7 +337,11 @@ class ChecklistController extends Controller
     private function notifyChecklistCompletado(Ticket $ticket, Checklist $checklist, string $tipo): void
     {
         // Enviar correo al solicitante
-        Mail::to($ticket->user->email)->send(new ChecklistCompletado($ticket, $checklist, $tipo));
+        try {
+            Mail::to($ticket->user->email)->send(new ChecklistCompletado($ticket, $checklist, $tipo));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error al enviar correo al solicitante: ' . $e->getMessage());
+        }
 
         // Enviar correo a encargados
         $encargados = User::whereHas('roles', function ($query) {
@@ -297,7 +349,11 @@ class ChecklistController extends Controller
         })->get();
 
         foreach ($encargados as $encargado) {
-            Mail::to($encargado->email)->send(new ChecklistCompletado($ticket, $checklist, $tipo));
+            try {
+                Mail::to($encargado->email)->send(new ChecklistCompletado($ticket, $checklist, $tipo));
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Error al enviar correo a encargado: ' . $e->getMessage());
+            }
         }
     }
 }

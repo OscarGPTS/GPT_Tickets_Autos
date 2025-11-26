@@ -125,7 +125,7 @@
                     @forelse($ticketsPendientes as $ticket)
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {{ $ticket->requisicion }}
+                            {{ $ticket->folio }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {{ $ticket->user->name }}

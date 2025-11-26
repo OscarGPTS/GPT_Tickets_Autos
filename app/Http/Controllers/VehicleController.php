@@ -15,8 +15,6 @@ class VehicleController extends Controller
      */
     public function index(Request $request): View
     {
-        $this->authorize('viewAny', Vehicle::class);
-
         $query = Vehicle::query();
 
         if ($request->filled('status')) {
@@ -47,7 +45,6 @@ class VehicleController extends Controller
      */
     public function create(): View
     {
-        $this->authorize('create', Vehicle::class);
         return view('vehicles.create');
     }
 
@@ -56,8 +53,6 @@ class VehicleController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $this->authorize('create', Vehicle::class);
-
         $validated = $request->validate([
             'internal_code' => 'required|string|unique:vehicles,internal_code',
             'brand' => 'required|string|max:255',
@@ -85,8 +80,6 @@ class VehicleController extends Controller
      */
     public function show(Vehicle $vehicle): View
     {
-        $this->authorize('view', $vehicle);
-        
         $vehicle->load(['documents', 'tickets', 'maintenances']);
 
         return view('vehicles.show', compact('vehicle'));
@@ -97,7 +90,6 @@ class VehicleController extends Controller
      */
     public function edit(Vehicle $vehicle): View
     {
-        $this->authorize('update', $vehicle);
         return view('vehicles.edit', compact('vehicle'));
     }
 
@@ -106,8 +98,6 @@ class VehicleController extends Controller
      */
     public function update(Request $request, Vehicle $vehicle): RedirectResponse
     {
-        $this->authorize('update', $vehicle);
-
         $validated = $request->validate([
             'internal_code' => 'required|string|unique:vehicles,internal_code,' . $vehicle->id,
             'brand' => 'required|string|max:255',
@@ -136,8 +126,6 @@ class VehicleController extends Controller
      */
     public function destroy(Vehicle $vehicle): RedirectResponse
     {
-        $this->authorize('delete', $vehicle);
-
         $vehicle->delete();
 
         return redirect()->route('vehicles.index')

@@ -18,12 +18,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\DB;
 
 class TicketController extends Controller
 {
-    use AuthorizesRequests;
     
     /**
      * Listar tickets
@@ -106,8 +104,6 @@ class TicketController extends Controller
      */
     public function show(Ticket $ticket): View
     {
-        $this->authorize('view', $ticket);
-        
         $ticket->load([
             'user',
             'vehicle',
@@ -130,8 +126,6 @@ class TicketController extends Controller
      */
     public function edit(Ticket $ticket): View
     {
-        $this->authorize('update', $ticket);
-
         if (!$ticket->canBeEdited()) {
             abort(403, 'Este ticket ya no puede ser editado.');
         }
@@ -144,8 +138,6 @@ class TicketController extends Controller
      */
     public function update(Request $request, Ticket $ticket): RedirectResponse
     {
-        $this->authorize('update', $ticket);
-
         if (!$ticket->canBeEdited()) {
             return back()->with('error', 'Este ticket ya no puede ser editado.');
         }
@@ -172,8 +164,6 @@ class TicketController extends Controller
      */
     public function approve(Request $request, Ticket $ticket): RedirectResponse
     {
-        $this->authorize('approve', $ticket);
-
         if (!$ticket->canBeApproved()) {
             return back()->with('error', 'Este ticket no puede ser aprobado.');
         }
@@ -210,7 +200,11 @@ class TicketController extends Controller
         $ticket->user->notify(new TicketApproved($ticket));
         
         // Enviar correo al despachador notificando la asignación
-        Mail::to($ticket->dispatcher->email)->send(new DespachadorAsignado($ticket));
+        try {
+            Mail::to($ticket->dispatcher->email)->send(new DespachadorAsignado($ticket));
+        } catch (\Exception $e) {
+            Log::error('Error al enviar correo al despachador: ' . $e->getMessage());
+        }
 
         return redirect()->route('tickets.show', $ticket)
             ->with('success', "Ticket aprobado exitosamente. Folio: {$folio}. Se ha notificado al despachador.");
@@ -221,8 +215,6 @@ class TicketController extends Controller
      */
     public function reject(Request $request, Ticket $ticket): RedirectResponse
     {
-        $this->authorize('approve', $ticket);
-
         if (!$ticket->canBeApproved()) {
             return back()->with('error', 'Este ticket no puede ser rechazado.');
         }
@@ -277,7 +269,11 @@ class TicketController extends Controller
         ]);
 
         // Enviar correo al despachador notificando la asignación
-        Mail::to($dispatcher->email)->send(new DespachadorAsignado($ticket->fresh()));
+        try {
+            Mail::to($dispatcher->email)->send(new DespachadorAsignado($ticket->fresh()));
+        } catch (\Exception $e) {
+            Log::error('Error al enviar correo al despachador: ' . $e->getMessage());
+        }
 
         return redirect()->route('tickets.show', $ticket)
             ->with('success', 'Despachador asignado exitosamente. Se ha enviado una notificación por correo.');
@@ -288,8 +284,6 @@ class TicketController extends Controller
      */
     public function rate(Request $request, Ticket $ticket): RedirectResponse
     {
-        $this->authorize('rate', $ticket);
-
         if (!$ticket->canBeRated()) {
             return back()->with('error', 'Este ticket no puede ser calificado aún.');
         }

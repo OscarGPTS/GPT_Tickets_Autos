@@ -11,6 +11,8 @@ class VehicleMaintenance extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'vehicle_maintenance';
+
     protected $fillable = [
         'vehicle_id',
         'maintenance_type',

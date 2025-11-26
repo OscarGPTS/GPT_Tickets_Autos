@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ChecklistController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\DriverLicenseController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
@@ -67,8 +68,10 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('checklists')->name('checklists.')->group(function () {
         Route::get('/{ticket}/checkout', [ChecklistController::class, 'checkoutForm'])->name('checkout');
         Route::post('/{ticket}/checkout', [ChecklistController::class, 'processCheckout'])->name('checkout.store');
+        Route::get('/{ticket}/checkout/view', [ChecklistController::class, 'viewCheckout'])->name('checkout.view');
         Route::get('/{ticket}/checkin', [ChecklistController::class, 'checkinForm'])->name('checkin');
         Route::post('/{ticket}/checkin', [ChecklistController::class, 'processCheckin'])->name('checkin.store');
+        Route::get('/{ticket}/checkin/view', [ChecklistController::class, 'viewCheckin'])->name('checkin.view');
     });
     
     /*
@@ -113,9 +116,8 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::middleware(['role:encargado'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/export', [AdminDashboardController::class, 'export'])->name('dashboard.export');
         
         Route::get('/users', function () {
             return view('admin.users.index');

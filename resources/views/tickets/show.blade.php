@@ -225,7 +225,7 @@
                                 <option value="">Seleccionar vehículo...</option>
                                 @foreach(\App\Models\Vehicle::where('status', 'disponible')->get() as $vehicle)
                                     <option value="{{ $vehicle->id }}">
-                                        {{ $vehicle->brand }} {{ $vehicle->model }} - {{ $vehicle->license_plate }} (Cap: {{ $vehicle->capacity }})
+                                        {{ $vehicle->brand }} {{ $vehicle->model }} - {{ $vehicle->plates }} (Cap: {{ $vehicle->color }})
                                     </option>
                                 @endforeach
                             </select>
@@ -291,9 +291,22 @@
                 </a>
                 @endif
 
-                @if($ticket->status === 'en_uso' && auth()->user()->hasRole('despachador'))
+                @if($ticket->status === 'en_curso' && auth()->user()->hasRole('despachador'))
                 <a href="{{ route('checklists.checkin', $ticket) }}" class="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                     <i class="fas fa-clipboard-check mr-2"></i>Realizar Checkin
+                </a>
+                @endif
+
+                {{-- Botones para revisar checklists completados --}}
+                @if($ticket->checkoutChecklist)
+                <a href="{{ route('checklists.checkout.view', $ticket) }}" class="bg-purple-100 hover:bg-purple-200 text-purple-800 font-semibold py-2 px-4 rounded-lg transition duration-200 border border-purple-300">
+                    <i class="fas fa-eye mr-2"></i>Ver Checkout
+                </a>
+                @endif
+
+                @if($ticket->checkinChecklist)
+                <a href="{{ route('checklists.checkin.view', $ticket) }}" class="bg-orange-100 hover:bg-orange-200 text-orange-800 font-semibold py-2 px-4 rounded-lg transition duration-200 border border-orange-300">
+                    <i class="fas fa-eye mr-2"></i>Ver Checkin
                 </a>
                 @endif
 
