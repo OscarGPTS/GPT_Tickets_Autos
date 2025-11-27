@@ -33,8 +33,10 @@ return new class extends Migration
             // LLANTAS (Boolean: TRUE = Buen Estado)
             $table->boolean('llanta_delantera_derecha')->default(true);
             $table->boolean('llanta_delantera_izquierda')->default(true);
+            $table->boolean('llanta_delantera_vida')->default(true);
             $table->boolean('llanta_trasera_derecha')->default(true);
             $table->boolean('llanta_trasera_izquierda')->default(true);
+            $table->boolean('llanta_trasera_vida')->default(true);
             $table->boolean('llanta_refaccion')->default(true);
             $table->boolean('presion_adecuada')->default(true);
             

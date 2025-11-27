@@ -122,13 +122,18 @@ class Ticket extends Model
     public static function generateFolio(): string
     {
         $year = now()->year;
-        $lastTicket = self::whereYear('created_at', $year)
+        $latest = self::whereYear('created_at', $year)
             ->whereNotNull('folio')
-            ->orderBy('id', 'desc')
+            ->latest('id')
             ->first();
 
-        $number = $lastTicket ? (int) substr($lastTicket->folio, 5) + 1 : 1;
-        
+        $number = $latest ? (int) substr($latest->folio, 5) + 1 : 1;
+
+        // Ensure uniqueness
+        while (self::where('folio', sprintf('%d-%04d', $year, $number))->exists()) {
+            $number++;
+        }
+
         return sprintf('%d-%04d', $year, $number);
     }
 

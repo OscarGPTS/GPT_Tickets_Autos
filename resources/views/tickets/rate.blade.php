@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Calificar Servicio - Solicitud #' . $ticket->id)
+@section('title', 'Calificar Servicio - Solicitud #' .  $ticket->folio)
 
 @section('content')
 <div class="max-w-2xl mx-auto">

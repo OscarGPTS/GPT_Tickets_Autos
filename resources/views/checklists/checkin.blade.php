@@ -226,48 +226,65 @@
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Folio</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="text" name="folio" value="{{ old('folio') }}" class="w-full border-gray-300 rounded table-input bg-gray-50" placeholder="Auto-generado" readonly>
+                        <input type="text" name="folio" value="{{ old('folio', $ticket->folio) }}" class="w-full border-gray-300 rounded table-input bg-gray-50" placeholder="Auto-generado" readonly>
                     </td>
                 </tr>
 
                 <tr>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Marca</td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Hora de salida</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="text" name="marca" value="{{ old('marca', $ticket->vehicle->brand) }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly required>
+                        <input type="time" name="hora_salida" value="{{ old('hora_salida', $ticket->hora_salida) }}" class="w-full border-gray-300 rounded table-input" required>
                     </td>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Placas</td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Hora de entrada</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="text" name="placas" value="{{ old('placas', $ticket->vehicle->plates) }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly required>
+                        <input type="time" name="hora_entrada" value="{{ old('hora_entrada', $ticket->hora_entrada) }}" class="w-full border-gray-300 rounded table-input bg-gray-50" required>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Fecha</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="date" name="fecha" value="{{ old('fecha', now()->toDateString()) }}" class="w-full border-gray-300 rounded table-input" required>
+                        <input type="date" name="fecha" value="{{ old('fecha', $ticket->fecha) }}" class="w-full border-gray-300 rounded table-input bg-gray-50" placeholder="Auto-generado" >
                     </td>
                 </tr>
 
                 <tr>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Hora de Entrada</td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje inicial</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="time" name="hora_entrada" value="{{ old('hora_entrada', now()->format('H:i')) }}" class="w-full border-gray-300 rounded table-input" required>
+                        <input type="number" step="0.01" name="kilometraje_inicial" value="{{ old('kilometraje_inicial', $checkoutChecklist->kilometraje_inicial ?? '') }}" class="w-full border-gray-300 rounded table-input" required>
                     </td>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje Final</td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Nivel de combustible inicial</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="number" step="0.01" name="kilometraje_final" value="{{ old('kilometraje_final') }}" class="w-full border-gray-300 rounded table-input" required>
-                        <input type="hidden" name="kilometraje_inicial" value="{{ $checkoutChecklist ? $checkoutChecklist->kilometraje_inicial : 0 }}">
+                        <select name="nivel_combustible_inicial" class="w-full border-gray-300 rounded table-input" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="1/4" {{ old('nivel_combustible_inicial', $checkoutChecklist->nivel_combustible_inicial ?? '') == '1/4' ? 'selected' : '' }}>1/4</option>
+                            <option value="1/2" {{ old('nivel_combustible_inicial', $checkoutChecklist->nivel_combustible_inicial ?? '') == '1/2' ? 'selected' : '' }}>1/2</option>
+                            <option value="3/4" {{ old('nivel_combustible_inicial', $checkoutChecklist->nivel_combustible_inicial ?? '') == '3/4' ? 'selected' : '' }}>3/4</option>
+                            <option value="Lleno" {{ old('nivel_combustible_inicial', $checkoutChecklist->nivel_combustible_inicial ?? '') == 'Lleno' ? 'selected' : '' }}>Lleno</option>
+                        </select>
                     </td>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Nivel de Combustible Final</td>
+                    
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Placas</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="text" name="placas" value="{{ old('placas', $ticket->vehicle->plates) }}" class="w-full border-gray-300 rounded table-input" required readonly>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje final</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="number" step="0.01" name="kilometraje_final" value="{{ old('kilometraje_final', now()->format('H:i')) }}" class="w-full border-gray-300 rounded table-input" required>
+                    </td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Nivel de combustible final</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
                         <select name="nivel_combustible_final" class="w-full border-gray-300 rounded table-input" required>
                             <option value="">Seleccionar...</option>
-                            @php
-                                $defaultCombustible = old('nivel_combustible_final', $checkoutChecklist->nivel_combustible_inicial ?? '');
-                            @endphp
-                            <option value="1/4" {{ $defaultCombustible == '1/4' ? 'selected' : '' }}>1/4</option>
-                            <option value="1/2" {{ $defaultCombustible == '1/2' ? 'selected' : '' }}>1/2</option>
-                            <option value="3/4" {{ $defaultCombustible == '3/4' ? 'selected' : '' }}>3/4</option>
-                            <option value="Lleno" {{ $defaultCombustible == 'Lleno' ? 'selected' : '' }}>Lleno</option>
+                            <option value="1/4" {{ old('nivel_combustible_final') == '1/4' ? 'selected' : '' }}>1/4</option>
+                            <option value="1/2" {{ old('nivel_combustible_final') == '1/2' ? 'selected' : '' }}>1/2</option>
+                            <option value="3/4" {{ old('nivel_combustible_final') == '3/4' ? 'selected' : '' }}>3/4</option>
+                            <option value="Lleno" {{ old('nivel_combustible_final') == 'Lleno' ? 'selected' : '' }}>Lleno</option>
                         </select>
-                        <input type="hidden" name="nivel_combustible_inicial" value="{{ $checkoutChecklist ? $checkoutChecklist->nivel_combustible_inicial : '' }}">
+                    </td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Marca</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="text" name="marca" value="{{ old('marca', $ticket->vehicle->brand) }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly required>
                     </td>
                 </tr>
 
