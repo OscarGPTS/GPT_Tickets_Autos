@@ -27,7 +27,7 @@
     }
 
     .form-wrapper {
-        max-width: 1400px;
+        max-width: 90%;
         margin: 0 auto;
         padding: 0 1rem;
     }
@@ -181,12 +181,13 @@
                     <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="text" name="destino" value="{{ old('destino', $ticket->destination) }}" class="w-full border-gray-300 rounded table-input" required>
                     </td>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Modelo</td>
+
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow" colspan="2">Modelo</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="text" name="modelo" value="{{ old('modelo', $ticket->vehicle->model) }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly required>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Folio</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                    <td class="border border-gray-200 table-cell-text" colspan="2">
                         <input type="text" name="folio" value="{{ old('folio', $ticket->folio) }}" class="w-full border-gray-300 rounded table-input bg-gray-50" placeholder="Auto-generado" readonly>
                     </td>
                 </tr>
@@ -196,12 +197,12 @@
                     <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="time" name="hora_salida" value="{{ old('hora_salida', $ticket->hora_salida) }}" class="w-full border-gray-300 rounded table-input" required>
                     </td>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Hora de entrada</td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow" colspan="2">Hora de entrada</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="time" name="hora_entrada" value="{{ old('hora_entrada', $ticket->hora_entrada) }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly required>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Fecha</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                    <td class="border border-gray-200 table-cell-text" colspan="2">
                         <input type="date" name="fecha" value="{{ old('fecha', $ticket->fecha) }}" class="w-full border-gray-300 rounded table-input bg-gray-50" placeholder="Auto-generado" readonly>
                     </td>
                 </tr>
@@ -212,7 +213,7 @@
                     <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="number" step="0.01" name="kilometraje_inicial" value="{{ old('kilometraje_inicial', $ticket->kilometraje_salida) }}" class="w-full border-gray-300 rounded table-input" required>
                     </td>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Nivel de combustible inicial</td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow" colspan="2">Nivel de combustible inicial</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
                         <select name="nivel_combustible_inicial" class="w-full border-gray-300 rounded table-input" required>
                             <option value="">Seleccionar...</option>
@@ -224,7 +225,7 @@
                     </td>
                     
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Placas</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                    <td class="border border-gray-200 table-cell-text" colspan="2">
                         <input type="text" name="placas" value="{{ old('placas', $ticket->vehicle->plates) }}" class="w-full border-gray-300 rounded table-input" required readonly>
                     </td>
                 </tr>
@@ -234,7 +235,7 @@
                     <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="number" step="0.01" name="kilometraje_final" value="{{ old('kilometraje_final', now()->format('H:i')) }}" class="w-full border-gray-300 rounded table-input" required>
                     </td>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Nivel de combustible final</td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow" colspan="2">Nivel de combustible final</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
                         <select name="nivel_combustible_final" class="w-full border-gray-300 rounded table-input" required>
                             <option value="">Seleccionar...</option>
@@ -245,21 +246,21 @@
                         </select>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Marca</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                    <td class="border border-gray-200 table-cell-text" colspan="2">
                         <input type="text" name="marca" value="{{ old('marca', $ticket->vehicle->brand) }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly required>
                     </td>
                 </tr>
 
                 <tr>
-                    <td class="border border-gray-200 table-cell-text title-yellow">Llantas</td>
-                    <td class="border border-gray-200 table-cell-text title-red">Si</td>
-                    <td class="border border-gray-200 table-cell-text title-red">No</td>
+                    <td class="border border-gray-200 table-cell-text title-yellow" >Llantas</td>
+                    <td class="border border-gray-200 table-cell-text title-red" style="width: 60px;">Si</td>
+                    <td class="border border-gray-200 table-cell-text title-red" style="width: 60px;">No</td>
                     <td class="border border-gray-200 table-cell-text title-yellow">Frontal</td>
-                    <td class="border border-gray-200 table-cell-text title-red">Si</td>
+                    <td class="border border-gray-200 table-cell-text title-red" >Si</td>
                     <td class="border border-gray-200 table-cell-text title-red">No</td>
                     <td class="border border-gray-200 table-cell-text title-yellow">Interior</td>
-                    <td class="border border-gray-200 table-cell-text title-red">Si</td>
-                    <td class="border border-gray-200 table-cell-text title-red">No</td>
+                    <td class="border border-gray-200 table-cell-text title-red" style="width: 60px;">Si</td>
+                    <td class="border border-gray-200 table-cell-text title-red" style="width: 60px;">No</td>
                     <td class="border border-gray-200 table-cell-text title-yellow">Motor</td>
                     <td class="border border-gray-200 table-cell-text title-red">Si</td>
                     <td class="border border-gray-200 table-cell-text title-red">No</td>
@@ -586,13 +587,13 @@
                 </tr>
 
                 <tr>
-                    <td class="border border-gray-200 p-2 font-semibold" colspan="12">Condición de Carrocería</td>
+                    <td class="border border-gray-200 p-2 font-semibold text-center" colspan="12">
+                        <p>Condición de Carrocería</p> 
+                    </td>
                 </tr>
                 <tr>
                     <td class="border border-gray-200 table-cell-text" colspan="12">
-                        <div class="mb-3">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Marcar Daños en el Vehículo (Dibuja sobre la imagen)</label>
-                            
+                        <div class="mb-3">                          
                             <!-- Botón fullscreen -->
                             <div class="mb-3 flex justify-end">
                                 <button type="button" onclick="toggleFullscreen()" class="bg-purple-600 text-white px-3 py-2 sm:px-4 sm:py-2 rounded hover:bg-purple-700 text-sm">

@@ -14,6 +14,8 @@ class UserController extends Controller
      */
     public function index(Request $request): View
     {
+        $this->authorize('viewAny', User::class);
+
         $query = User::query();
 
         if ($request->filled('role')) {
@@ -39,6 +41,8 @@ class UserController extends Controller
      */
     public function create(): View
     {
+        $this->authorize('create', User::class);
+        
         return view('users.create');
     }
 
@@ -47,6 +51,8 @@ class UserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $this->authorize('create', User::class);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -68,6 +74,8 @@ class UserController extends Controller
      */
     public function show(User $user): View
     {
+        $this->authorize('view', $user);
+        
         $user->load(['tickets', 'driverLicenses']);
 
         return view('users.show', compact('user'));
@@ -78,6 +86,8 @@ class UserController extends Controller
      */
     public function edit(User $user): View
     {
+        $this->authorize('update', $user);
+        
         return view('users.edit', compact('user'));
     }
 
@@ -86,6 +96,8 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user): RedirectResponse
     {
+        $this->authorize('update', $user);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
@@ -107,6 +119,8 @@ class UserController extends Controller
      */
     public function destroy(User $user): RedirectResponse
     {
+        $this->authorize('delete', $user);
+
         $user->delete();
 
         return redirect()->route('users.index')
