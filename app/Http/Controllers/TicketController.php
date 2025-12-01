@@ -106,8 +106,6 @@ class TicketController extends Controller
      */
     public function show(Ticket $ticket): View
     {
-        $this->authorize('view', $ticket);
-        
         $ticket->load([
             'user',
             'vehicle',
@@ -130,8 +128,6 @@ class TicketController extends Controller
      */
     public function edit(Ticket $ticket): View
     {
-        $this->authorize('update', $ticket);
-
         if (!$ticket->canBeEdited()) {
             abort(403, 'Este ticket ya no puede ser editado.');
         }
@@ -144,8 +140,6 @@ class TicketController extends Controller
      */
     public function update(Request $request, Ticket $ticket): RedirectResponse
     {
-        $this->authorize('update', $ticket);
-
         if (!$ticket->canBeEdited()) {
             return back()->with('error', 'Este ticket ya no puede ser editado.');
         }
@@ -172,8 +166,6 @@ class TicketController extends Controller
      */
     public function approve(Request $request, Ticket $ticket): RedirectResponse
     {
-        $this->authorize('approve', $ticket);
-
         if (!$ticket->canBeApproved()) {
             return back()->with('error', 'Este ticket no puede ser aprobado.');
         }
@@ -221,9 +213,7 @@ class TicketController extends Controller
      */
     public function reject(Request $request, Ticket $ticket): RedirectResponse
     {
-        $this->authorize('approve', $ticket);
-
-        if (!$ticket->canBeApproved()) {
+        if (!$ticket->canBeRejected()) {
             return back()->with('error', 'Este ticket no puede ser rechazado.');
         }
 
@@ -288,8 +278,6 @@ class TicketController extends Controller
      */
     public function rate(Request $request, Ticket $ticket): RedirectResponse
     {
-        $this->authorize('rate', $ticket);
-
         if (!$ticket->canBeRated()) {
             return back()->with('error', 'Este ticket no puede ser calificado aún.');
         }

@@ -16,8 +16,6 @@ class DriverLicenseController extends Controller
      */
     public function index(Request $request): View
     {
-        $this->authorize('viewAny', DriverLicense::class);
-
         $query = DriverLicense::with('user');
 
         if ($request->filled('status')) {
@@ -49,8 +47,6 @@ class DriverLicenseController extends Controller
      */
     public function create(): View
     {
-        $this->authorize('create', DriverLicense::class);
-        
         $users = User::orderBy('name')->get();
         
         return view('driver-licenses.create', compact('users'));
@@ -61,8 +57,6 @@ class DriverLicenseController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $this->authorize('create', DriverLicense::class);
-
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'license_number' => 'required|string|unique:driver_licenses,license_number',
@@ -94,8 +88,6 @@ class DriverLicenseController extends Controller
      */
     public function show(DriverLicense $license): View
     {
-        $this->authorize('view', $license);
-        
         $license->load(['user', 'tickets']);
 
         return view('driver-licenses.show', compact('license'));
@@ -106,8 +98,6 @@ class DriverLicenseController extends Controller
      */
     public function edit(DriverLicense $license): View
     {
-        $this->authorize('update', $license);
-        
         $users = User::orderBy('name')->get();
         
         return view('driver-licenses.edit', compact('license', 'users'));
@@ -118,8 +108,6 @@ class DriverLicenseController extends Controller
      */
     public function update(Request $request, DriverLicense $license): RedirectResponse
     {
-        $this->authorize('update', $license);
-
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'license_number' => 'required|string|unique:driver_licenses,license_number,' . $license->id,
@@ -156,8 +144,6 @@ class DriverLicenseController extends Controller
      */
     public function destroy(DriverLicense $license): RedirectResponse
     {
-        $this->authorize('delete', $license);
-
         // Delete file
         if ($license->document_path) {
             Storage::disk('public')->delete($license->document_path);

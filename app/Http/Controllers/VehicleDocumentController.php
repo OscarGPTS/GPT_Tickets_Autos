@@ -16,8 +16,6 @@ class VehicleDocumentController extends Controller
      */
     public function index(Vehicle $vehicle): View
     {
-        $this->authorize('view', $vehicle);
-        
         $documents = $vehicle->documents()->latest()->paginate(15);
         
         return view('vehicle-documents.index', compact('vehicle', 'documents'));
@@ -28,8 +26,6 @@ class VehicleDocumentController extends Controller
      */
     public function create(Vehicle $vehicle): View
     {
-        $this->authorize('update', $vehicle);
-        
         return view('vehicle-documents.create', compact('vehicle'));
     }
 
@@ -38,8 +34,6 @@ class VehicleDocumentController extends Controller
      */
     public function store(Request $request, Vehicle $vehicle): RedirectResponse
     {
-        $this->authorize('update', $vehicle);
-
         $validated = $request->validate([
             'document_type' => 'required|in:seguro,tarjeta_circulacion,verificacion,tenencia,otro',
             'document_number' => 'nullable|string|max:255',
@@ -73,8 +67,6 @@ class VehicleDocumentController extends Controller
      */
     public function show(Vehicle $vehicle, VehicleDocument $document): View
     {
-        $this->authorize('view', $vehicle);
-        
         if ($document->vehicle_id !== $vehicle->id) {
             abort(404);
         }
@@ -87,8 +79,6 @@ class VehicleDocumentController extends Controller
      */
     public function edit(Vehicle $vehicle, VehicleDocument $document): View
     {
-        $this->authorize('update', $vehicle);
-        
         if ($document->vehicle_id !== $vehicle->id) {
             abort(404);
         }
@@ -101,8 +91,6 @@ class VehicleDocumentController extends Controller
      */
     public function update(Request $request, Vehicle $vehicle, VehicleDocument $document): RedirectResponse
     {
-        $this->authorize('update', $vehicle);
-        
         if ($document->vehicle_id !== $vehicle->id) {
             abort(404);
         }
@@ -143,8 +131,6 @@ class VehicleDocumentController extends Controller
      */
     public function destroy(Vehicle $vehicle, VehicleDocument $document): RedirectResponse
     {
-        $this->authorize('update', $vehicle);
-        
         if ($document->vehicle_id !== $vehicle->id) {
             abort(404);
         }

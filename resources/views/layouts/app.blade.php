@@ -42,14 +42,9 @@
                         <!-- Logo -->
                         <div class="flex-shrink-0 flex items-center">
                             <a href="{{ route('dashboard') }}" class="flex items-center gap-2 group">
-                                <div
-                                    class="bg-blue-600 text-white p-1.5 rounded-lg shadow-md group-hover:bg-blue-700 transition-colors">
-                                    <i class="fas fa-car-side text-lg"></i>
-                                </div>
-                                <div class="flex flex-col">
-                                    <span class="text-xl font-bold text-gray-900 leading-none">GPT Services</span>
-                                    <span class="text-xs text-blue-600 font-semibold tracking-wider">SIGEV</span>
-                                </div>
+                            
+                                <img src="{{ asset('storage/img/logo.png') }}" alt="Logo" style="width: 70px; height: auto;">
+                                
                             </a>
                         </div>
 
@@ -160,37 +155,6 @@
             </div>
         </nav>
     @endauth
-
-    <!-- Flash Messages -->
-    @if (session('success'))
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-            <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg shadow-sm">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-check-circle text-green-400"></i>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm text-green-700 font-medium">{{ session('success') }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-            <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg shadow-sm">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-exclamation-circle text-red-400"></i>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm text-red-700 font-medium">{{ session('error') }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
 
     <!-- Page Content -->
     <main class="flex-grow py-8 px-4 sm:px-6 lg:px-8">

@@ -613,13 +613,10 @@
                                     <button type="button" onclick="undoLastStroke()" class="bg-yellow-500 text-white px-2 py-1.5 sm:px-3 sm:py-2 rounded hover:bg-yellow-600 text-xs sm:text-sm flex items-center gap-1">
                                         <i class="fas fa-undo"></i><span class="hidden sm:inline">Deshacer</span>
                                     </button>
-                                    <select id="drawColor" class="border rounded px-2 py-1.5 text-xs sm:text-sm flex-grow sm:flex-grow-0">
-                                        <option value="#ff0000">🔴 Severo</option>
-                                        <option value="#ff8800">🟠 Moderado</option>
-                                        <option value="#ffff00">🟡 Leve</option>
-                                        <option value="#0088ff">🔵 Abolladura</option>
-                                        <option value="#00ff00">🟢 Desgaste</option>
-                                    </select>
+                                    <div class="flex items-center gap-2 px-3 py-1.5 bg-red-50 border border-red-200 rounded text-xs sm:text-sm">
+                                        <span class="font-semibold text-red-800">Marcando de checkout</span>
+                                        <div class="w-4 h-4 rounded-full bg-red-600 border-2 border-red-800"></div>
+                                    </div>
                                     <label class="text-xs sm:text-sm flex items-center gap-1">
                                         <i class="fas fa-paint-brush"></i>
                                         <input type="range" id="lineWidth" min="2" max="20" value="5" class="w-16 sm:w-24">
@@ -629,6 +626,13 @@
                             </div>
                             
                             <input type="hidden" name="condicion_carroceria_imagen" id="carDamageImageData">
+                        </div>
+                        <div class="mb-3 p-3 bg-gray-50 border border-gray-300 rounded text-xs sm:text-sm">
+                            <p class="font-semibold mb-2">Información importante:</p>
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 rounded-full bg-red-600 border-2 border-red-800"></div>
+                                <span>Marque en <strong>ROJO</strong> todos los daños existentes al momento de la salida del vehículo</span>
+                            </div>
                         </div>
                         <textarea name="condicion_carroceria_log" rows="3" class="w-full border-gray-300 rounded table-input" placeholder="Describa detalladamente los daños marcados en la imagen (ej: 1. Rayón en puerta delantera izquierda, 2. Abolladura en cofre...)">{{ old('condicion_carroceria_log') }}</textarea>
                     </td>
@@ -796,7 +800,8 @@
         
         isDrawing = true;
         const point = getCanvasPoint(e);
-        const color = document.getElementById('drawColor').value;
+        // Color fijo para checkout (rojo)
+        const color = '#ff0000';
         const width = parseInt(document.getElementById('lineWidth').value);
         
         currentStroke = {

@@ -22,12 +22,16 @@ class Checklist extends Model
         'hora_salida',
         'hora_entrada',
         'kilometraje_inicial',
+        'kilometraje_final',
         'nivel_combustible_inicial',
+        'nivel_combustible_final',
         // Llantas
         'llanta_delantera_derecha',
         'llanta_delantera_izquierda',
+        'llanta_delantera_vida',
         'llanta_trasera_derecha',
         'llanta_trasera_izquierda',
+        'llanta_trasera_vida',
         'llanta_refaccion',
         'presion_adecuada',
         // Frontal
@@ -105,12 +109,15 @@ class Checklist extends Model
     protected $casts = [
         'fecha' => 'date',
         'kilometraje_inicial' => 'decimal:2',
+        'kilometraje_final' => 'decimal:2',
         'condicion_carroceria_log' => 'array',
         // Todos los campos boolean
         'llanta_delantera_derecha' => 'boolean',
         'llanta_delantera_izquierda' => 'boolean',
+        'llanta_delantera_vida' => 'boolean',
         'llanta_trasera_derecha' => 'boolean',
         'llanta_trasera_izquierda' => 'boolean',
+        'llanta_trasera_vida' => 'boolean',
         'llanta_refaccion' => 'boolean',
         'presion_adecuada' => 'boolean',
         'parabrisas' => 'boolean',

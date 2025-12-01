@@ -20,7 +20,6 @@ class ChecklistController extends Controller
      */
     public function checkoutForm(Ticket $ticket): View
     {
-
         if (!$ticket->canCheckout()) {
             abort(403, 'No se puede realizar checkout en este ticket.');
         }
@@ -33,8 +32,6 @@ class ChecklistController extends Controller
      */
     public function processCheckout(Request $request, Ticket $ticket): RedirectResponse
     {
-        //$this->authorize('checkout', $ticket);
-
         if (!$ticket->canCheckout()) {
             return back()->with('error', 'No se puede realizar checkout en este ticket.');
         }
@@ -110,8 +107,6 @@ class ChecklistController extends Controller
      */
     public function checkinForm(Ticket $ticket): View
     {
-        $this->authorize('checkin', $ticket);
-
         if (!$ticket->canCheckin()) {
             abort(403, 'No se puede realizar checkin en este ticket.');
         }
@@ -126,8 +121,6 @@ class ChecklistController extends Controller
      */
     public function processCheckin(Request $request, Ticket $ticket): RedirectResponse
     {
-        $this->authorize('checkin', $ticket);
-
         if (!$ticket->canCheckin()) {
             return back()->with('error', 'No se puede realizar checkin en este ticket.');
         }
@@ -138,6 +131,28 @@ class ChecklistController extends Controller
         $checkoutChecklist = $ticket->checkoutChecklist;
         $folio = $checkoutChecklist ? $checkoutChecklist->folio : (now()->format('Ymd') . str_pad($ticket->id, 6, '0', STR_PAD_LEFT));
 
+        // Guardar imagen del canvas si existe
+        $imagePath = null;
+        if ($request->has('condicion_carroceria_imagen') && !empty($request->input('condicion_carroceria_imagen'))) {
+            $imageData = $request->input('condicion_carroceria_imagen');
+            
+            // Decodificar la imagen base64
+            if (preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) {
+                $imageData = substr($imageData, strpos($imageData, ',') + 1);
+                $type = strtolower($type[1]); // jpg, png, gif
+                
+                $imageData = base64_decode($imageData);
+                
+                if ($imageData !== false) {
+                    $fileName = 'checklist_checkin_' . $ticket->id . '_' . time() . '.' . $type;
+                    $path = 'checklists/' . $fileName;
+                    
+                    Storage::disk('public')->put($path, $imageData);
+                    $imagePath = $path;
+                }
+            }
+        }
+
         $checklist = Checklist::create([
             'ticket_id' => $ticket->id,
             'tipo_inspeccion' => 'entrada',
@@ -147,6 +162,7 @@ class ChecklistController extends Controller
             'modelo' => $request->input('modelo'),
             'placas' => $request->input('placas'),
             'marca' => $request->input('marca'),
+            'hora_salida' => $request->input('hora_salida'),
             'hora_entrada' => $request->input('hora_entrada'),
             'kilometraje_inicial' => $checkoutChecklist ? $checkoutChecklist->kilometraje_inicial : 0,
             'kilometraje_final' => $request->input('kilometraje_final'),
@@ -157,6 +173,7 @@ class ChecklistController extends Controller
             'mantenimiento_preventivo' => $request->input('mantenimiento_preventivo'),
             'mantenimiento_correctivo' => $request->input('mantenimiento_correctivo'),
             'condicion_carroceria_log' => $request->input('condicion_carroceria_log'),
+            'condicion_carroceria_imagen' => $imagePath,
             ...$validated,
         ]);
 
@@ -201,8 +218,10 @@ class ChecklistController extends Controller
             // Llantas
             'llanta_delantera_derecha' => 'nullable|boolean',
             'llanta_delantera_izquierda' => 'nullable|boolean',
+            'llanta_delantera_vida' => 'nullable|boolean',
             'llanta_trasera_derecha' => 'nullable|boolean',
             'llanta_trasera_izquierda' => 'nullable|boolean',
+            'llanta_trasera_vida' => 'nullable|boolean',
             'llanta_refaccion' => 'nullable|boolean',
             'presion_adecuada' => 'nullable|boolean',
             // Frontal
