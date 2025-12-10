@@ -8,4 +8,43 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Brand palette (based on #CF0A2C) */
+    --color-brand-50:  #FFF1F2;
+    --color-brand-100: #FFE4E6;
+    --color-brand-200: #FECDD3;
+    --color-brand-300: #FDA4AF;
+    --color-brand-400: #FB7185;
+    --color-brand-500: #F43F5E;
+    --color-brand-600: #CF0A2C; /* Primary brand */
+    --color-brand-700: #B80A28;
+    --color-brand-800: #9A0822;
+    --color-brand-900: #7F071C;
+    --color-brand-950: #450412;
+
+    /* Remap yellow scale to brand red to avoid template changes */
+    --color-yellow-50:  var(--color-brand-50);
+    --color-yellow-100: var(--color-brand-100);
+    --color-yellow-200: var(--color-brand-200);
+    --color-yellow-300: var(--color-brand-300);
+    --color-yellow-400: var(--color-brand-400);
+    --color-yellow-500: var(--color-brand-500);
+    --color-yellow-600: var(--color-brand-600);
+    --color-yellow-700: var(--color-brand-700);
+    --color-yellow-800: var(--color-brand-800);
+    --color-yellow-900: var(--color-brand-900);
+    --color-yellow-950: var(--color-brand-950);
+
+    /* Remap blue scale to brand red for consistent identity */
+    --color-blue-50:  var(--color-brand-50);
+    --color-blue-100: var(--color-brand-100);
+    --color-blue-200: var(--color-brand-200);
+    --color-blue-300: var(--color-brand-300);
+    --color-blue-400: var(--color-brand-400);
+    --color-blue-500: var(--color-brand-500);
+    --color-blue-600: var(--color-brand-600);
+    --color-blue-700: var(--color-brand-700);
+    --color-blue-800: var(--color-brand-800);
+    --color-blue-900: var(--color-brand-900);
+    --color-blue-950: var(--color-brand-950);
 }

@@ -32,11 +32,11 @@
                 <div>
                     @php
                         $statusColors = [
-                            'pendiente' => 'bg-yellow-100 text-yellow-800 border-yellow-300',
-                            'aprobado' => 'bg-green-100 text-green-800 border-green-300',
+                            'pendiente' => 'bg-amber-100 text-amber-800 border-amber-300',
+                            'aprobado' => 'bg-blue-100 text-blue-800 border-blue-300',
                             'rechazado' => 'bg-red-100 text-red-800 border-red-300',
-                            'en_uso' => 'bg-blue-100 text-blue-800 border-blue-300',
-                            'completado' => 'bg-gray-100 text-gray-800 border-gray-300',
+                            'en_uso' => 'bg-indigo-100 text-indigo-800 border-indigo-300',
+                            'completado' => 'bg-green-100 text-green-800 border-green-300',
                         ];
                     @endphp
                     <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full border-2 {{ $statusColors[$ticket->status] ?? 'bg-gray-100 text-gray-800' }}">

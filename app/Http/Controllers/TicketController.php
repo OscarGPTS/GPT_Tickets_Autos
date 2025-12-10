@@ -39,6 +39,11 @@ class TicketController extends Controller
             $query->forUser($user->id);
         } elseif ($user->isDespachador()) {
             $query->forDispatcher($user->id);
+        } elseif ($user->isEncargado()) {
+            // Para encargado: mostrar solo pendientes por defecto, a menos que pida "todas"
+            if (!$request->has('view') || $request->view !== 'todas') {
+                $query->where('status', 'pendiente');
+            }
         }
 
         // Aplicar filtros

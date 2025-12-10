@@ -53,7 +53,7 @@
                         <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Pendientes</p>
                         <p class="text-3xl font-bold text-gray-900 mt-1">{{ $stats['pendientes'] }}</p>
                     </div>
-                    <div class="p-3 rounded-xl bg-yellow-50 text-yellow-600">
+                    <div class="p-3 rounded-xl bg-amber-50 text-amber-600">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -62,7 +62,7 @@
                 </div>
                 <div class="mt-4">
                     <div class="w-full bg-gray-100 rounded-full h-1.5">
-                        <div class="bg-yellow-500 h-1.5 rounded-full"
+                        <div class="bg-amber-500 h-1.5 rounded-full"
                             style="width: {{ $stats['total'] > 0 ? ($stats['pendientes'] / $stats['total']) * 100 : 0 }}%">
                         </div>
                     </div>
@@ -176,12 +176,12 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @php
                                         $statusColors = [
-                                            'pendiente' => 'bg-yellow-100 text-yellow-800 border border-yellow-200',
-                                            'aprobado' => 'bg-green-100 text-green-800 border border-green-200',
+                                            'pendiente' => 'bg-amber-100 text-amber-800 border border-amber-200',
+                                            'aprobado' => 'bg-blue-100 text-blue-800 border border-blue-200',
                                             'rechazado' => 'bg-red-100 text-red-800 border border-red-200',
-                                            'en_curso' => 'bg-blue-100 text-blue-800 border border-blue-200',
-                                            'finalizado' => 'bg-purple-100 text-purple-800 border border-purple-200',
-                                            'completado' => 'bg-gray-100 text-gray-800 border border-gray-200',
+                                            'en_curso' => 'bg-indigo-100 text-indigo-800 border border-indigo-200',
+                                            'finalizado' => 'bg-green-100 text-green-800 border border-green-200',
+                                            'completado' => 'bg-green-100 text-green-800 border border-green-200',
                                         ];
                                         $statusIcons = [
                                             'pendiente' => 'fa-clock',

@@ -53,7 +53,9 @@ class LoginController extends Controller
             }
 
             // Intercambiar código por token
-            $tokenResponse = Http::asForm()->post('https://oauth2.googleapis.com/token', [
+            $tokenResponse = Http::withOptions([
+                'verify' => config('app.env') === 'local' ? false : true,
+            ])->asForm()->post('https://oauth2.googleapis.com/token', [
                 'client_id' => config('services.google.client_id'),
                 'client_secret' => config('services.google.client_secret'),
                 'code' => $request->code,
@@ -69,7 +71,9 @@ class LoginController extends Controller
             $accessToken = $tokenData['access_token'];
 
             // Obtener información del usuario
-            $userResponse = Http::withToken($accessToken)
+            $userResponse = Http::withOptions([
+                'verify' => config('app.env') === 'local' ? false : true,
+            ])->withToken($accessToken)
                 ->get('https://www.googleapis.com/oauth2/v2/userinfo');
 
             if (!$userResponse->successful()) {

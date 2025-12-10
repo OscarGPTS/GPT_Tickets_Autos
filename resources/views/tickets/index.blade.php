@@ -6,17 +6,35 @@
     <div class="max-w-7xl mx-auto">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Mis Solicitudes</h1>
-                <p class="mt-2 text-gray-600">Historial y estado de tus requisiciones de vehículos</p>
+                @if(Auth::user()->hasRole('encargado') && (!request()->has('view') || request('view') !== 'todas'))
+                    <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Requisiciones Pendientes</h1>
+                    <p class="mt-2 text-gray-600">Solicitudes que requieren tu aprobación</p>
+                @else
+                    <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Mis Solicitudes</h1>
+                    <p class="mt-2 text-gray-600">Historial y estado de tus requisiciones de vehículos</p>
+                @endif
             </div>
-            @can('create', App\Models\Ticket::class)
-                <div class="mt-4 sm:mt-0">
+            <div class="mt-4 sm:mt-0 flex gap-3">
+                @if(Auth::user()->hasRole('encargado'))
+                    @if(!request()->has('view') || request('view') !== 'todas')
+                        <a href="{{ route('tickets.index', ['view' => 'todas']) }}"
+                            class="inline-flex items-center px-5 py-2.5 border border-gray-300 shadow-sm text-sm font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                            <i class="fas fa-list mr-2"></i>Ver Todas
+                        </a>
+                    @else
+                        <a href="{{ route('tickets.index') }}"
+                            class="inline-flex items-center px-5 py-2.5 border border-gray-300 shadow-sm text-sm font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                            <i class="fas fa-clock mr-2"></i>Solo Pendientes
+                        </a>
+                    @endif
+                @endif
+                @can('create', App\Models\Ticket::class)
                     <a href="{{ route('tickets.create') }}"
                         class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl shadow-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:-translate-y-0.5">
                         <i class="fas fa-plus mr-2"></i>Nueva Solicitud
                     </a>
-                </div>
-            @endcan
+                @endcan
+            </div>
         </div>
 
         @if (session('success'))
@@ -150,11 +168,11 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @php
                                             $statusColors = [
-                                                'pendiente' => 'bg-yellow-100 text-yellow-800 border border-yellow-200',
-                                                'aprobado' => 'bg-green-100 text-green-800 border border-green-200',
+                                                'pendiente' => 'bg-amber-100 text-amber-800 border border-amber-200',
+                                                'aprobado' => 'bg-blue-100 text-blue-800 border border-blue-200',
                                                 'rechazado' => 'bg-red-100 text-red-800 border border-red-200',
-                                                'en_uso' => 'bg-blue-100 text-blue-800 border border-blue-200',
-                                                'completado' => 'bg-gray-100 text-gray-800 border border-gray-200',
+                                                'en_uso' => 'bg-indigo-100 text-indigo-800 border border-indigo-200',
+                                                'completado' => 'bg-green-100 text-green-800 border border-green-200',
                                             ];
                                         @endphp
                                         <span
@@ -175,45 +193,11 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex justify-end items-center space-x-2">
                                             <a href="{{ route('tickets.show', $ticket) }}"
-                                                class="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                                                class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
                                                 title="Ver detalles">
-                                                <i class="fas fa-eye"></i>
+                                                <i class="fas fa-eye mr-2"></i>
+                                                Ver
                                             </a>
-
-                                            @can('update', $ticket)
-                                                @if ($ticket->status === 'pendiente')
-                                                    <a href="{{ route('tickets.edit', $ticket) }}"
-                                                        class="text-indigo-600 hover:text-indigo-900 p-2 hover:bg-indigo-50 rounded-lg transition-colors"
-                                                        title="Editar">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                @endif
-                                            @endcan
-
-                                            @can('approve', $ticket)
-                                                @if ($ticket->status === 'pendiente')
-                                                    <form action="{{ route('tickets.approve', $ticket) }}" method="POST"
-                                                        class="inline">
-                                                        @csrf
-                                                        <button type="submit"
-                                                            class="text-green-600 hover:text-green-900 p-2 hover:bg-green-50 rounded-lg transition-colors"
-                                                            onclick="return confirm('¿Aprobar esta solicitud?')"
-                                                            title="Aprobar">
-                                                            <i class="fas fa-check-circle"></i>
-                                                        </button>
-                                                    </form>
-                                                    <form action="{{ route('tickets.reject', $ticket) }}" method="POST"
-                                                        class="inline">
-                                                        @csrf
-                                                        <button type="submit"
-                                                            class="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-lg transition-colors"
-                                                            onclick="return confirm('¿Rechazar esta solicitud?')"
-                                                            title="Rechazar">
-                                                            <i class="fas fa-times-circle"></i>
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                            @endcan
 
                                             @if ($ticket->status === 'aprobado' && auth()->user()->hasRole('despachador'))
                                                 <a href="{{ route('checklists.checkout', $ticket) }}"
@@ -231,13 +215,6 @@
                                                 </a>
                                             @endif
 
-                                            @if ($ticket->status === 'completado' && $ticket->user_id === auth()->id() && !$ticket->service_rating)
-                                                <a href="{{ route('tickets.rate', $ticket) }}"
-                                                    class="text-yellow-600 hover:text-yellow-900 p-2 hover:bg-yellow-50 rounded-lg transition-colors"
-                                                    title="Calificar">
-                                                    <i class="fas fa-star"></i>
-                                                </a>
-                                            @endif
                                         </div>
                                     </td>
                                 </tr>

@@ -34,7 +34,7 @@
                         <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Pendientes</p>
                         <p class="text-3xl font-bold text-gray-900 mt-1">{{ $stats['pendientes'] }}</p>
                     </div>
-                    <div class="p-3 rounded-xl bg-yellow-50 text-yellow-600">
+                    <div class="p-3 rounded-xl bg-amber-50 text-amber-600">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -42,7 +42,7 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    <div class="flex items-center text-sm text-yellow-600">
+                    <div class="flex items-center text-sm text-amber-600">
                         <span class="font-medium">Requieren atención</span>
                     </div>
                 </div>
@@ -124,12 +124,12 @@
             <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
                 <div>
                     <h3 class="text-lg font-bold text-gray-900 flex items-center">
-                        <i class="fas fa-clock text-yellow-500 mr-2"></i> Requisiciones Pendientes de Aprobación
+                        <i class="fas fa-clock text-amber-500 mr-2"></i> Requisiciones Pendientes de Aprobación
                     </h3>
                     <p class="mt-1 text-sm text-gray-500">Revisa y aprueba las solicitudes de vehículos</p>
                 </div>
                 <span
-                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
                     {{ count($ticketsPendientes) }} pendientes
                 </span>
             </div>

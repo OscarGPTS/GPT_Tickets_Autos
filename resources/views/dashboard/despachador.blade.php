@@ -16,7 +16,7 @@
             <div
                 class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 p-6 border border-gray-100 relative overflow-hidden group">
                 <div
-                    class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-yellow-50 to-transparent opacity-50 group-hover:opacity-100 transition-opacity">
+                    class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-amber-50 to-transparent opacity-50 group-hover:opacity-100 transition-opacity">
                 </div>
                 <div class="relative z-10 flex items-center justify-between">
                     <div>
@@ -24,7 +24,7 @@
                         <p class="text-4xl font-bold text-gray-900 mt-2">{{ $stats['pendientes_checkout'] }}</p>
                         <p class="text-sm text-gray-500 mt-1">Vehículos por entregar</p>
                     </div>
-                    <div class="p-4 rounded-2xl bg-yellow-100 text-yellow-600 shadow-sm">
+                    <div class="p-4 rounded-2xl bg-amber-100 text-amber-600 shadow-sm">
                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -117,14 +117,14 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if ($ticket->status === 'aprobado')
                                         <span
-                                            class="px-3 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
-                                            <span class="w-2 h-2 bg-yellow-400 rounded-full mr-1.5 animate-pulse"></span>
+                                            class="px-3 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                                            <span class="w-2 h-2 bg-amber-400 rounded-full mr-1.5 animate-pulse"></span>
                                             Pendiente Checkout
                                         </span>
                                     @elseif($ticket->status === 'en_curso')
                                         <span
-                                            class="px-3 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 border border-blue-200">
-                                            <span class="w-2 h-2 bg-blue-400 rounded-full mr-1.5 animate-pulse"></span>
+                                            class="px-3 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">
+                                            <span class="w-2 h-2 bg-indigo-400 rounded-full mr-1.5 animate-pulse"></span>
                                             En Curso
                                         </span>
                                     @endif

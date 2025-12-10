@@ -74,7 +74,7 @@
             <div
                 class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 p-6 border border-gray-100">
                 <div class="flex items-center">
-                    <div class="p-3 rounded-xl bg-yellow-50 text-yellow-600">
+                    <div class="p-3 rounded-xl bg-amber-50 text-amber-600">
                         <i class="fas fa-clock text-2xl"></i>
                     </div>
                     <div class="ml-4">
