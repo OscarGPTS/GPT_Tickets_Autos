@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\DispatcherController;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+*/
+
+Route::prefix('dispatcher')->group(function () {
+    // Login/Verificación de usuario y obtención de tickets
+    Route::post('/login', [DispatcherController::class, 'login']);
+    
+    // Crear o actualizar checklist de salida (checkout)
+    Route::post('/checklist/checkout', [DispatcherController::class, 'checkoutChecklist']);
+    
+    // Crear o actualizar checklist de entrada (checkin)
+    Route::post('/checklist/checkin', [DispatcherController::class, 'checkinChecklist']);
+    
+    // Obtener detalle de un ticket específico
+    Route::get('/ticket/{id}', [DispatcherController::class, 'getTicket']);
+});

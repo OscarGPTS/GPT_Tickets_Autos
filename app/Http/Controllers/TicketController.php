@@ -178,7 +178,6 @@ class TicketController extends Controller
         $validated = $request->validate([
             'vehicle_id' => 'required|exists:vehicles,id',
             'dispatcher_id' => 'required|exists:users,id',
-            'conductor_name' => 'nullable|string|max:255',
         ]);
 
         // Verificar disponibilidad del vehículo
@@ -194,7 +193,8 @@ class TicketController extends Controller
             'folio' => $folio,
             'vehicle_id' => $validated['vehicle_id'],
             'dispatcher_id' => $validated['dispatcher_id'],
-            'conductor_name' => $validated['conductor_name'] ?? $ticket->user->name,
+            // Mantener conductor como solicitante por defecto
+            'conductor_name' => $ticket->user->name,
             'approved_by' => Auth::id(),
             'status' => 'aprobado',
             'approved_at' => now(),
@@ -205,9 +205,17 @@ class TicketController extends Controller
 
         // Notificar al solicitante
         $ticket->user->notify(new TicketApproved($ticket));
-        
-        // Enviar correo al despachador notificando la asignación
-        Mail::to($ticket->dispatcher->email)->send(new DespachadorAsignado($ticket));
+
+        // Enviar correo al despachador; si falla el SMTP solo registramos el error
+        try {
+            Mail::to($ticket->dispatcher->email)->send(new DespachadorAsignado($ticket));
+        } catch (\Throwable $e) {
+            Log::warning('No se pudo enviar correo al despachador', [
+                'ticket_id' => $ticket->id,
+                'dispatcher_id' => $ticket->dispatcher_id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return redirect()->route('tickets.show', $ticket)
             ->with('success', "Ticket aprobado exitosamente. Folio: {$folio}. Se ha notificado al despachador.");

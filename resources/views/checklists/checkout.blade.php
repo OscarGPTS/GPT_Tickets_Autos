@@ -184,26 +184,26 @@
 
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow" colspan="2">Modelo</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="text" name="modelo" value="{{ old('modelo', $ticket->vehicle->model) }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly required>
+                        <input type="text" name="modelo" value="{{ old('modelo', $ticket->vehicle->model) }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly required>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Folio</td>
                     <td class="border border-gray-200 table-cell-text" colspan="2">
-                        <input type="text" name="folio" value="{{ old('folio', $ticket->folio) }}" class="w-full border-gray-300 rounded table-input bg-gray-50" placeholder="Auto-generado" readonly>
+                        <input type="text" name="folio" value="{{ old('folio', $ticket->folio) }}" class="w-full border-gray-300 rounded table-input bg-gray-100" placeholder="Auto-generado" readonly>
                     </td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Hora de salida</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="time" name="hora_salida" value="{{ old('hora_salida', $ticket->hora_salida) }}" class="w-full border-gray-300 rounded table-input" required>
+                        <input type="time" name="hora_salida" value="{{ old('hora_salida', now()->format('H:i')) }}" class="w-full border-gray-300 rounded table-input" required>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow" colspan="2">Hora de entrada</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="time" name="hora_entrada" value="{{ old('hora_entrada', $ticket->hora_entrada) }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly required>
+                        <input type="time" name="hora_entrada" value="{{ old('hora_entrada') }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Fecha</td>
                     <td class="border border-gray-200 table-cell-text" colspan="2">
-                        <input type="date" name="fecha" value="{{ old('fecha', $ticket->fecha) }}" class="w-full border-gray-300 rounded table-input bg-gray-50" placeholder="Auto-generado" readonly>
+                        <input type="date" name="fecha" value="{{ old('fecha', now()->format('Y-m-d')) }}" class="w-full border-gray-300 rounded table-input bg-gray-100" placeholder="Auto-generado">
                     </td>
                 </tr>
 
@@ -211,7 +211,7 @@
                 <tr>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje inicial</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="number" step="0.01" name="kilometraje_inicial" value="{{ old('kilometraje_inicial', $ticket->kilometraje_salida) }}" class="w-full border-gray-300 rounded table-input" required>
+                        <input type="number" step="0.01" name="kilometraje_inicial" value="{{ old('kilometraje_inicial', $ticket->vehicle->current_mileage) }}" class="w-full border-gray-300 rounded table-input" required>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow" colspan="2">Nivel de combustible inicial</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
@@ -233,7 +233,7 @@
                 <tr>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje final</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="number" step="0.01" name="kilometraje_final" value="{{ old('kilometraje_final', now()->format('H:i')) }}" class="w-full border-gray-300 rounded table-input" required>
+                        <input type="number" step="0.01" name="kilometraje_final" value="{{ old('kilometraje_final') }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow" colspan="2">Nivel de combustible final</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
