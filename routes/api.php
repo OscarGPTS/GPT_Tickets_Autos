@@ -16,6 +16,9 @@ use App\Http\Controllers\API\DispatcherController;
 */
 
 Route::prefix('dispatcher')->group(function () {
+    // Ruta de prueba (test)
+    Route::get('/test', [DispatcherController::class, 'test']);
+    
     // Login/Verificación de usuario y obtención de tickets
     Route::post('/login', [DispatcherController::class, 'login']);
     

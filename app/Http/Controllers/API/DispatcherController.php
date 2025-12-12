@@ -13,6 +13,28 @@ use Illuminate\Support\Facades\DB;
 class DispatcherController extends Controller
 {
     /**
+     * Ruta de prueba para verificar que el API funciona
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function test()
+    {
+        return response()->json([
+            'success' => true,
+            'message' => '¡API de Despachador funcionando correctamente! 🚀',
+            'timestamp' => now()->toDateTimeString(),
+            'version' => '1.0.0',
+            'endpoints' => [
+                'POST /api/dispatcher/login' => 'Login y obtener tickets',
+                'POST /api/dispatcher/checklist/checkout' => 'Crear/actualizar checklist de salida',
+                'POST /api/dispatcher/checklist/checkin' => 'Crear/actualizar checklist de entrada',
+                'GET /api/dispatcher/ticket/{id}' => 'Obtener detalle de un ticket',
+                'GET /api/dispatcher/test' => 'Esta ruta de prueba',
+            ]
+        ], 200);
+    }
+
+    /**
      * Login o verificación de usuario por OAuth2
      * Busca por correo y nombre, retorna tickets disponibles con sus checklists
      * 
@@ -61,57 +83,61 @@ class DispatcherController extends Controller
         // Ordenados por más reciente primero
         $tickets = Ticket::with([
             'user:id,name,email,phone',
-            'vehicle:id,brand,model,year,plates,vehicle_number',
-            'conductorLicense:id,license_number,full_name,expiration_date',
+            'vehicle:id,brand,model,year,plates,internal_code,color,vehicle_type',
+            'conductorLicense:id,license_number,license_type,expiry_date',
+            'conductorLicense.user:id,name',
             'checklists'
         ])
         ->where('dispatcher_id', $user->id)
-        ->whereIn('status', ['aprobado', 'en_progreso'])
+        ->whereIn('status', ['aprobado', 'en_curso'])
         ->orderBy('created_at', 'desc')
         ->get()
         ->map(function ($ticket) {
             return [
                 'id' => $ticket->id,
-                'folio' => $ticket->folio,
-                'requisicion' => $ticket->requisicion,
+                'folio' => $ticket->folio ?? '',
                 'status' => $ticket->status,
-                'destination' => $ticket->destination,
-                'cliente' => $ticket->cliente,
-                'purpose' => $ticket->purpose,
-                'requested_date' => $ticket->requested_date?->format('Y-m-d'),
-                'requested_time_start' => $ticket->requested_time_start,
-                'requested_time_end' => $ticket->requested_time_end,
-                'conductor_name' => $ticket->conductor_name,
-                'conductor_phone' => $ticket->conductor_phone,
-                'approved_at' => $ticket->approved_at?->format('Y-m-d H:i:s'),
-                'checkout_at' => $ticket->checkout_at?->format('Y-m-d H:i:s'),
-                'checkin_at' => $ticket->checkin_at?->format('Y-m-d H:i:s'),
-                'completed_at' => $ticket->completed_at?->format('Y-m-d H:i:s'),
+                'destination' => $ticket->destination ?? '',
+                'purpose' => $ticket->purpose ?? '',
+                'passenger_count' => $ticket->passenger_count ?? 1,
+                'additional_notes' => $ticket->additional_notes ?? '',
+                'requested_date' => $ticket->requested_date?->format('Y-m-d') ?? '',
+                'requested_time_start' => $ticket->requested_time_start ?? '',
+                'requested_time_end' => $ticket->requested_time_end ?? '',
+                'conductor_name' => $ticket->conductor_name ?? '',
+                'conductor_phone' => $ticket->conductor_phone ?? '',
+                'approved_at' => $ticket->approved_at?->format('Y-m-d H:i:s') ?? null,
+                'checkout_at' => $ticket->checkout_at?->format('Y-m-d H:i:s') ?? null,
+                'checkin_at' => $ticket->checkin_at?->format('Y-m-d H:i:s') ?? null,
+                'completed_at' => $ticket->completed_at?->format('Y-m-d H:i:s') ?? null,
                 
                 // Usuario solicitante
                 'user' => $ticket->user ? [
                     'id' => $ticket->user->id,
-                    'name' => $ticket->user->name,
-                    'email' => $ticket->user->email,
-                    'phone' => $ticket->user->phone,
+                    'name' => $ticket->user->name ?? '',
+                    'email' => $ticket->user->email ?? '',
+                    'phone' => $ticket->user->phone ?? '',
                 ] : null,
                 
                 // Vehículo asignado
                 'vehicle' => $ticket->vehicle ? [
                     'id' => $ticket->vehicle->id,
-                    'brand' => $ticket->vehicle->brand,
-                    'model' => $ticket->vehicle->model,
-                    'year' => $ticket->vehicle->year,
-                    'plates' => $ticket->vehicle->plates,
-                    'vehicle_number' => $ticket->vehicle->vehicle_number,
+                    'brand' => $ticket->vehicle->brand ?? '',
+                    'model' => $ticket->vehicle->model ?? '',
+                    'year' => $ticket->vehicle->year ?? 0,
+                    'plates' => $ticket->vehicle->plates ?? '',
+                    'internal_code' => $ticket->vehicle->internal_code ?? '',
+                    'color' => $ticket->vehicle->color ?? '',
+                    'vehicle_type' => $ticket->vehicle->vehicle_type ?? '',
                 ] : null,
                 
                 // Licencia del conductor
                 'conductor_license' => $ticket->conductorLicense ? [
                     'id' => $ticket->conductorLicense->id,
-                    'license_number' => $ticket->conductorLicense->license_number,
-                    'full_name' => $ticket->conductorLicense->full_name,
-                    'expiration_date' => $ticket->conductorLicense->expiration_date?->format('Y-m-d'),
+                    'license_number' => $ticket->conductorLicense->license_number ?? '',
+                    'license_type' => $ticket->conductorLicense->license_type ?? '',
+                    'expiry_date' => $ticket->conductorLicense->expiry_date?->format('Y-m-d') ?? '',
+                    'full_name' => $ticket->conductorLicense->user?->name ?? $ticket->conductor_name ?? '',
                 ] : null,
                 
                 // Checklists (vacíos si no existen)
@@ -168,7 +194,7 @@ class DispatcherController extends Controller
             $ticket = Ticket::findOrFail($request->ticket_id);
             
             // Verificar que el ticket esté en estado aprobado
-            if (!in_array($ticket->status, ['aprobado', 'en_progreso'])) {
+            if (!in_array($ticket->status, ['aprobado', 'en_curso'])) {
                 return response()->json([
                     'success' => false,
                     'message' => 'El ticket debe estar aprobado para crear un checklist'
@@ -192,7 +218,7 @@ class DispatcherController extends Controller
                 // Actualizar el ticket con la fecha de checkout
                 $ticket->update([
                     'checkout_at' => now(),
-                    'status' => 'en_progreso'
+                    'status' => 'en_curso'
                 ]);
             }
 
@@ -247,11 +273,11 @@ class DispatcherController extends Controller
 
             $ticket = Ticket::findOrFail($request->ticket_id);
             
-            // Verificar que el ticket esté en progreso
-            if ($ticket->status !== 'en_progreso') {
+            // Verificar que el ticket esté en curso
+            if ($ticket->status !== 'en_curso') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'El ticket debe estar en progreso para crear un checklist de entrada'
+                    'message' => 'El ticket debe estar en curso para crear un checklist de entrada'
                 ], 400);
             }
 
@@ -284,8 +310,7 @@ class DispatcherController extends Controller
                 // Actualizar el ticket con la fecha de checkin
                 $ticket->update([
                     'checkin_at' => now(),
-                    'status' => 'completado',
-                    'completed_at' => now()
+                    'status' => 'finalizado'
                 ]);
             }
 
@@ -321,8 +346,9 @@ class DispatcherController extends Controller
     {
         $ticket = Ticket::with([
             'user:id,name,email,phone',
-            'vehicle:id,brand,model,year,plates,vehicle_number',
-            'conductorLicense:id,license_number,full_name,expiration_date',
+            'vehicle:id,brand,model,year,plates,internal_code,color,vehicle_type',
+            'conductorLicense:id,license_number,license_type,expiry_date',
+            'conductorLicense.user:id,name',
             'checklists'
         ])
         ->find($id);
@@ -338,21 +364,21 @@ class DispatcherController extends Controller
             'success' => true,
             'data' => [
                 'id' => $ticket->id,
-                'folio' => $ticket->folio,
-                'requisicion' => $ticket->requisicion,
+                'folio' => $ticket->folio ?? '',
                 'status' => $ticket->status,
-                'destination' => $ticket->destination,
-                'cliente' => $ticket->cliente,
-                'purpose' => $ticket->purpose,
-                'requested_date' => $ticket->requested_date?->format('Y-m-d'),
-                'requested_time_start' => $ticket->requested_time_start,
-                'requested_time_end' => $ticket->requested_time_end,
-                'conductor_name' => $ticket->conductor_name,
-                'conductor_phone' => $ticket->conductor_phone,
-                'approved_at' => $ticket->approved_at?->format('Y-m-d H:i:s'),
-                'checkout_at' => $ticket->checkout_at?->format('Y-m-d H:i:s'),
-                'checkin_at' => $ticket->checkin_at?->format('Y-m-d H:i:s'),
-                'completed_at' => $ticket->completed_at?->format('Y-m-d H:i:s'),
+                'destination' => $ticket->destination ?? '',
+                'purpose' => $ticket->purpose ?? '',
+                'passenger_count' => $ticket->passenger_count ?? 1,
+                'additional_notes' => $ticket->additional_notes ?? '',
+                'requested_date' => $ticket->requested_date?->format('Y-m-d') ?? '',
+                'requested_time_start' => $ticket->requested_time_start ?? '',
+                'requested_time_end' => $ticket->requested_time_end ?? '',
+                'conductor_name' => $ticket->conductor_name ?? '',
+                'conductor_phone' => $ticket->conductor_phone ?? '',
+                'approved_at' => $ticket->approved_at?->format('Y-m-d H:i:s') ?? null,
+                'checkout_at' => $ticket->checkout_at?->format('Y-m-d H:i:s') ?? null,
+                'checkin_at' => $ticket->checkin_at?->format('Y-m-d H:i:s') ?? null,
+                'completed_at' => $ticket->completed_at?->format('Y-m-d H:i:s') ?? null,
                 
                 'user' => $ticket->user,
                 'vehicle' => $ticket->vehicle,
@@ -423,18 +449,18 @@ class DispatcherController extends Controller
                 'id' => null,
                 'exists' => false,
                 'tipo_inspeccion' => $tipo,
-                'folio' => $ticket->folio,
-                'fecha' => null,
-                'destino' => $ticket->destination,
-                'modelo' => $ticket->vehicle?->model,
-                'placas' => $ticket->vehicle?->plates,
-                'marca' => $ticket->vehicle?->brand,
-                'hora_salida' => null,
-                'hora_entrada' => null,
-                'kilometraje_inicial' => null,
-                'kilometraje_final' => null,
-                'nivel_combustible_inicial' => null,
-                'nivel_combustible_final' => null,
+                'folio' => $ticket->folio ?? '',
+                'fecha' => '',
+                'destino' => $ticket->destination ?? '',
+                'modelo' => $ticket->vehicle?->model ?? '',
+                'placas' => $ticket->vehicle?->plates ?? '',
+                'marca' => $ticket->vehicle?->brand ?? '',
+                'hora_salida' => '',
+                'hora_entrada' => '',
+                'kilometraje_inicial' => 0,
+                'kilometraje_final' => 0,
+                'nivel_combustible_inicial' => '',
+                'nivel_combustible_final' => '',
                 // Secciones
                 'llantas' => $this->getEmptyLlantasSection(),
                 'frontal' => $this->getEmptyFrontalSection(),
@@ -562,124 +588,124 @@ class DispatcherController extends Controller
     private function getEmptyLlantasSection(): array
     {
         return [
-            'llanta_delantera_derecha' => null,
-            'llanta_delantera_izquierda' => null,
-            'llanta_delantera_vida' => null,
-            'llanta_trasera_derecha' => null,
-            'llanta_trasera_izquierda' => null,
-            'llanta_trasera_vida' => null,
-            'llanta_refaccion' => null,
-            'presion_adecuada' => null,
+            'llanta_delantera_derecha' => false,
+            'llanta_delantera_izquierda' => false,
+            'llanta_delantera_vida' => false,
+            'llanta_trasera_derecha' => false,
+            'llanta_trasera_izquierda' => false,
+            'llanta_trasera_vida' => false,
+            'llanta_refaccion' => false,
+            'presion_adecuada' => false,
         ];
     }
 
     private function getEmptyFrontalSection(): array
     {
         return [
-            'parabrisas' => null,
-            'cofre' => null,
-            'parrilla' => null,
-            'defensas' => null,
-            'molduras' => null,
-            'placa' => null,
-            'salpicadera' => null,
-            'antena' => null,
+            'parabrisas' => false,
+            'cofre' => false,
+            'parrilla' => false,
+            'defensas' => false,
+            'molduras' => false,
+            'placa' => false,
+            'salpicadera' => false,
+            'antena' => false,
         ];
     }
 
     private function getEmptyLucesSection(): array
     {
         return [
-            'intermitentes' => null,
-            'direccional_derecha' => null,
-            'direccional_izquierda' => null,
-            'luz_stop' => null,
-            'faros' => null,
-            'luces_altas' => null,
-            'luz_interior' => null,
-            'calaveras_buen_estado' => null,
+            'intermitentes' => false,
+            'direccional_derecha' => false,
+            'direccional_izquierda' => false,
+            'luz_stop' => false,
+            'faros' => false,
+            'luces_altas' => false,
+            'luz_interior' => false,
+            'calaveras_buen_estado' => false,
         ];
     }
 
     private function getEmptySeguridadSection(): array
     {
         return [
-            'mata_chispas' => null,
-            'alarma' => null,
-            'extintor' => null,
-            'botiquin' => null,
-            'tarjeta_circulacion' => null,
-            'licencia_conducir_vigente' => null,
-            'poliza_seguro' => null,
-            'triangulo_emergencia' => null,
+            'mata_chispas' => false,
+            'alarma' => false,
+            'extintor' => false,
+            'botiquin' => false,
+            'tarjeta_circulacion' => false,
+            'licencia_conducir_vigente' => false,
+            'poliza_seguro' => false,
+            'triangulo_emergencia' => false,
         ];
     }
 
     private function getEmptyInteriorSection(): array
     {
         return [
-            'tablero_indicadores' => null,
-            'switch_encendido' => null,
-            'controles_ac' => null,
-            'defroster' => null,
-            'radio' => null,
-            'volante' => null,
-            'bolsas_aire' => null,
-            'cinturon_seguridad' => null,
-            'coderas' => null,
-            'espejo_interior' => null,
-            'freno_mano' => null,
-            'encendedor' => null,
-            'guantera' => null,
-            'manijas_interiores' => null,
-            'seguros' => null,
-            'asientos' => null,
-            'tapetes_delanteros_traseros' => null,
+            'tablero_indicadores' => false,
+            'switch_encendido' => false,
+            'controles_ac' => false,
+            'defroster' => false,
+            'radio' => false,
+            'volante' => false,
+            'bolsas_aire' => false,
+            'cinturon_seguridad' => false,
+            'coderas' => false,
+            'espejo_interior' => false,
+            'freno_mano' => false,
+            'encendedor' => false,
+            'guantera' => false,
+            'manijas_interiores' => false,
+            'seguros' => false,
+            'asientos' => false,
+            'tapetes_delanteros_traseros' => false,
         ];
     }
 
     private function getEmptyMotorSection(): array
     {
         return [
-            'nivel_aceite_motor' => null,
-            'nivel_anticongelante' => null,
-            'nivel_liquido_frenos' => null,
-            'bateria' => null,
-            'bayoneta_aceite_motor' => null,
-            'tapones' => null,
-            'bocina_claxon' => null,
-            'radiador' => null,
+            'nivel_aceite_motor' => false,
+            'nivel_anticongelante' => false,
+            'nivel_liquido_frenos' => false,
+            'bateria' => false,
+            'bayoneta_aceite_motor' => false,
+            'tapones' => false,
+            'bocina_claxon' => false,
+            'radiador' => false,
         ];
     }
 
     private function getEmptyHerramientaSection(): array
     {
         return [
-            'gato' => null,
-            'llave_ruedas' => null,
-            'cables_pasa_corriente' => null,
-            'caja_bolsa_herramientas' => null,
-            'dado_birlo_seguridad' => null,
+            'gato' => false,
+            'llave_ruedas' => false,
+            'cables_pasa_corriente' => false,
+            'caja_bolsa_herramientas' => false,
+            'dado_birlo_seguridad' => false,
         ];
     }
 
     private function getEmptyCalcomaniasSection(): array
     {
         return [
-            'calcomanias_permisos' => null,
-            'calcomania_velocidad_maxima' => null,
+            'calcomanias_permisos' => false,
+            'calcomania_velocidad_maxima' => false,
         ];
     }
 
     private function getEmptyObservacionesSection(): array
     {
         return [
-            'mantenimiento_preventivo' => null,
-            'mantenimiento_correctivo' => null,
-            'condicion_carroceria_log' => null,
-            'condicion_carroceria_imagen' => null,
-            'responsable_recibo_uso' => null,
-            'responsable_entrega' => null,
+            'mantenimiento_preventivo' => '',
+            'mantenimiento_correctivo' => '',
+            'condicion_carroceria_log' => [],
+            'condicion_carroceria_imagen' => '',
+            'responsable_recibo_uso' => '',
+            'responsable_entrega' => '',
         ];
     }
 }

@@ -38,11 +38,11 @@ Verifica el usuario por OAuth2 y retorna todos los tickets disponibles con sus c
             {
                 "id": 1,
                 "folio": "2025-0001",
-                "requisicion": "REQ-001",
                 "status": "aprobado",
                 "destination": "Ciudad de México",
-                "cliente": "Cliente ABC",
                 "purpose": "Entrega de documentos",
+                "passenger_count": 2,
+                "additional_notes": "Llevar documentos importantes",
                 "requested_date": "2025-12-15",
                 "requested_time_start": "09:00",
                 "requested_time_end": "17:00",
@@ -64,13 +64,16 @@ Verifica el usuario por OAuth2 y retorna todos los tickets disponibles con sus c
                     "model": "Camry",
                     "year": 2023,
                     "plates": "ABC-123-XYZ",
-                    "vehicle_number": "V-001"
+                    "internal_code": "GPT-001",
+                    "color": "Blanco",
+                    "vehicle_type": "sedan"
                 },
                 "conductor_license": {
                     "id": 1,
                     "license_number": "LIC123456",
-                    "full_name": "Carlos Ruiz Hernández",
-                    "expiration_date": "2026-12-31"
+                    "license_type": "B",
+                    "expiry_date": "2026-12-31",
+                    "full_name": "Carlos Ruiz"
                 },
                 "checkout_checklist": {
                     "id": null,
@@ -378,18 +381,23 @@ Obtiene la información completa de un ticket específico.
 
 ## Estados del Ticket
 
+- `pendiente`: Ticket recién creado
 - `aprobado`: Ticket aprobado, listo para checkout
-- `en_progreso`: Checkout realizado, esperando checkin
-- `completado`: Checkin realizado, ticket completado
+- `rechazado`: Ticket rechazado por encargado
+- `en_curso`: Checkout realizado, esperando checkin
+- `finalizado`: Checkin realizado, esperando calificación
+- `completado`: Calificado por usuario (final)
 
 ## Notas Importantes
 
 1. Los checklists se retornan vacíos (con `exists: false`) si no existen aún
 2. Todos los campos boolean pueden enviarse como `true`/`false` o como strings `"true"`/`"false"`
-3. El checkout cambia el estado del ticket a `en_progreso`
-4. El checkin cambia el estado del ticket a `completado`
+3. El checkout cambia el estado del ticket a `en_curso`
+4. El checkin cambia el estado del ticket a `finalizado`
 5. No se puede crear un checkin sin haber creado primero un checkout
 6. Los checklists están organizados en secciones para facilitar su uso en la app móvil
+7. Los campos `requisicion` y `cliente` no existen en la tabla tickets
+8. El campo `completed_at` solo se actualiza cuando el usuario califica el servicio (status=completado)
 
 ## Ejemplo de Uso en Flutter/React Native
 
