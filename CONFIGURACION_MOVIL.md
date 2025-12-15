@@ -12,6 +12,7 @@ http://192.168.100.62:8000/api/dispatcher
 
 ### Endpoints Completos:
 - **🧪 Test (GET)**: `http://192.168.100.62:8000/api/dispatcher/test`
+- **🧪 Todos los Tickets (GET - Prueba)**: `http://192.168.100.62:8000/api/dispatcher/all-tickets`
 - **Login**: `http://192.168.100.62:8000/api/dispatcher/login`
 - **Checkout**: `http://192.168.100.62:8000/api/dispatcher/checklist/checkout`
 - **Checkin**: `http://192.168.100.62:8000/api/dispatcher/checklist/checkin`

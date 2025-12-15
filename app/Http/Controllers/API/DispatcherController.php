@@ -26,10 +26,102 @@ class DispatcherController extends Controller
             'version' => '1.0.0',
             'endpoints' => [
                 'POST /api/dispatcher/login' => 'Login y obtener tickets',
+                'GET /api/dispatcher/all-tickets' => 'Obtener todos los tickets (prueba)',
                 'POST /api/dispatcher/checklist/checkout' => 'Crear/actualizar checklist de salida',
                 'POST /api/dispatcher/checklist/checkin' => 'Crear/actualizar checklist de entrada',
                 'GET /api/dispatcher/ticket/{id}' => 'Obtener detalle de un ticket',
                 'GET /api/dispatcher/test' => 'Esta ruta de prueba',
+            ]
+        ], 200);
+    }
+
+    /**
+     * Obtener todos los tickets (API de prueba - sin autenticación)
+     * Útil para desarrollo y testing
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAllTickets()
+    {
+        // Obtener todos los tickets con status aprobado o en_curso
+        $tickets = Ticket::with([
+            'user:id,name,email,phone',
+            'vehicle:id,brand,model,year,plates,internal_code,color,vehicle_type',
+            'conductorLicense:id,license_number,license_type,expiry_date',
+            'conductorLicense.user:id,name',
+            'dispatcher:id,name,email',
+            'checklists'
+        ])
+        ->whereIn('status', ['aprobado', 'en_curso'])
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(function ($ticket) {
+            return [
+                'id' => $ticket->id,
+                'folio' => $ticket->folio ?? '',
+                'status' => $ticket->status,
+                'destination' => $ticket->destination ?? '',
+                'purpose' => $ticket->purpose ?? '',
+                'passenger_count' => $ticket->passenger_count ?? 1,
+                'additional_notes' => $ticket->additional_notes ?? '',
+                'requested_date' => $ticket->requested_date?->format('Y-m-d') ?? '',
+                'requested_time_start' => $ticket->requested_time_start ?? '',
+                'requested_time_end' => $ticket->requested_time_end ?? '',
+                'conductor_name' => $ticket->conductor_name ?? '',
+                'conductor_phone' => $ticket->conductor_phone ?? '',
+                'approved_at' => $ticket->approved_at?->format('Y-m-d H:i:s') ?? null,
+                'checkout_at' => $ticket->checkout_at?->format('Y-m-d H:i:s') ?? null,
+                'checkin_at' => $ticket->checkin_at?->format('Y-m-d H:i:s') ?? null,
+                'completed_at' => $ticket->completed_at?->format('Y-m-d H:i:s') ?? null,
+                
+                // Usuario solicitante
+                'user' => $ticket->user ? [
+                    'id' => $ticket->user->id,
+                    'name' => $ticket->user->name ?? '',
+                    'email' => $ticket->user->email ?? '',
+                    'phone' => $ticket->user->phone ?? '',
+                ] : null,
+                
+                // Despachador asignado
+                'dispatcher' => $ticket->dispatcher ? [
+                    'id' => $ticket->dispatcher->id,
+                    'name' => $ticket->dispatcher->name ?? '',
+                    'email' => $ticket->dispatcher->email ?? '',
+                ] : null,
+                
+                // Vehículo asignado
+                'vehicle' => $ticket->vehicle ? [
+                    'id' => $ticket->vehicle->id,
+                    'brand' => $ticket->vehicle->brand ?? '',
+                    'model' => $ticket->vehicle->model ?? '',
+                    'year' => $ticket->vehicle->year ?? 0,
+                    'plates' => $ticket->vehicle->plates ?? '',
+                    'internal_code' => $ticket->vehicle->internal_code ?? '',
+                    'color' => $ticket->vehicle->color ?? '',
+                    'vehicle_type' => $ticket->vehicle->vehicle_type ?? '',
+                ] : null,
+                
+                // Licencia del conductor
+                'conductor_license' => $ticket->conductorLicense ? [
+                    'id' => $ticket->conductorLicense->id,
+                    'license_number' => $ticket->conductorLicense->license_number ?? '',
+                    'license_type' => $ticket->conductorLicense->license_type ?? '',
+                    'expiry_date' => $ticket->conductorLicense->expiry_date?->format('Y-m-d') ?? '',
+                    'full_name' => $ticket->conductorLicense->user?->name ?? $ticket->conductor_name ?? '',
+                ] : null,
+                
+                // Checklists (vacíos si no existen)
+                'checkout_checklist' => $this->formatChecklistForMobile($ticket, 'salida'),
+                'checkin_checklist' => $this->formatChecklistForMobile($ticket, 'entrada'),
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tickets obtenidos correctamente (modo prueba)',
+            'total' => $tickets->count(),
+            'data' => [
+                'tickets' => $tickets
             ]
         ], 200);
     }
@@ -165,25 +257,22 @@ class DispatcherController extends Controller
 
     /**
      * Crear o actualizar checklist de salida (checkout)
+     * Asignación directa de campos del request al modelo
      * 
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function checkoutChecklist(Request $request)
     {
+        // Validación mínima requerida
         $validator = Validator::make($request->all(), [
             'ticket_id' => 'required|exists:tickets,id',
-            'fecha' => 'required|date',
-            'hora_salida' => 'required',
-            'kilometraje_inicial' => 'required|numeric',
-            'nivel_combustible_inicial' => 'required|string',
-            // Los demás campos son opcionales pero validarlos si vienen
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Datos de validación incorrectos',
+                'message' => 'El ticket_id es requerido',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -201,32 +290,135 @@ class DispatcherController extends Controller
                 ], 400);
             }
 
-            // Buscar si ya existe un checklist de salida
+            // Buscar si ya existe un checklist de salida o crear uno nuevo
             $checklist = Checklist::where('ticket_id', $request->ticket_id)
                                   ->where('tipo_inspeccion', 'salida')
                                   ->first();
 
-            $data = $this->prepareChecklistData($request, $ticket, 'salida');
+            $isNew = false;
+            if (!$checklist) {
+                $checklist = new Checklist();
+                $isNew = true;
+            }
 
-            if ($checklist) {
-                // Actualizar checklist existente
-                $checklist->update($data);
-            } else {
-                // Crear nuevo checklist
-                $checklist = Checklist::create($data);
-                
-                // Actualizar el ticket con la fecha de checkout
-                $ticket->update([
-                    'checkout_at' => now(),
-                    'status' => 'en_curso'
-                ]);
+            // Asignación directa de campos
+            $checklist->ticket_id = $request->ticket_id;
+            $checklist->tipo_inspeccion = 'salida';
+            $checklist->folio = $request->folio;
+            $checklist->fecha = $request->fecha;
+            $checklist->destino = $request->destino;
+            $checklist->modelo = $request->modelo;
+            $checklist->placas = $request->placas;
+            $checklist->marca = $request->marca;
+            $checklist->hora_salida = $request->hora_salida;
+            $checklist->hora_entrada = $request->hora_entrada;
+            $checklist->kilometraje_inicial = $request->kilometraje_inicial;
+            $checklist->kilometraje_final = $request->kilometraje_final;
+            $checklist->nivel_combustible_inicial = $request->nivel_combustible_inicial;
+            $checklist->nivel_combustible_final = $request->nivel_combustible_final;
+            
+            // Llantas
+            $checklist->llanta_delantera_derecha = $request->llanta_delantera_derecha;
+            $checklist->llanta_delantera_izquierda = $request->llanta_delantera_izquierda;
+            $checklist->llanta_delantera_vida = $request->llanta_delantera_vida;
+            $checklist->llanta_trasera_derecha = $request->llanta_trasera_derecha;
+            $checklist->llanta_trasera_izquierda = $request->llanta_trasera_izquierda;
+            $checklist->llanta_trasera_vida = $request->llanta_trasera_vida;
+            $checklist->llanta_refaccion = $request->llanta_refaccion;
+            $checklist->presion_adecuada = $request->presion_adecuada;
+            
+            // Frontal
+            $checklist->parabrisas = $request->parabrisas;
+            $checklist->cofre = $request->cofre;
+            $checklist->parrilla = $request->parrilla;
+            $checklist->defensas = $request->defensas;
+            $checklist->molduras = $request->molduras;
+            $checklist->placa = $request->placa;
+            $checklist->salpicadera = $request->salpicadera;
+            $checklist->antena = $request->antena;
+            
+            // Luces
+            $checklist->intermitentes = $request->intermitentes;
+            $checklist->direccional_derecha = $request->direccional_derecha;
+            $checklist->direccional_izquierda = $request->direccional_izquierda;
+            $checklist->luz_stop = $request->luz_stop;
+            $checklist->faros = $request->faros;
+            $checklist->luces_altas = $request->luces_altas;
+            $checklist->luz_interior = $request->luz_interior;
+            $checklist->calaveras_buen_estado = $request->calaveras_buen_estado;
+            
+            // Seguridad
+            $checklist->mata_chispas = $request->mata_chispas;
+            $checklist->alarma = $request->alarma;
+            $checklist->extintor = $request->extintor;
+            $checklist->botiquin = $request->botiquin;
+            $checklist->tarjeta_circulacion = $request->tarjeta_circulacion;
+            $checklist->licencia_conducir_vigente = $request->licencia_conducir_vigente;
+            $checklist->poliza_seguro = $request->poliza_seguro;
+            $checklist->triangulo_emergencia = $request->triangulo_emergencia;
+            
+            // Interior
+            $checklist->tablero_indicadores = $request->tablero_indicadores;
+            $checklist->switch_encendido = $request->switch_encendido;
+            $checklist->controles_ac = $request->controles_ac;
+            $checklist->defroster = $request->defroster;
+            $checklist->radio = $request->radio;
+            $checklist->volante = $request->volante;
+            $checklist->bolsas_aire = $request->bolsas_aire;
+            $checklist->cinturon_seguridad = $request->cinturon_seguridad;
+            $checklist->coderas = $request->coderas;
+            $checklist->espejo_interior = $request->espejo_interior;
+            $checklist->freno_mano = $request->freno_mano;
+            $checklist->encendedor = $request->encendedor;
+            $checklist->guantera = $request->guantera;
+            $checklist->manijas_interiores = $request->manijas_interiores;
+            $checklist->seguros = $request->seguros;
+            $checklist->asientos = $request->asientos;
+            $checklist->tapetes_delanteros_traseros = $request->tapetes_delanteros_traseros;
+            
+            // Motor
+            $checklist->nivel_aceite_motor = $request->nivel_aceite_motor;
+            $checklist->nivel_anticongelante = $request->nivel_anticongelante;
+            $checklist->nivel_liquido_frenos = $request->nivel_liquido_frenos;
+            $checklist->bateria = $request->bateria;
+            $checklist->bayoneta_aceite_motor = $request->bayoneta_aceite_motor;
+            $checklist->tapones = $request->tapones;
+            $checklist->bocina_claxon = $request->bocina_claxon;
+            $checklist->radiador = $request->radiador;
+            
+            // Herramienta
+            $checklist->gato = $request->gato;
+            $checklist->llave_ruedas = $request->llave_ruedas;
+            $checklist->cables_pasa_corriente = $request->cables_pasa_corriente;
+            $checklist->caja_bolsa_herramientas = $request->caja_bolsa_herramientas;
+            $checklist->dado_birlo_seguridad = $request->dado_birlo_seguridad;
+            
+            // Calcomanías
+            $checklist->calcomanias_permisos = $request->calcomanias_permisos;
+            $checklist->calcomania_velocidad_maxima = $request->calcomania_velocidad_maxima;
+            
+            // Observaciones
+            $checklist->mantenimiento_preventivo = $request->mantenimiento_preventivo;
+            $checklist->mantenimiento_correctivo = $request->mantenimiento_correctivo;
+            $checklist->condicion_carroceria_log = $request->condicion_carroceria_log;
+            $checklist->condicion_carroceria_imagen = $request->condicion_carroceria_imagen;
+            $checklist->responsable_recibo_uso = $request->responsable_recibo_uso;
+            $checklist->responsable_entrega = $request->responsable_entrega;
+
+            $checklist->save();
+
+            // Si es nuevo, actualizar el ticket
+            if ($isNew) {
+                $ticket->checkout_at = now();
+                $ticket->status = 'en_curso';
+                $ticket->save();
             }
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => $checklist->wasRecentlyCreated ? 'Checklist de salida creado correctamente' : 'Checklist de salida actualizado correctamente',
+                'message' => $isNew ? 'Checklist de salida creado correctamente' : 'Checklist de salida actualizado correctamente',
                 'data' => [
                     'checklist' => $checklist,
                     'ticket' => $ticket->fresh(['vehicle', 'user'])
@@ -246,24 +438,22 @@ class DispatcherController extends Controller
 
     /**
      * Crear o actualizar checklist de entrada (checkin)
+     * Asignación directa de campos del request al modelo
      * 
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function checkinChecklist(Request $request)
     {
+        // Validación mínima requerida
         $validator = Validator::make($request->all(), [
             'ticket_id' => 'required|exists:tickets,id',
-            'fecha' => 'required|date',
-            'hora_entrada' => 'required',
-            'kilometraje_final' => 'required|numeric',
-            'nivel_combustible_final' => 'required|string',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Datos de validación incorrectos',
+                'message' => 'El ticket_id es requerido',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -293,32 +483,135 @@ class DispatcherController extends Controller
                 ], 400);
             }
 
-            // Buscar si ya existe un checklist de entrada
+            // Buscar si ya existe un checklist de entrada o crear uno nuevo
             $checklist = Checklist::where('ticket_id', $request->ticket_id)
                                   ->where('tipo_inspeccion', 'entrada')
                                   ->first();
 
-            $data = $this->prepareChecklistData($request, $ticket, 'entrada');
+            $isNew = false;
+            if (!$checklist) {
+                $checklist = new Checklist();
+                $isNew = true;
+            }
 
-            if ($checklist) {
-                // Actualizar checklist existente
-                $checklist->update($data);
-            } else {
-                // Crear nuevo checklist
-                $checklist = Checklist::create($data);
-                
-                // Actualizar el ticket con la fecha de checkin
-                $ticket->update([
-                    'checkin_at' => now(),
-                    'status' => 'finalizado'
-                ]);
+            // Asignación directa de campos
+            $checklist->ticket_id = $request->ticket_id;
+            $checklist->tipo_inspeccion = 'entrada';
+            $checklist->folio = $request->folio;
+            $checklist->fecha = $request->fecha;
+            $checklist->destino = $request->destino;
+            $checklist->modelo = $request->modelo;
+            $checklist->placas = $request->placas;
+            $checklist->marca = $request->marca;
+            $checklist->hora_salida = $request->hora_salida;
+            $checklist->hora_entrada = $request->hora_entrada;
+            $checklist->kilometraje_inicial = $request->kilometraje_inicial;
+            $checklist->kilometraje_final = $request->kilometraje_final;
+            $checklist->nivel_combustible_inicial = $request->nivel_combustible_inicial;
+            $checklist->nivel_combustible_final = $request->nivel_combustible_final;
+            
+            // Llantas
+            $checklist->llanta_delantera_derecha = $request->llanta_delantera_derecha;
+            $checklist->llanta_delantera_izquierda = $request->llanta_delantera_izquierda;
+            $checklist->llanta_delantera_vida = $request->llanta_delantera_vida;
+            $checklist->llanta_trasera_derecha = $request->llanta_trasera_derecha;
+            $checklist->llanta_trasera_izquierda = $request->llanta_trasera_izquierda;
+            $checklist->llanta_trasera_vida = $request->llanta_trasera_vida;
+            $checklist->llanta_refaccion = $request->llanta_refaccion;
+            $checklist->presion_adecuada = $request->presion_adecuada;
+            
+            // Frontal
+            $checklist->parabrisas = $request->parabrisas;
+            $checklist->cofre = $request->cofre;
+            $checklist->parrilla = $request->parrilla;
+            $checklist->defensas = $request->defensas;
+            $checklist->molduras = $request->molduras;
+            $checklist->placa = $request->placa;
+            $checklist->salpicadera = $request->salpicadera;
+            $checklist->antena = $request->antena;
+            
+            // Luces
+            $checklist->intermitentes = $request->intermitentes;
+            $checklist->direccional_derecha = $request->direccional_derecha;
+            $checklist->direccional_izquierda = $request->direccional_izquierda;
+            $checklist->luz_stop = $request->luz_stop;
+            $checklist->faros = $request->faros;
+            $checklist->luces_altas = $request->luces_altas;
+            $checklist->luz_interior = $request->luz_interior;
+            $checklist->calaveras_buen_estado = $request->calaveras_buen_estado;
+            
+            // Seguridad
+            $checklist->mata_chispas = $request->mata_chispas;
+            $checklist->alarma = $request->alarma;
+            $checklist->extintor = $request->extintor;
+            $checklist->botiquin = $request->botiquin;
+            $checklist->tarjeta_circulacion = $request->tarjeta_circulacion;
+            $checklist->licencia_conducir_vigente = $request->licencia_conducir_vigente;
+            $checklist->poliza_seguro = $request->poliza_seguro;
+            $checklist->triangulo_emergencia = $request->triangulo_emergencia;
+            
+            // Interior
+            $checklist->tablero_indicadores = $request->tablero_indicadores;
+            $checklist->switch_encendido = $request->switch_encendido;
+            $checklist->controles_ac = $request->controles_ac;
+            $checklist->defroster = $request->defroster;
+            $checklist->radio = $request->radio;
+            $checklist->volante = $request->volante;
+            $checklist->bolsas_aire = $request->bolsas_aire;
+            $checklist->cinturon_seguridad = $request->cinturon_seguridad;
+            $checklist->coderas = $request->coderas;
+            $checklist->espejo_interior = $request->espejo_interior;
+            $checklist->freno_mano = $request->freno_mano;
+            $checklist->encendedor = $request->encendedor;
+            $checklist->guantera = $request->guantera;
+            $checklist->manijas_interiores = $request->manijas_interiores;
+            $checklist->seguros = $request->seguros;
+            $checklist->asientos = $request->asientos;
+            $checklist->tapetes_delanteros_traseros = $request->tapetes_delanteros_traseros;
+            
+            // Motor
+            $checklist->nivel_aceite_motor = $request->nivel_aceite_motor;
+            $checklist->nivel_anticongelante = $request->nivel_anticongelante;
+            $checklist->nivel_liquido_frenos = $request->nivel_liquido_frenos;
+            $checklist->bateria = $request->bateria;
+            $checklist->bayoneta_aceite_motor = $request->bayoneta_aceite_motor;
+            $checklist->tapones = $request->tapones;
+            $checklist->bocina_claxon = $request->bocina_claxon;
+            $checklist->radiador = $request->radiador;
+            
+            // Herramienta
+            $checklist->gato = $request->gato;
+            $checklist->llave_ruedas = $request->llave_ruedas;
+            $checklist->cables_pasa_corriente = $request->cables_pasa_corriente;
+            $checklist->caja_bolsa_herramientas = $request->caja_bolsa_herramientas;
+            $checklist->dado_birlo_seguridad = $request->dado_birlo_seguridad;
+            
+            // Calcomanías
+            $checklist->calcomanias_permisos = $request->calcomanias_permisos;
+            $checklist->calcomania_velocidad_maxima = $request->calcomania_velocidad_maxima;
+            
+            // Observaciones
+            $checklist->mantenimiento_preventivo = $request->mantenimiento_preventivo;
+            $checklist->mantenimiento_correctivo = $request->mantenimiento_correctivo;
+            $checklist->condicion_carroceria_log = $request->condicion_carroceria_log;
+            $checklist->condicion_carroceria_imagen = $request->condicion_carroceria_imagen;
+            $checklist->responsable_recibo_uso = $request->responsable_recibo_uso;
+            $checklist->responsable_entrega = $request->responsable_entrega;
+
+            $checklist->save();
+
+            // Si es nuevo, actualizar el ticket
+            if ($isNew) {
+                $ticket->checkin_at = now();
+                $ticket->status = 'finalizado';
+                $ticket->save();
             }
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => $checklist->wasRecentlyCreated ? 'Checklist de entrada creado correctamente' : 'Checklist de entrada actualizado correctamente',
+                'message' => $isNew ? 'Checklist de entrada creado correctamente' : 'Checklist de entrada actualizado correctamente',
                 'data' => [
                     'checklist' => $checklist,
                     'ticket' => $ticket->fresh(['vehicle', 'user'])
@@ -387,48 +680,6 @@ class DispatcherController extends Controller
                 'checkin_checklist' => $this->formatChecklistForMobile($ticket, 'entrada'),
             ]
         ], 200);
-    }
-
-    /**
-     * Preparar datos del checklist desde el request
-     * 
-     * @param Request $request
-     * @param Ticket $ticket
-     * @param string $tipo
-     * @return array
-     */
-    private function prepareChecklistData(Request $request, Ticket $ticket, string $tipo): array
-    {
-        $data = [
-            'ticket_id' => $ticket->id,
-            'tipo_inspeccion' => $tipo,
-            'folio' => $ticket->folio,
-            'fecha' => $request->fecha,
-            'destino' => $request->destino ?? $ticket->destination,
-        ];
-
-        // Datos del vehículo
-        if ($ticket->vehicle) {
-            $data['modelo'] = $ticket->vehicle->model;
-            $data['placas'] = $ticket->vehicle->plates;
-            $data['marca'] = $ticket->vehicle->brand;
-        }
-
-        // Agregar todos los campos del request excepto ticket_id
-        $fillableFields = (new Checklist())->getFillable();
-        
-        foreach ($request->all() as $key => $value) {
-            if ($key !== 'ticket_id' && in_array($key, $fillableFields)) {
-                // Convertir strings "true"/"false" a booleanos
-                if (is_string($value) && ($value === 'true' || $value === 'false')) {
-                    $data[$key] = $value === 'true';
-                } else {
-                    $data[$key] = $value;
-                }
-            }
-        }
-
-        return $data;
     }
 
     /**

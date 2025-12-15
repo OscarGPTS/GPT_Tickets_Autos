@@ -19,6 +19,9 @@ Route::prefix('dispatcher')->group(function () {
     // Ruta de prueba (test)
     Route::get('/test', [DispatcherController::class, 'test']);
     
+    // Obtener todos los tickets (API de prueba - sin autenticación)
+    Route::get('/all-tickets', [DispatcherController::class, 'getAllTickets']);
+    
     // Login/Verificación de usuario y obtención de tickets
     Route::post('/login', [DispatcherController::class, 'login']);
     
