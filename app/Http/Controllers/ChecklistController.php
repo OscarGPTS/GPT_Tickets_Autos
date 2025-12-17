@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Checklist;
+use App\Models\CheckoutChecklist;
+use App\Models\CheckinChecklist;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Mail\ChecklistCompletado;
@@ -38,9 +39,6 @@ class ChecklistController extends Controller
 
         $validated = $this->validateChecklist($request, 'salida');
 
-        // Generar folio numérico
-        $folio = now()->format('Ymd') . str_pad($ticket->id, 6, '0', STR_PAD_LEFT);
-
         // Guardar imagen del canvas si existe
         $imagePath = null;
         if ($request->has('condicion_carroceria_imagen') && !empty($request->input('condicion_carroceria_imagen'))) {
@@ -63,15 +61,9 @@ class ChecklistController extends Controller
             }
         }
 
-        $checklist = Checklist::create([
+        $checklist = CheckoutChecklist::create([
             'ticket_id' => $ticket->id,
-            'tipo_inspeccion' => 'salida',
-            'folio' => $folio,
             'fecha' => $request->input('fecha', now()->toDateString()),
-            'destino' => $request->input('destino'),
-            'modelo' => $request->input('modelo'),
-            'placas' => $request->input('placas'),
-            'marca' => $request->input('marca'),
             'hora_salida' => $request->input('hora_salida'),
             'kilometraje_inicial' => $request->input('kilometraje_inicial'),
             'nivel_combustible_inicial' => $request->input('nivel_combustible_inicial'),
@@ -85,7 +77,7 @@ class ChecklistController extends Controller
         ]);
 
         $ticket->update([
-            'status' => 'en_uso',
+            'status' => 'en_curso',
             'checkout_at' => now(),
         ]);
 
@@ -127,9 +119,8 @@ class ChecklistController extends Controller
 
         $validated = $this->validateChecklist($request, 'entrada');
 
-        // Usar el mismo folio del checkout
+        // El folio se obtiene de la relación con el ticket
         $checkoutChecklist = $ticket->checkoutChecklist;
-        $folio = $checkoutChecklist ? $checkoutChecklist->folio : (now()->format('Ymd') . str_pad($ticket->id, 6, '0', STR_PAD_LEFT));
 
         // Guardar imagen del canvas si existe
         $imagePath = null;
@@ -153,15 +144,9 @@ class ChecklistController extends Controller
             }
         }
 
-        $checklist = Checklist::create([
+        $checklist = CheckinChecklist::create([
             'ticket_id' => $ticket->id,
-            'tipo_inspeccion' => 'entrada',
-            'folio' => $folio,
             'fecha' => $request->input('fecha', now()->toDateString()),
-            'destino' => $request->input('destino'),
-            'modelo' => $request->input('modelo'),
-            'placas' => $request->input('placas'),
-            'marca' => $request->input('marca'),
             'hora_salida' => $request->input('hora_salida'),
             'hora_entrada' => $request->input('hora_entrada'),
             'kilometraje_inicial' => $checkoutChecklist ? $checkoutChecklist->kilometraje_inicial : 0,
@@ -204,10 +189,6 @@ class ChecklistController extends Controller
     private function validateChecklist(Request $request, string $tipo): array
     {
         $rules = [
-            'destino' => 'required|string|max:255',
-            'modelo' => 'required|string|max:255',
-            'placas' => 'required|string|max:255',
-            'marca' => 'required|string|max:255',
             'fecha' => 'required|date',
             'kilometraje_inicial' => 'required|numeric|min:0',
             'nivel_combustible_inicial' => 'required|string',
@@ -305,7 +286,7 @@ class ChecklistController extends Controller
     /**
      * Notificar por correo cuando se completa un checklist
      */
-    private function notifyChecklistCompletado(Ticket $ticket, Checklist $checklist, string $tipo): void
+    private function notifyChecklistCompletado(Ticket $ticket, $checklist, string $tipo): void
     {
         // Enviar correo al solicitante
         Mail::to($ticket->user->email)->send(new ChecklistCompletado($ticket, $checklist, $tipo));

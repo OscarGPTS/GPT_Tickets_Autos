@@ -11,16 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('checklists', function (Blueprint $table) {
+        Schema::create('checkout_checklists', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('ticket_id')->constrained()->onDelete('cascade');
-            $table->enum('tipo_inspeccion', ['salida', 'entrada']);
-            $table->bigInteger('folio');
+            $table->foreignId('ticket_id')->unique()->constrained()->onDelete('cascade');
             $table->date('fecha');
-            $table->string('destino');
-            $table->string('modelo');
-            $table->string('placas');
-            $table->string('marca');
             
             // Tiempos y kilometraje
             $table->time('hora_salida')->nullable();
@@ -114,12 +108,13 @@ return new class extends Migration
             $table->text('mantenimiento_preventivo')->nullable();
             $table->text('mantenimiento_correctivo')->nullable();
             $table->json('condicion_carroceria_log')->nullable(); // Para el esquema gráfico de daños
+            $table->string('condicion_carroceria_imagen')->nullable();
             $table->string('responsable_recibo_uso')->nullable();
             $table->string('responsable_entrega')->nullable();
             
             $table->timestamps();
 
-            $table->index(['ticket_id', 'tipo_inspeccion']);
+            $table->index('ticket_id');
         });
     }
 
@@ -128,6 +123,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('checklists');
+        Schema::dropIfExists('checkout_checklists');
     }
 };

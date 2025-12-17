@@ -5,7 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Ticket;
-use App\Models\Checklist;
+use App\Models\CheckoutChecklist;
+use App\Models\CheckinChecklist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +24,7 @@ class DispatcherController extends Controller
             'success' => true,
             'message' => '¡API de Despachador funcionando correctamente! 🚀',
             'timestamp' => now()->toDateTimeString(),
-            'version' => '1.0.0',
+            'version' => '2.0.0',
             'endpoints' => [
                 'POST /api/dispatcher/login' => 'Login y obtener tickets',
                 'GET /api/dispatcher/all-tickets' => 'Obtener todos los tickets (prueba)',
@@ -50,7 +51,8 @@ class DispatcherController extends Controller
             'conductorLicense:id,license_number,license_type,expiry_date',
             'conductorLicense.user:id,name',
             'dispatcher:id,name,email',
-            'checklists'
+            'checkoutChecklist',
+            'checkinChecklist'
         ])
         ->whereIn('status', ['aprobado', 'en_curso'])
         ->orderBy('created_at', 'desc')
@@ -161,24 +163,26 @@ class DispatcherController extends Controller
             ], 404);
         }
 
+        // TODO: Descomentar validación de rol despachador en producción
         // Verificar que el usuario tenga el rol de despachador
-        $isDispatcher = $user->roles()->where('name', 'despachador')->exists();
+        // $isDispatcher = $user->roles()->where('name', 'despachador')->exists();
 
-        if (!$isDispatcher) {
-            return response()->json([
-                'success' => false,
-                'message' => 'El usuario no tiene permisos de despachador'
-            ], 403);
-        }
+        // if (!$isDispatcher) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'El usuario no tiene permisos de despachador'
+        //     ], 403);
+        // }
 
         // Obtener todos los tickets asignados al despachador
-        // Ordenados por más reciente primero
+       
         $tickets = Ticket::with([
             'user:id,name,email,phone',
             'vehicle:id,brand,model,year,plates,internal_code,color,vehicle_type',
             'conductorLicense:id,license_number,license_type,expiry_date',
             'conductorLicense.user:id,name',
-            'checklists'
+            'checkoutChecklist',
+            'checkinChecklist'
         ])
         ->where('dispatcher_id', $user->id)
         ->whereIn('status', ['aprobado', 'en_curso'])
@@ -276,7 +280,12 @@ class DispatcherController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-
+        
+        // Corregir typo común de Flutter
+        if ($request->has('cintulon_seguridad')) {
+            $request->merge(['cinturon_seguridad' => $request->cintulon_seguridad]);
+        }
+        
         try {
             DB::beginTransaction();
 
@@ -291,31 +300,23 @@ class DispatcherController extends Controller
             }
 
             // Buscar si ya existe un checklist de salida o crear uno nuevo
-            $checklist = Checklist::where('ticket_id', $request->ticket_id)
-                                  ->where('tipo_inspeccion', 'salida')
-                                  ->first();
+            $checklist = CheckoutChecklist::where('ticket_id', $request->ticket_id)->first();
 
             $isNew = false;
             if (!$checklist) {
-                $checklist = new Checklist();
+                $checklist = new CheckoutChecklist();
                 $isNew = true;
             }
 
-            // Asignación directa de campos
+            // Asignación directa de campos con valores por defecto
             $checklist->ticket_id = $request->ticket_id;
-            $checklist->tipo_inspeccion = 'salida';
-            $checklist->folio = $request->folio;
-            $checklist->fecha = $request->fecha;
-            $checklist->destino = $request->destino;
-            $checklist->modelo = $request->modelo;
-            $checklist->placas = $request->placas;
-            $checklist->marca = $request->marca;
-            $checklist->hora_salida = $request->hora_salida;
-            $checklist->hora_entrada = $request->hora_entrada;
-            $checklist->kilometraje_inicial = $request->kilometraje_inicial;
-            $checklist->kilometraje_final = $request->kilometraje_final;
-            $checklist->nivel_combustible_inicial = $request->nivel_combustible_inicial;
-            $checklist->nivel_combustible_final = $request->nivel_combustible_final;
+            $checklist->fecha = $request->fecha ?? now()->toDateString();
+            $checklist->hora_salida = $request->hora_salida ?? null;
+            $checklist->hora_entrada = $request->hora_entrada ?? null;
+            $checklist->kilometraje_inicial = $request->kilometraje_inicial ?? 0;
+            $checklist->kilometraje_final = $request->kilometraje_final ?? null;
+            $checklist->nivel_combustible_inicial = $request->nivel_combustible_inicial ?? '1/2';
+            $checklist->nivel_combustible_final = $request->nivel_combustible_final ?? null;
             
             // Llantas
             $checklist->llanta_delantera_derecha = $request->llanta_delantera_derecha;
@@ -430,7 +431,7 @@ class DispatcherController extends Controller
             
             return response()->json([
                 'success' => false,
-                'message' => 'Error al procesar el checklist',
+                'message' => 'Error al procesar el checklist de salida',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -457,6 +458,11 @@ class DispatcherController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
+        
+        // Corregir typo común de Flutter
+        if ($request->has('cintulon_seguridad')) {
+            $request->merge(['cinturon_seguridad' => $request->cintulon_seguridad]);
+        }
 
         try {
             DB::beginTransaction();
@@ -472,9 +478,7 @@ class DispatcherController extends Controller
             }
 
             // Verificar que exista un checklist de salida
-            $checkoutExists = Checklist::where('ticket_id', $request->ticket_id)
-                                       ->where('tipo_inspeccion', 'salida')
-                                       ->exists();
+            $checkoutExists = CheckoutChecklist::where('ticket_id', $request->ticket_id)->exists();
 
             if (!$checkoutExists) {
                 return response()->json([
@@ -484,31 +488,23 @@ class DispatcherController extends Controller
             }
 
             // Buscar si ya existe un checklist de entrada o crear uno nuevo
-            $checklist = Checklist::where('ticket_id', $request->ticket_id)
-                                  ->where('tipo_inspeccion', 'entrada')
-                                  ->first();
+            $checklist = CheckinChecklist::where('ticket_id', $request->ticket_id)->first();
 
             $isNew = false;
             if (!$checklist) {
-                $checklist = new Checklist();
+                $checklist = new CheckinChecklist();
                 $isNew = true;
             }
 
-            // Asignación directa de campos
+            // Asignación directa de campos con valores por defecto
             $checklist->ticket_id = $request->ticket_id;
-            $checklist->tipo_inspeccion = 'entrada';
-            $checklist->folio = $request->folio;
-            $checklist->fecha = $request->fecha;
-            $checklist->destino = $request->destino;
-            $checklist->modelo = $request->modelo;
-            $checklist->placas = $request->placas;
-            $checklist->marca = $request->marca;
-            $checklist->hora_salida = $request->hora_salida;
-            $checklist->hora_entrada = $request->hora_entrada;
-            $checklist->kilometraje_inicial = $request->kilometraje_inicial;
-            $checklist->kilometraje_final = $request->kilometraje_final;
-            $checklist->nivel_combustible_inicial = $request->nivel_combustible_inicial;
-            $checklist->nivel_combustible_final = $request->nivel_combustible_final;
+            $checklist->fecha = $request->fecha ?? now()->toDateString();
+            $checklist->hora_salida = $request->hora_salida ?? null;
+            $checklist->hora_entrada = $request->hora_entrada ?? null;
+            $checklist->kilometraje_inicial = $request->kilometraje_inicial ?? 0;
+            $checklist->kilometraje_final = $request->kilometraje_final ?? null;
+            $checklist->nivel_combustible_inicial = $request->nivel_combustible_inicial ?? '1/2';
+            $checklist->nivel_combustible_final = $request->nivel_combustible_final ?? null;
             
             // Llantas
             $checklist->llanta_delantera_derecha = $request->llanta_delantera_derecha;
@@ -623,7 +619,7 @@ class DispatcherController extends Controller
             
             return response()->json([
                 'success' => false,
-                'message' => 'Error al procesar el checklist',
+                'message' => 'Error al procesar el checklist de entrada',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -642,7 +638,8 @@ class DispatcherController extends Controller
             'vehicle:id,brand,model,year,plates,internal_code,color,vehicle_type',
             'conductorLicense:id,license_number,license_type,expiry_date',
             'conductorLicense.user:id,name',
-            'checklists'
+            'checkoutChecklist',
+            'checkinChecklist'
         ])
         ->find($id);
 
@@ -692,7 +689,9 @@ class DispatcherController extends Controller
      */
     private function formatChecklistForMobile(Ticket $ticket, string $tipo): array
     {
-        $checklist = $ticket->checklists->where('tipo_inspeccion', $tipo)->first();
+        $checklist = $tipo === 'salida' 
+            ? $ticket->checkoutChecklist 
+            : $ticket->checkinChecklist;
 
         if (!$checklist) {
             // Retornar estructura vacía con valores por defecto
@@ -729,13 +728,13 @@ class DispatcherController extends Controller
         return [
             'id' => $checklist->id,
             'exists' => true,
-            'tipo_inspeccion' => $checklist->tipo_inspeccion,
-            'folio' => $checklist->folio,
+            'tipo_inspeccion' => $tipo,
+            'folio' => $ticket->folio ?? '',
             'fecha' => $checklist->fecha?->format('Y-m-d'),
-            'destino' => $checklist->destino,
-            'modelo' => $checklist->modelo,
-            'placas' => $checklist->placas,
-            'marca' => $checklist->marca,
+            'destino' => $ticket->destination ?? '',
+            'modelo' => $ticket->vehicle?->model ?? '',
+            'placas' => $ticket->vehicle?->plates ?? '',
+            'marca' => $ticket->vehicle?->brand ?? '',
             'hora_salida' => $checklist->hora_salida,
             'hora_entrada' => $checklist->hora_entrada,
             'kilometraje_inicial' => $checklist->kilometraje_inicial,

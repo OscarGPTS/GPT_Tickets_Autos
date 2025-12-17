@@ -159,7 +159,7 @@
             <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">✓ Completado</span>
         </div>
         <div class="mb-4 bg-orange-50 border border-orange-200 rounded p-3">
-            <strong class="text-orange-800">Folio:</strong> {{ $checklist->folio }}
+            <strong class="text-orange-800">Folio:</strong> {{ $checklist->ticket->folio ?? 'N/A' }}
         </div>
 
         @if($errors->any())
@@ -224,15 +224,15 @@
                 <tr>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Destino</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="text" value="{{ $checklist->destino }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
+                        <input type="text" value="{{ $checklist->ticket->destination ?? 'N/A' }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Modelo</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="text" value="{{ $checklist->modelo }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
+                        <input type="text" value="{{ $checklist->vehicle->model ?? 'N/A' }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Folio</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="text" value="{{ $checklist->folio }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
+                        <input type="text" value="{{ $checklist->ticket->folio ?? 'N/A' }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
                     </td>
                 </tr>
 
@@ -630,7 +630,7 @@
         </h3>
         <ul class="text-xs sm:text-sm text-orange-700 space-y-1">
             <li>• Este checklist fue completado el {{ $checklist->created_at->format('d/m/Y') }} a las {{ $checklist->created_at->format('H:i') }}</li>
-            <li>• Folio: <strong>{{ $checklist->folio }}</strong></li>
+            <li>• Folio: <strong>{{ $checklist->ticket->folio ?? 'N/A' }}</strong></li>
             @if($checkoutChecklist)
             <li>• Kilómetros recorridos: <strong>{{ number_format($checklist->kilometraje_final - $checkoutChecklist->kilometraje_inicial, 2) }} km</strong></li>
             @endif

@@ -93,19 +93,11 @@ class Ticket extends Model
     }
 
     /**
-     * Checklists (salida y entrada)
-     */
-    public function checklists(): HasMany
-    {
-        return $this->hasMany(Checklist::class);
-    }
-
-    /**
      * Checklist de salida
      */
     public function checkoutChecklist(): HasOne
     {
-        return $this->hasOne(Checklist::class)->where('tipo_inspeccion', 'salida');
+        return $this->hasOne(CheckoutChecklist::class);
     }
 
     /**
@@ -113,7 +105,7 @@ class Ticket extends Model
      */
     public function checkinChecklist(): HasOne
     {
-        return $this->hasOne(Checklist::class)->where('tipo_inspeccion', 'entrada');
+        return $this->hasOne(CheckinChecklist::class);
     }
 
     /**

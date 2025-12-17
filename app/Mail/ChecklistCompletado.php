@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use App\Models\Ticket;
-use App\Models\Checklist;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -22,7 +21,7 @@ class ChecklistCompletado extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(Ticket $ticket, Checklist $checklist, string $tipo)
+    public function __construct(Ticket $ticket, $checklist, string $tipo)
     {
         $this->ticket = $ticket;
         $this->checklist = $checklist;

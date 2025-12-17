@@ -6,13 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Checklist extends Model
+class CheckinChecklist extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'ticket_id',
-        'tipo_inspeccion',
         'fecha',
         'hora_salida',
         'hora_entrada',
@@ -182,7 +181,7 @@ class Checklist extends Model
     }
 
     /**
-     * Vehículo asociado al checklist (a través del ticket)
+     * Obtener el vehículo a través del ticket
      */
     public function getVehicleAttribute()
     {
@@ -190,46 +189,68 @@ class Checklist extends Model
     }
 
     /**
-     * Obtener los ítems con problemas (false)
+     * Verificar si un campo es un item de checklist (boolean)
      */
-    public function getProblemsAttribute(): array
+    public static function isChecklistItem(string $field): bool
     {
-        $problems = [];
+        $excludedFields = ['id', 'ticket_id', 'fecha', 'hora_salida', 'hora_entrada', 
+                          'kilometraje_inicial', 'kilometraje_final', 
+                          'nivel_combustible_inicial', 'nivel_combustible_final',
+                          'mantenimiento_preventivo', 'mantenimiento_correctivo',
+                          'condicion_carroceria_log', 'condicion_carroceria_imagen',
+                          'responsable_recibo_uso', 'responsable_entrega',
+                          'created_at', 'updated_at'];
         
-        foreach ($this->attributes as $key => $value) {
-            if ($this->isChecklistItem($key) && !$value) {
-                $problems[] = $this->formatFieldName($key);
+        return !in_array($field, $excludedFields);
+    }
+
+    /**
+     * Obtener array de campos que son items de checklist
+     */
+    public static function getChecklistFields(): array
+    {
+        $model = new static;
+        return array_filter($model->getFillable(), function($field) {
+            return static::isChecklistItem($field);
+        });
+    }
+
+    /**
+     * Contar items en buen estado
+     */
+    public function countGoodItems(): int
+    {
+        $count = 0;
+        foreach (static::getChecklistFields() as $field) {
+            if ($this->$field === true) {
+                $count++;
             }
         }
-        
-        return $problems;
+        return $count;
     }
 
     /**
-     * Verificar si un campo es un ítem del checklist
+     * Contar items en mal estado
      */
-    private function isChecklistItem(string $field): bool
+    public function countBadItems(): int
     {
-        $excludedFields = [
-            'id', 'ticket_id', 'tipo_inspeccion', 'fecha',
-            'hora_salida', 'hora_entrada', 'kilometraje_inicial', 'kilometraje_final',
-            'nivel_combustible_inicial', 'nivel_combustible_final',
-            'mantenimiento_preventivo', 'mantenimiento_correctivo',
-            'condicion_carroceria_log', 'condicion_carroceria_imagen',
-            'responsable_recibo_uso', 'responsable_entrega',
-            'created_at', 'updated_at'
-        ];
-        
-        return !in_array($field, $excludedFields) && 
-               isset($this->casts[$field]) && 
-               $this->casts[$field] === 'boolean';
+        $count = 0;
+        foreach (static::getChecklistFields() as $field) {
+            if ($this->$field === false) {
+                $count++;
+            }
+        }
+        return $count;
     }
 
     /**
-     * Formatear nombre de campo para lectura humana
+     * Obtener porcentaje de items en buen estado
      */
-    private function formatFieldName(string $field): string
+    public function getGoodPercentage(): float
     {
-        return ucwords(str_replace('_', ' ', $field));
+        $total = count(static::getChecklistFields());
+        if ($total === 0) return 0;
+        
+        return ($this->countGoodItems() / $total) * 100;
     }
 }
