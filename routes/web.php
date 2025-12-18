@@ -68,8 +68,10 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('checklists')->name('checklists.')->group(function () {
         Route::get('/{ticket}/checkout', [ChecklistController::class, 'checkoutForm'])->name('checkout');
         Route::post('/{ticket}/checkout', [ChecklistController::class, 'processCheckout'])->name('checkout.store');
+        Route::get('/{ticket}/checkout/view', [ChecklistController::class, 'viewCheckout'])->name('checkout.view');
         Route::get('/{ticket}/checkin', [ChecklistController::class, 'checkinForm'])->name('checkin');
         Route::post('/{ticket}/checkin', [ChecklistController::class, 'processCheckin'])->name('checkin.store');
+        Route::get('/{ticket}/checkin/view', [ChecklistController::class, 'viewCheckin'])->name('checkin.view');
     });
     
     /*

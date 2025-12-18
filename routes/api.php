@@ -34,3 +34,8 @@ Route::prefix('dispatcher')->group(function () {
     // Obtener detalle de un ticket específico
     Route::get('/ticket/{id}', [DispatcherController::class, 'getTicket']);
 });
+
+Route::prefix('user')->group(function () {
+    // Obtener tickets del usuario autenticado (paginados)
+    Route::post('/my-tickets', [DispatcherController::class, 'getUserTickets']);
+});

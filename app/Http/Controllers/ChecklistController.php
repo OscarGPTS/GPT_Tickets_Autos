@@ -300,4 +300,40 @@ class ChecklistController extends Controller
             Mail::to($encargado->email)->send(new ChecklistCompletado($ticket, $checklist, $tipo));
         }
     }
+
+    /**
+     * Ver checklist de checkout completado
+     */
+    public function viewCheckout(Ticket $ticket): View
+    {
+        $checkoutChecklist = $ticket->checkoutChecklist;
+        
+        if (!$checkoutChecklist) {
+            abort(404, 'No se encontró el checklist de salida para este ticket.');
+        }
+
+        return view('checklists.view-checkout', [
+            'ticket' => $ticket,
+            'checklist' => $checkoutChecklist
+        ]);
+    }
+
+    /**
+     * Ver checklist de checkin completado
+     */
+    public function viewCheckin(Ticket $ticket): View
+    {
+        $checkinChecklist = $ticket->checkinChecklist;
+        $checkoutChecklist = $ticket->checkoutChecklist;
+        
+        if (!$checkinChecklist) {
+            abort(404, 'No se encontró el checklist de entrada para este ticket.');
+        }
+
+        return view('checklists.view-checkin', [
+            'ticket' => $ticket,
+            'checklist' => $checkinChecklist,
+            'checkoutChecklist' => $checkoutChecklist
+        ]);
+    }
 }

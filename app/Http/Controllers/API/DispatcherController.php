@@ -402,9 +402,32 @@ class DispatcherController extends Controller
             $checklist->mantenimiento_preventivo = $request->mantenimiento_preventivo;
             $checklist->mantenimiento_correctivo = $request->mantenimiento_correctivo;
             $checklist->condicion_carroceria_log = $request->condicion_carroceria_log;
-            $checklist->condicion_carroceria_imagen = $request->condicion_carroceria_imagen;
             $checklist->responsable_recibo_uso = $request->responsable_recibo_uso;
             $checklist->responsable_entrega = $request->responsable_entrega;
+
+            // Procesar imagen base64 si viene
+            $imagePath = null;
+            if ($request->has('condicion_carroceria_imagen') && !empty($request->condicion_carroceria_imagen)) {
+                $imageData = $request->condicion_carroceria_imagen;
+                
+                // Decodificar la imagen base64
+                if (preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) {
+                    $imageData = substr($imageData, strpos($imageData, ',') + 1);
+                    $type = strtolower($type[1]); // jpg, png, gif
+                    
+                    $imageData = base64_decode($imageData);
+                    
+                    if ($imageData !== false) {
+                        $fileName = 'checkout_' . $ticket->id . '_' . time() . '.' . $type;
+                        $path = 'checklists/' . $fileName;
+                        
+                        \Storage::disk('public')->put($path, $imageData);
+                        $imagePath = $path;
+                    }
+                }
+            }
+            
+            $checklist->condicion_carroceria_imagen = $imagePath;
 
             $checklist->save();
 
@@ -590,9 +613,32 @@ class DispatcherController extends Controller
             $checklist->mantenimiento_preventivo = $request->mantenimiento_preventivo;
             $checklist->mantenimiento_correctivo = $request->mantenimiento_correctivo;
             $checklist->condicion_carroceria_log = $request->condicion_carroceria_log;
-            $checklist->condicion_carroceria_imagen = $request->condicion_carroceria_imagen;
             $checklist->responsable_recibo_uso = $request->responsable_recibo_uso;
             $checklist->responsable_entrega = $request->responsable_entrega;
+
+            // Procesar imagen base64 si viene
+            $imagePath = null;
+            if ($request->has('condicion_carroceria_imagen') && !empty($request->condicion_carroceria_imagen)) {
+                $imageData = $request->condicion_carroceria_imagen;
+                
+                // Decodificar la imagen base64
+                if (preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) {
+                    $imageData = substr($imageData, strpos($imageData, ',') + 1);
+                    $type = strtolower($type[1]); // jpg, png, gif
+                    
+                    $imageData = base64_decode($imageData);
+                    
+                    if ($imageData !== false) {
+                        $fileName = 'checkin_' . $ticket->id . '_' . time() . '.' . $type;
+                        $path = 'checklists/' . $fileName;
+                        
+                        \Storage::disk('public')->put($path, $imageData);
+                        $imagePath = $path;
+                    }
+                }
+            }
+            
+            $checklist->condicion_carroceria_imagen = $imagePath;
 
             $checklist->save();
 
@@ -957,5 +1003,160 @@ class DispatcherController extends Controller
             'responsable_recibo_uso' => '',
             'responsable_entrega' => '',
         ];
+    }
+
+    /**
+     * Obtener tickets del usuario autenticado (paginados)
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUserTickets(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'page' => 'nullable|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Datos de validación incorrectos',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Buscar usuario por correo
+        $user = User::where('email', $request->email)
+                    ->where('is_active', true)
+                    ->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no encontrado o inactivo'
+            ], 404);
+        }
+
+        // Obtener tickets del usuario con paginación
+        $tickets = Ticket::with([
+            'user:id,name,email,phone',
+            'vehicle:id,brand,model,year,plates,internal_code,color,vehicle_type,current_mileage',
+            'dispatcher:id,name,email,phone',
+            'approver:id,name',
+            'conductorLicense:id,license_number,license_type,expiry_date',
+            'conductorLicense.user:id,name',
+            'checkoutChecklist',
+            'checkinChecklist'
+        ])
+        ->where('user_id', $user->id)
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+
+        // Formatear los tickets
+        $formattedTickets = $tickets->getCollection()->map(function ($ticket) {
+            return [
+                'id' => $ticket->id,
+                'folio' => $ticket->folio ?? '',
+                'requisicion' => $ticket->requisicion ?? '',
+                'status' => $ticket->status,
+                'destination' => $ticket->destination ?? '',
+                'cliente' => $ticket->cliente ?? '',
+                'purpose' => $ticket->purpose ?? '',
+                'passenger_count' => $ticket->passenger_count ?? 1,
+                'additional_notes' => $ticket->additional_notes ?? '',
+                'requested_date' => $ticket->requested_date?->format('Y-m-d') ?? '',
+                'requested_time_start' => $ticket->requested_time_start ?? '',
+                'requested_time_end' => $ticket->requested_time_end ?? '',
+                'conductor_name' => $ticket->conductor_name ?? '',
+                'conductor_phone' => $ticket->conductor_phone ?? '',
+                
+                // Timestamps importantes
+                'created_at' => $ticket->created_at?->format('Y-m-d H:i:s') ?? null,
+                'approved_at' => $ticket->approved_at?->format('Y-m-d H:i:s') ?? null,
+                'rejected_at' => $ticket->rejected_at?->format('Y-m-d H:i:s') ?? null,
+                'checkout_at' => $ticket->checkout_at?->format('Y-m-d H:i:s') ?? null,
+                'checkin_at' => $ticket->checkin_at?->format('Y-m-d H:i:s') ?? null,
+                'completed_at' => $ticket->completed_at?->format('Y-m-d H:i:s') ?? null,
+                'rejection_reason' => $ticket->rejection_reason ?? '',
+                
+                // Calificaciones
+                'service_rating' => $ticket->service_rating ?? null,
+                'vehicle_rating' => $ticket->vehicle_rating ?? null,
+                'rating_comments' => $ticket->rating_comments ?? '',
+                
+                // Usuario solicitante (el mismo que hace la petición)
+                'user' => $ticket->user ? [
+                    'id' => $ticket->user->id,
+                    'name' => $ticket->user->name ?? '',
+                    'email' => $ticket->user->email ?? '',
+                    'phone' => $ticket->user->phone ?? '',
+                ] : null,
+                
+                // Vehículo asignado
+                'vehicle' => $ticket->vehicle ? [
+                    'id' => $ticket->vehicle->id,
+                    'brand' => $ticket->vehicle->brand ?? '',
+                    'model' => $ticket->vehicle->model ?? '',
+                    'year' => $ticket->vehicle->year ?? 0,
+                    'plates' => $ticket->vehicle->plates ?? '',
+                    'internal_code' => $ticket->vehicle->internal_code ?? '',
+                    'color' => $ticket->vehicle->color ?? '',
+                    'vehicle_type' => $ticket->vehicle->vehicle_type ?? '',
+                    'current_mileage' => $ticket->vehicle->current_mileage ?? 0,
+                ] : null,
+                
+                // Despachador asignado
+                'dispatcher' => $ticket->dispatcher ? [
+                    'id' => $ticket->dispatcher->id,
+                    'name' => $ticket->dispatcher->name ?? '',
+                    'email' => $ticket->dispatcher->email ?? '',
+                    'phone' => $ticket->dispatcher->phone ?? '',
+                ] : null,
+                
+                // Aprobador
+                'approver' => $ticket->approver ? [
+                    'id' => $ticket->approver->id,
+                    'name' => $ticket->approver->name ?? '',
+                ] : null,
+                
+                // Licencia del conductor
+                'conductor_license' => $ticket->conductorLicense ? [
+                    'id' => $ticket->conductorLicense->id,
+                    'license_number' => $ticket->conductorLicense->license_number ?? '',
+                    'license_type' => $ticket->conductorLicense->license_type ?? '',
+                    'expiry_date' => $ticket->conductorLicense->expiry_date?->format('Y-m-d') ?? '',
+                    'full_name' => $ticket->conductorLicense->user?->name ?? $ticket->conductor_name ?? '',
+                ] : null,
+                
+                // Checklists
+                'checkout_checklist' => $this->formatChecklistForMobile($ticket, 'salida'),
+                'checkin_checklist' => $this->formatChecklistForMobile($ticket, 'entrada'),
+                
+                // Estados booleanos para la UI
+                'can_checkout' => $ticket->status === 'aprobado',
+                'can_checkin' => $ticket->status === 'en_curso',
+                'can_rate' => $ticket->status === 'completado' && !$ticket->service_rating,
+                'has_checkout' => $ticket->checkoutChecklist !== null,
+                'has_checkin' => $ticket->checkinChecklist !== null,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tickets obtenidos correctamente',
+            'data' => [
+                'tickets' => $formattedTickets,
+                'pagination' => [
+                    'total' => $tickets->total(),
+                    'per_page' => $tickets->perPage(),
+                    'current_page' => $tickets->currentPage(),
+                    'last_page' => $tickets->lastPage(),
+                    'from' => $tickets->firstItem(),
+                    'to' => $tickets->lastItem(),
+                    'has_more_pages' => $tickets->hasMorePages(),
+                ]
+            ]
+        ], 200);
     }
 }

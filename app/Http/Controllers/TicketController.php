@@ -297,18 +297,16 @@ class TicketController extends Controller
 
         $validated = $request->validate([
             'service_rating' => 'required|integer|min:1|max:5',
-            'vehicle_rating' => 'required|integer|min:1|max:5',
-            'rating_comments' => 'nullable|string',
+            'rating_comments' => 'nullable|string|max:255',
         ]);
 
         $ticket->update([
-            ...$validated,
-            'status' => 'completado',
-            'completed_at' => now(),
+            'service_rating' => $validated['service_rating'],
+            'rating_comments' => $validated['rating_comments'] ?? null,
         ]);
 
         return redirect()->route('tickets.show', $ticket)
-            ->with('success', 'Gracias por tu calificación.');
+            ->with('success', '¡Gracias por tu calificación! Tu opinión nos ayuda a mejorar.');
     }
 
     /**

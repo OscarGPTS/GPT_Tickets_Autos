@@ -200,17 +200,6 @@
                         <strong>Combustible Inicial:</strong> {{ $checkoutChecklist->nivel_combustible_inicial }}
                     </div>
                 </div>
-                
-                @if($checkoutChecklist->condicion_carroceria_imagen)
-                <div class="mt-3">
-                    <strong class="text-blue-800">Imagen del Checkout (Condición al Salir):</strong>
-                    <div class="mt-2 border rounded p-2 bg-white">
-                        <img src="{{ asset('storage/' . $checkoutChecklist->condicion_carroceria_imagen) }}" 
-                             alt="Condición del vehículo al salir" 
-                             class="max-w-full h-auto rounded">
-                    </div>
-                </div>
-                @endif
             </div>
             @endif
 

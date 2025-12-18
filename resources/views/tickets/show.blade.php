@@ -190,19 +190,51 @@
             <!-- Calificación -->
             @if($ticket->service_rating)
             <div class="mb-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Calificación del Servicio</h2>
-                <div>
-                    <div class="flex items-center mb-2">
-                        <span class="text-2xl font-bold text-yellow-500 mr-2">{{ $ticket->service_rating }}/5</span>
-                        <div class="flex">
-                            @for($i = 1; $i <= 5; $i++)
-                                <i class="fas fa-star {{ $i <= $ticket->service_rating ? 'text-yellow-400' : 'text-gray-300' }}"></i>
-                            @endfor
+                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">
+                    <i class="fas fa-star text-amber-500"></i>
+                    Calificación del Servicio
+                </h2>
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl p-5 border-2 border-amber-200 shadow-sm">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-white rounded-full px-4 py-2 shadow-md">
+                                <span class="text-3xl font-bold text-amber-600">{{ $ticket->service_rating }}</span>
+                                <span class="text-gray-500 text-lg">/5</span>
+                            </div>
+                            <div class="flex gap-1 text-2xl">
+                                @for($i = 1; $i <= 5; $i++)
+                                    <i class="fas fa-star {{ $i <= $ticket->service_rating ? 'text-amber-400' : 'text-gray-300' }}"></i>
+                                @endfor
+                            </div>
+                        </div>
+                        @php
+                            $ratingLabels = [
+                                1 => ['text' => 'Insatisfecho', 'color' => 'text-red-600', 'emoji' => '😞'],
+                                2 => ['text' => 'Regular', 'color' => 'text-orange-600', 'emoji' => '😐'],
+                                3 => ['text' => 'Bueno', 'color' => 'text-yellow-600', 'emoji' => '🙂'],
+                                4 => ['text' => 'Muy Bueno', 'color' => 'text-lime-600', 'emoji' => '😊'],
+                                5 => ['text' => 'Excelente', 'color' => 'text-green-600', 'emoji' => '🌟'],
+                            ];
+                            $ratingData = $ratingLabels[$ticket->service_rating] ?? ['text' => '', 'color' => '', 'emoji' => ''];
+                        @endphp
+                        <div class="text-right">
+                            <span class="text-2xl">{{ $ratingData['emoji'] }}</span>
+                            <p class="text-lg font-semibold {{ $ratingData['color'] }}">{{ $ratingData['text'] }}</p>
                         </div>
                     </div>
                     @if($ticket->rating_comments)
-                    <p class="text-gray-700 mt-2">{{ $ticket->rating_comments }}</p>
+                    <div class="bg-white rounded-lg p-4 mt-3 border border-amber-200">
+                        <p class="text-sm font-semibold text-gray-700 mb-1 flex items-center gap-2">
+                            <i class="fas fa-comment-dots text-amber-500"></i>
+                            Comentarios:
+                        </p>
+                        <p class="text-gray-700 text-sm leading-relaxed">{{ $ticket->rating_comments }}</p>
+                    </div>
                     @endif
+                    <div class="mt-3 text-xs text-gray-500 flex items-center gap-1">
+                        <i class="fas fa-clock"></i>
+                        <span>Calificado el {{ $ticket->updated_at->format('d/m/Y \a \l\a\s H:i') }}</span>
+                    </div>
                 </div>
             </div>
             @endif
@@ -309,14 +341,136 @@
                 @endif
 
                 @if($ticket->status === 'completado' && $ticket->user_id === auth()->id() && !$ticket->service_rating)
-                <a href="{{ route('tickets.rate', $ticket) }}" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
+                <button onclick="openRatingModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 shadow-lg">
                     <i class="fas fa-star mr-2"></i>Calificar Servicio
-                </a>
+                </button>
                 @endif
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal de Calificación -->
+@if($ticket->status === 'completado' && $ticket->user_id === auth()->id() && !$ticket->service_rating)
+<div id="ratingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4 transition-opacity duration-300">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full transform transition-all duration-300 scale-95" id="modalContent">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-4 rounded-t-2xl">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="bg-white bg-opacity-20 rounded-full p-2">
+                        <i class="fas fa-star text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Calificar Servicio</h3>
+                        <p class="text-amber-100 text-sm">Solicitud #{{ $ticket->folio }}</p>
+                    </div>
+                </div>
+                <button onclick="closeRatingModal()" class="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition duration-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <form action="{{ route('tickets.rate.store', $ticket) }}" method="POST" id="ratingForm">
+            @csrf
+            <div class="p-6 space-y-6">
+                <!-- Resumen del Viaje -->
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
+                    <h4 class="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                        <i class="fas fa-route text-amber-500"></i>
+                        Resumen del Viaje
+                    </h4>
+                    <div class="text-sm text-gray-600 space-y-2">
+                        <div class="flex items-start gap-2">
+                            <i class="fas fa-map-marker-alt text-gray-400 mt-1"></i>
+                            <span><strong>Destino:</strong> {{ $ticket->destination }}</span>
+                        </div>
+                        @if($ticket->vehicle)
+                        <div class="flex items-start gap-2">
+                            <i class="fas fa-car text-gray-400 mt-1"></i>
+                            <span><strong>Vehículo:</strong> {{ $ticket->vehicle->brand }} {{ $ticket->vehicle->model }} ({{ $ticket->vehicle->plates }})</span>
+                        </div>
+                        @endif
+                        @if($ticket->checkout_at)
+                        <div class="flex items-start gap-2">
+                            <i class="fas fa-calendar-check text-gray-400 mt-1"></i>
+                            <span><strong>Fecha:</strong> {{ $ticket->checkout_at->format('d/m/Y') }}</span>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Calificación con Estrellas -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        ¿Cómo calificarías el servicio? <span class="text-red-500">*</span>
+                    </label>
+                    <div class="flex flex-col items-center gap-3 bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
+                        <div id="starRating" class="flex gap-2 text-5xl cursor-pointer select-none">
+                            <i class="far fa-star star text-gray-300 hover:text-amber-400 transition-all duration-200" data-rating="1"></i>
+                            <i class="far fa-star star text-gray-300 hover:text-amber-400 transition-all duration-200" data-rating="2"></i>
+                            <i class="far fa-star star text-gray-300 hover:text-amber-400 transition-all duration-200" data-rating="3"></i>
+                            <i class="far fa-star star text-gray-300 hover:text-amber-400 transition-all duration-200" data-rating="4"></i>
+                            <i class="far fa-star star text-gray-300 hover:text-amber-400 transition-all duration-200" data-rating="5"></i>
+                        </div>
+                        <div id="ratingText" class="text-lg font-medium text-gray-600 min-h-[28px]"></div>
+                    </div>
+                    <input type="hidden" name="service_rating" id="ratingInput" value="0" required>
+                    <p id="ratingError" class="mt-2 text-sm text-red-600 hidden">
+                        <i class="fas fa-exclamation-circle mr-1"></i>Por favor selecciona una calificación
+                    </p>
+                </div>
+
+                <!-- Comentarios -->
+                <div>
+                    <label for="ratingComments" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Comentarios Adicionales <span class="text-gray-400 text-xs font-normal">(Opcional)</span>
+                    </label>
+                    <textarea id="ratingComments" 
+                              name="rating_comments" 
+                              rows="4"
+                              maxlength="255"
+                              class="w-full border-gray-300 rounded-lg shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition duration-200 resize-none"
+                              placeholder="Cuéntanos sobre tu experiencia: ¿Qué te gustó? ¿Qué podríamos mejorar?"></textarea>
+                    <div class="flex justify-between items-center mt-1">
+                        <p class="text-xs text-gray-500">
+                            <i class="fas fa-info-circle mr-1"></i>Máximo 255 caracteres
+                        </p>
+                        <p class="text-xs text-gray-500">
+                            <span id="charCount">0</span>/255
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Info adicional -->
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                    <div class="flex items-start gap-3">
+                        <i class="fas fa-lightbulb text-blue-500 mt-1"></i>
+                        <div>
+                            <p class="text-sm font-medium text-blue-800">Tu opinión es importante</p>
+                            <p class="text-xs text-blue-700 mt-1">
+                                Nos ayuda a mejorar continuamente nuestro servicio y garantizar la mejor experiencia para todos.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-4 bg-gray-50 rounded-b-2xl flex justify-end gap-3 border-t border-gray-200">
+                <button type="button" onclick="closeRatingModal()" class="px-6 py-2.5 bg-white border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition duration-200">
+                    <i class="fas fa-times mr-2"></i>Cancelar
+                </button>
+                <button type="submit" id="submitRatingBtn" disabled class="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-semibold rounded-lg hover:from-amber-600 hover:to-amber-700 transition duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-paper-plane mr-2"></i>Enviar Calificación
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
 
 <script>
 function handleReject(event) {
@@ -330,5 +484,136 @@ function handleReject(event) {
     }
     return false;
 }
+
+// Modal de Calificación
+function openRatingModal() {
+    const modal = document.getElementById('ratingModal');
+    const modalContent = document.getElementById('modalContent');
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        modal.classList.add('opacity-100');
+        modalContent.classList.remove('scale-95');
+        modalContent.classList.add('scale-100');
+    }, 10);
+    document.body.style.overflow = 'hidden';
+}
+
+function closeRatingModal() {
+    const modal = document.getElementById('ratingModal');
+    const modalContent = document.getElementById('modalContent');
+    modal.classList.remove('opacity-100');
+    modalContent.classList.remove('scale-100');
+    modalContent.classList.add('scale-95');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }, 300);
+}
+
+// Sistema de calificación por estrellas
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('#starRating .star');
+    const ratingInput = document.getElementById('ratingInput');
+    const ratingText = document.getElementById('ratingText');
+    const submitBtn = document.getElementById('submitRatingBtn');
+    const ratingError = document.getElementById('ratingError');
+    const commentsTextarea = document.getElementById('ratingComments');
+    const charCount = document.getElementById('charCount');
+    
+    const ratingMessages = {
+        1: '😞 Insatisfecho',
+        2: '😐 Regular',
+        3: '🙂 Bueno',
+        4: '😊 Muy Bueno',
+        5: '🌟 ¡Excelente!'
+    };
+    
+    const ratingColors = {
+        1: 'text-red-500',
+        2: 'text-orange-500',
+        3: 'text-yellow-500',
+        4: 'text-lime-500',
+        5: 'text-green-500'
+    };
+    
+    let currentRating = 0;
+    
+    // Hover effect
+    stars.forEach(star => {
+        star.addEventListener('mouseenter', function() {
+            const rating = parseInt(this.dataset.rating);
+            highlightStars(rating);
+        });
+        
+        star.addEventListener('mouseleave', function() {
+            highlightStars(currentRating);
+        });
+        
+        star.addEventListener('click', function() {
+            currentRating = parseInt(this.dataset.rating);
+            ratingInput.value = currentRating;
+            highlightStars(currentRating);
+            updateRatingText(currentRating);
+            submitBtn.disabled = false;
+            ratingError.classList.add('hidden');
+        });
+    });
+    
+    function highlightStars(rating) {
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.remove('far', 'text-gray-300');
+                star.classList.add('fas', 'text-amber-400');
+            } else {
+                star.classList.remove('fas', 'text-amber-400');
+                star.classList.add('far', 'text-gray-300');
+            }
+        });
+    }
+    
+    function updateRatingText(rating) {
+        ratingText.textContent = ratingMessages[rating] || '';
+        ratingText.className = 'text-lg font-medium min-h-[28px] ' + (ratingColors[rating] || 'text-gray-600');
+    }
+    
+    // Contador de caracteres
+    if (commentsTextarea && charCount) {
+        commentsTextarea.addEventListener('input', function() {
+            charCount.textContent = this.value.length;
+        });
+    }
+    
+    // Validación del formulario
+    const form = document.getElementById('ratingForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (currentRating === 0) {
+                e.preventDefault();
+                ratingError.classList.remove('hidden');
+                return false;
+            }
+        });
+    }
+    
+    // Cerrar modal con ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('ratingModal');
+            if (modal && !modal.classList.contains('hidden')) {
+                closeRatingModal();
+            }
+        }
+    });
+    
+    // Cerrar modal al hacer click fuera
+    const modal = document.getElementById('ratingModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeRatingModal();
+            }
+        });
+    }
+});
 </script>
 @endsection
