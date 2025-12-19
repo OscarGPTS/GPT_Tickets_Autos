@@ -107,7 +107,7 @@ return new class extends Migration
             // OBSERVACIONES Y FIRMAS
             $table->text('mantenimiento_preventivo')->nullable();
             $table->text('mantenimiento_correctivo')->nullable();
-            $table->json('condicion_carroceria_log')->nullable(); // Para el esquema gráfico de daños
+            $table->text('condicion_carroceria_log')->nullable();
             $table->string('condicion_carroceria_imagen')->nullable();
             $table->string('responsable_recibo_uso')->nullable();
             $table->string('responsable_entrega')->nullable();

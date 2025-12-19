@@ -185,6 +185,24 @@
             <div class="overflow-x-auto overflow-y-visible -mx-3 sm:mx-0 table-scroll-container relative rounded-lg shadow-sm">
             <table class="w-full mb-6 border border-black rounded-lg text-xs sm:text-sm" style="min-width: 800px;">
                 
+
+                <tr>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Destino</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="text" name="destino" value="{{ $ticket->destination }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
+                    </td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Modelo</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="text" name="modelo" value="{{ $ticket->vehicle->model }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
+                    </td>
+
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Folio</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="text" name="folio" value="{{ $ticket->folio  }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
+                    </td>
+                </tr>
+
+
                 <tr>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Hora de salida</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
@@ -194,31 +212,34 @@
                     <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="time" name="hora_entrada" value="{{ old('hora_entrada', now()->format('H:i')) }}" class="w-full border-gray-300 rounded table-input" required>
                     </td>
-                </tr>
-
-                <tr>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Fecha</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="date" name="fecha" value="{{ old('fecha', now()->format('Y-m-d')) }}" class="w-full border-gray-300 rounded table-input" required>
                     </td>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje inicial (checkout)</td>
+                </tr>
+
+                <tr>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje Inicial</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="number" step="0.01" name="kilometraje_inicial" value="{{ old('kilometraje_inicial', $checkoutChecklist->kilometraje_inicial ?? '') }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
                     </td>
-                </tr>
 
-                <tr>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Nivel combustible inicial (checkout)</td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Nivel de combustible Inicial</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="text" name="nivel_combustible_inicial" value="{{ old('nivel_combustible_inicial', $checkoutChecklist->nivel_combustible_inicial ?? 'N/A') }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
                     </td>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje final</td>
+
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Placas</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="number" step="0.01" name="kilometraje_final" value="{{ old('kilometraje_final') }}" class="w-full border-gray-300 rounded table-input" required>
+                        <input type="text" name="placas" value="{{ $ticket->vehicle->plates }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
                     </td>
                 </tr>
 
                 <tr>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje Final</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="number" step="0.01" name="kilometraje_final" value="{{ old('kilometraje_final') }}" class="w-full border-gray-300 rounded table-input" required>
+                    </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Nivel de combustible final</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
                         <select name="nivel_combustible_final" class="w-full border-gray-300 rounded table-input" required>
@@ -228,6 +249,10 @@
                             <option value="3/4" {{ old('nivel_combustible_final') == '3/4' ? 'selected' : '' }}>3/4</option>
                             <option value="Lleno" {{ old('nivel_combustible_final') == 'Lleno' ? 'selected' : '' }}>Lleno</option>
                         </select>
+                    </td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Marca</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="text" name="marca" value="{{ $ticket->vehicle->brand }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
                     </td>
                 </tr>
 
@@ -252,131 +277,131 @@
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text">Delantera derecha</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_delantera_derecha" value="1" {{ old('llanta_delantera_derecha', $checkoutData->llanta_delantera_derecha ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_delantera_derecha" value="0" {{ old('llanta_delantera_derecha', $checkoutData->llanta_delantera_derecha ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_delantera_derecha" value="1" {{ old('llanta_delantera_derecha', $checkoutData->llanta_delantera_derecha ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_delantera_derecha" value="0" {{ old('llanta_delantera_derecha', $checkoutData->llanta_delantera_derecha ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Parabrisas</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="parabrisas" value="1" {{ old('parabrisas', $checkoutData->parabrisas ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="parabrisas" value="0" {{ old('parabrisas', $checkoutData->parabrisas ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="parabrisas" value="1" {{ old('parabrisas', $checkoutData->parabrisas ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="parabrisas" value="0" {{ old('parabrisas', $checkoutData->parabrisas ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Tablero Indicadores</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="tablero_indicadores" value="1" {{ old('tablero_indicadores', $checkoutData->tablero_indicadores ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="tablero_indicadores" value="0" {{ old('tablero_indicadores', $checkoutData->tablero_indicadores ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="tablero_indicadores" value="1" {{ old('tablero_indicadores', $checkoutData->tablero_indicadores ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="tablero_indicadores" value="0" {{ old('tablero_indicadores', $checkoutData->tablero_indicadores ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Nivel aceite motor</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="nivel_aceite_motor" value="1" {{ old('nivel_aceite_motor', $checkoutData->nivel_aceite_motor ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="nivel_aceite_motor" value="0" {{ old('nivel_aceite_motor', $checkoutData->nivel_aceite_motor ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="nivel_aceite_motor" value="1" {{ old('nivel_aceite_motor', $checkoutData->nivel_aceite_motor ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="nivel_aceite_motor" value="0" {{ old('nivel_aceite_motor', $checkoutData->nivel_aceite_motor ?? 1) == 0 ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text">Delantera izquierda</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_delantera_izquierda" value="1" {{ old('llanta_delantera_izquierda', $checkoutData->llanta_delantera_izquierda ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_delantera_izquierda" value="0" {{ old('llanta_delantera_izquierda', $checkoutData->llanta_delantera_izquierda ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_delantera_izquierda" value="1" {{ old('llanta_delantera_izquierda', $checkoutData->llanta_delantera_izquierda ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_delantera_izquierda" value="0" {{ old('llanta_delantera_izquierda', $checkoutData->llanta_delantera_izquierda ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Cofre</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="cofre" value="1" {{ old('cofre', $checkoutData->cofre ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="cofre" value="0" {{ old('cofre', $checkoutData->cofre ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="cofre" value="1" {{ old('cofre', $checkoutData->cofre ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="cofre" value="0" {{ old('cofre', $checkoutData->cofre ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Switch de encendido</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="switch_encendido" value="1" {{ old('switch_encendido', $checkoutData->switch_encendido ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="switch_encendido" value="0" {{ old('switch_encendido', $checkoutData->switch_encendido ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="switch_encendido" value="1" {{ old('switch_encendido', $checkoutData->switch_encendido ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="switch_encendido" value="0" {{ old('switch_encendido', $checkoutData->switch_encendido ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Nivel anticongelante</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="nivel_anticongelante" value="1" {{ old('nivel_anticongelante', $checkoutData->nivel_anticongelante ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="nivel_anticongelante" value="0" {{ old('nivel_anticongelante', $checkoutData->nivel_anticongelante ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="nivel_anticongelante" value="1" {{ old('nivel_anticongelante', $checkoutData->nivel_anticongelante ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="nivel_anticongelante" value="0" {{ old('nivel_anticongelante', $checkoutData->nivel_anticongelante ?? 1) == 0 ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text">Vida</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_delantera_vida" value="1" {{ old('llanta_delantera_vida', $checkoutData->llanta_delantera_vida ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_delantera_vida" value="0" {{ old('llanta_delantera_vida', $checkoutData->llanta_delantera_vida ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_delantera_vida" value="1" {{ old('llanta_delantera_vida', $checkoutData->llanta_delantera_vida ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_delantera_vida" value="0" {{ old('llanta_delantera_vida', $checkoutData->llanta_delantera_vida ?? 1) == 0 ? 'checked' : '' }}></td>
                    
                     <td class="border border-gray-200 table-cell-text">Parrilla</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="parrilla" value="1" {{ old('parrilla', $checkoutData->parrilla ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="parrilla" value="0" {{ old('parrilla', $checkoutData->parrilla ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="parrilla" value="1" {{ old('parrilla', $checkoutData->parrilla ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="parrilla" value="0" {{ old('parrilla', $checkoutData->parrilla ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Controles A/C</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="controles_ac" value="1" {{ old('controles_ac', $checkoutData->controles_ac ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="controles_ac" value="0" {{ old('controles_ac', $checkoutData->controles_ac ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="controles_ac" value="1" {{ old('controles_ac', $checkoutData->controles_ac ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="controles_ac" value="0" {{ old('controles_ac', $checkoutData->controles_ac ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Nivel líquido frenos</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="nivel_liquido_frenos" value="1" {{ old('nivel_liquido_frenos', $checkoutData->nivel_liquido_frenos ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="nivel_liquido_frenos" value="0" {{ old('nivel_liquido_frenos', $checkoutData->nivel_liquido_frenos ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="nivel_liquido_frenos" value="1" {{ old('nivel_liquido_frenos', $checkoutData->nivel_liquido_frenos ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="nivel_liquido_frenos" value="0" {{ old('nivel_liquido_frenos', $checkoutData->nivel_liquido_frenos ?? 1) == 0 ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                      <td class="border border-gray-200 table-cell-text">Trasera derecha</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_trasera_derecha" value="1" {{ old('llanta_trasera_derecha', $checkoutData->llanta_trasera_derecha ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_trasera_derecha" value="0" {{ old('llanta_trasera_derecha', $checkoutData->llanta_trasera_derecha ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_trasera_derecha" value="1" {{ old('llanta_trasera_derecha', $checkoutData->llanta_trasera_derecha ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_trasera_derecha" value="0" {{ old('llanta_trasera_derecha', $checkoutData->llanta_trasera_derecha ?? 1) == 0 ? 'checked' : '' }}></td>
 
                     
                     <td class="border border-gray-200 table-cell-text">Defensas</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="defensas" value="1" {{ old('defensas', $checkoutData->defensas ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="defensas" value="0" {{ old('defensas', $checkoutData->defensas ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="defensas" value="1" {{ old('defensas', $checkoutData->defensas ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="defensas" value="0" {{ old('defensas', $checkoutData->defensas ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Defroster</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="defroster" value="1" {{ old('defroster', $checkoutData->defroster ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="defroster" value="0" {{ old('defroster', $checkoutData->defroster ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="defroster" value="1" {{ old('defroster', $checkoutData->defroster ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="defroster" value="0" {{ old('defroster', $checkoutData->defroster ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Batería</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="bateria" value="1" {{ old('bateria', $checkoutData->bateria ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="bateria" value="0" {{ old('bateria', $checkoutData->bateria ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="bateria" value="1" {{ old('bateria', $checkoutData->bateria ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="bateria" value="0" {{ old('bateria', $checkoutData->bateria ?? 1) == 0 ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text">Trasera izquierda</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_trasera_izquierda" value="1" {{ old('llanta_trasera_izquierda', $checkoutData->llanta_trasera_izquierda ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_trasera_izquierda" value="0" {{ old('llanta_trasera_izquierda', $checkoutData->llanta_trasera_izquierda ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_trasera_izquierda" value="1" {{ old('llanta_trasera_izquierda', $checkoutData->llanta_trasera_izquierda ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_trasera_izquierda" value="0" {{ old('llanta_trasera_izquierda', $checkoutData->llanta_trasera_izquierda ?? 1) == 0 ? 'checked' : '' }}></td>
 
                     
                     <td class="border border-gray-200 table-cell-text">Molduras</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="molduras" value="1" {{ old('molduras', $checkoutData->molduras ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="molduras" value="0" {{ old('molduras', $checkoutData->molduras ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="molduras" value="1" {{ old('molduras', $checkoutData->molduras ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="molduras" value="0" {{ old('molduras', $checkoutData->molduras ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Radio</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="radio" value="1" {{ old('radio', $checkoutData->radio ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="radio" value="0" {{ old('radio', $checkoutData->radio ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="radio" value="1" {{ old('radio', $checkoutData->radio ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="radio" value="0" {{ old('radio', $checkoutData->radio ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Bayoneta aceite motor</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="bayoneta_aceite_motor" value="1" {{ old('bayoneta_aceite_motor', $checkoutData->bayoneta_aceite_motor ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="bayoneta_aceite_motor" value="0" {{ old('bayoneta_aceite_motor', $checkoutData->bayoneta_aceite_motor ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="bayoneta_aceite_motor" value="1" {{ old('bayoneta_aceite_motor', $checkoutData->bayoneta_aceite_motor ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="bayoneta_aceite_motor" value="0" {{ old('bayoneta_aceite_motor', $checkoutData->bayoneta_aceite_motor ?? 1) == 0 ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
 
                     <td class="border border-gray-200 table-cell-text">Vida</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_trasera_vida" value="1" {{ old('llanta_trasera_vida', $checkoutData->llanta_trasera_vida ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_trasera_vida" value="0" {{ old('llanta_trasera_vida', $checkoutData->llanta_trasera_vida ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_trasera_vida" value="1" {{ old('llanta_trasera_vida', $checkoutData->llanta_trasera_vida ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_trasera_vida" value="0" {{ old('llanta_trasera_vida', $checkoutData->llanta_trasera_vida ?? 1) == 0 ? 'checked' : '' }}></td>
                     
                     <td class="border border-gray-200 table-cell-text">Placa</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="placa" value="1" {{ old('placa', $checkoutData->placa ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="placa" value="0" {{ old('placa', $checkoutData->placa ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="placa" value="1" {{ old('placa', $checkoutData->placa ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="placa" value="0" {{ old('placa', $checkoutData->placa ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Volante</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="volante" value="1" {{ old('volante', $checkoutData->volante ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="volante" value="0" {{ old('volante', $checkoutData->volante ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="volante" value="1" {{ old('volante', $checkoutData->volante ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="volante" value="0" {{ old('volante', $checkoutData->volante ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Tapones</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="tapones" value="1" {{ old('tapones', $checkoutData->tapones ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="tapones" value="0" {{ old('tapones', $checkoutData->tapones ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="tapones" value="1" {{ old('tapones', $checkoutData->tapones ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="tapones" value="0" {{ old('tapones', $checkoutData->tapones ?? 1) == 0 ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text">Llanta de refacción</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_refaccion" value="1" {{ old('llanta_refaccion', $checkoutData->llanta_refaccion ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_refaccion" value="0" {{ old('llanta_refaccion', $checkoutData->llanta_refaccion ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_refaccion" value="1" {{ old('llanta_refaccion', $checkoutData->llanta_refaccion ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_refaccion" value="0" {{ old('llanta_refaccion', $checkoutData->llanta_refaccion ?? 1) == 0 ? 'checked' : '' }}></td>
 
                     <td class="border border-gray-200 table-cell-text">Salpicadera</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="salpicadera" value="1" {{ old('salpicadera', $checkoutData->salpicadera ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="salpicadera" value="0" {{ old('salpicadera', $checkoutData->salpicadera ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="salpicadera" value="1" {{ old('salpicadera', $checkoutData->salpicadera ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="salpicadera" value="0" {{ old('salpicadera', $checkoutData->salpicadera ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Bolsas de aire</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="bolsas_aire" value="1" {{ old('bolsas_aire', $checkoutData->bolsas_aire ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="bolsas_aire" value="0" {{ old('bolsas_aire', $checkoutData->bolsas_aire ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="bolsas_aire" value="1" {{ old('bolsas_aire', $checkoutData->bolsas_aire ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="bolsas_aire" value="0" {{ old('bolsas_aire', $checkoutData->bolsas_aire ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Bocina claxon</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="bocina_claxon" value="1" {{ old('bocina_claxon', $checkoutData->bocina_claxon ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="bocina_claxon" value="0" {{ old('bocina_claxon', $checkoutData->bocina_claxon ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="bocina_claxon" value="1" {{ old('bocina_claxon', $checkoutData->bocina_claxon ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="bocina_claxon" value="0" {{ old('bocina_claxon', $checkoutData->bocina_claxon ?? 1) == 0 ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text">Presión Adecuada</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="presion_adecuada" value="1" {{ old('presion_adecuada', $checkoutData->presion_adecuada ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="presion_adecuada" value="0" {{ old('presion_adecuada', $checkoutData->presion_adecuada ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="presion_adecuada" value="1" {{ old('presion_adecuada', $checkoutData->presion_adecuada ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="presion_adecuada" value="0" {{ old('presion_adecuada', $checkoutData->presion_adecuada ?? 1) == 0 ? 'checked' : '' }}></td>
                     
                     <td class="border border-gray-200 table-cell-text">Antena</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="antena" value="1" {{ old('antena', $checkoutData->antena ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="antena" value="0" {{ old('antena', $checkoutData->antena ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="antena" value="1" {{ old('antena', $checkoutData->antena ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="antena" value="0" {{ old('antena', $checkoutData->antena ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Cinturón de seguridad</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="cinturon_seguridad" value="1" {{ old('cinturon_seguridad', $checkoutData->cinturon_seguridad ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="cinturon_seguridad" value="0" {{ old('cinturon_seguridad', $checkoutData->cinturon_seguridad ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="cinturon_seguridad" value="1" {{ old('cinturon_seguridad', $checkoutData->cinturon_seguridad ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="cinturon_seguridad" value="0" {{ old('cinturon_seguridad', $checkoutData->cinturon_seguridad ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Radiador</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="radiador" value="1" {{ old('radiador', $checkoutData->radiador ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="radiador" value="0" {{ old('radiador', $checkoutData->radiador ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="radiador" value="1" {{ old('radiador', $checkoutData->radiador ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="radiador" value="0" {{ old('radiador', $checkoutData->radiador ?? 1) == 0 ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
@@ -389,232 +414,104 @@
                     <td class="border border-gray-200 table-cell-text title-red">Si</td>
                     <td class="border border-gray-200 table-cell-text title-red">No</td>
                     <td class="border border-gray-200 table-cell-text">Coderas</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="coderas" value="1" {{ old('coderas', $checkoutData->coderas ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="coderas" value="0" {{ old('coderas', $checkoutData->coderas ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="coderas" value="1" {{ old('coderas', $checkoutData->coderas ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="coderas" value="0" {{ old('coderas', $checkoutData->coderas ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text title-yellow">Herramienta</td>
                     <td class="border border-gray-200 table-cell-text title-red">Si</td>
                     <td class="border border-gray-200 table-cell-text title-red">No</td>
                 </tr>
 
                 <tr>
-                                        <td class="border border-gray-200 table-cell-text">Intermitentes</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="intermitentes" value="1" {{ old('intermitentes', $checkoutData->intermitentes ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="intermitentes" value="0" {{ old('intermitentes', $checkoutData->intermitentes ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text">Intermitentes</td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="intermitentes" value="1" {{ old('intermitentes', $checkoutData->intermitentes ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="intermitentes" value="0" {{ old('intermitentes', $checkoutData->intermitentes ?? 1) == 0 ? 'checked' : '' }}></td>
 
-                    
-
-                    
                     <td class="border border-gray-200 table-cell-text">Mata Chispas</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="mata_chispas" value="1" {{ old('mata_chispas', $checkoutData->mata_chispas ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="mata_chispas" value="0" {{ old('mata_chispas', $checkoutData->mata_chispas ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="mata_chispas" value="1" {{ old('mata_chispas', $checkoutData->mata_chispas ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="mata_chispas" value="0" {{ old('mata_chispas', $checkoutData->mata_chispas ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Espejo interior</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="espejo_interior" value="1" {{ old('espejo_interior', $checkoutData->espejo_interior ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="espejo_interior" value="0" {{ old('espejo_interior', $checkoutData->espejo_interior ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="espejo_interior" value="1" {{ old('espejo_interior', $checkoutData->espejo_interior ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="espejo_interior" value="0" {{ old('espejo_interior', $checkoutData->espejo_interior ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Gato</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="gato" value="1" {{ old('gato', $checkoutData->gato ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="gato" value="0" {{ old('gato', $checkoutData->gato ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="gato" value="1" {{ old('gato', $checkoutData->gato ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="gato" value="0" {{ old('gato', $checkoutData->gato ?? 1) == 0 ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text">Direccional Derecha</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="direccional_derecha" value="1" {{ old('direccional_derecha', $checkoutData->direccional_derecha ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="direccional_derecha" value="0" {{ old('direccional_derecha', $checkoutData->direccional_derecha ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="direccional_derecha" value="1" {{ old('direccional_derecha', $checkoutData->direccional_derecha ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="direccional_derecha" value="0" {{ old('direccional_derecha', $checkoutData->direccional_derecha ?? 1) == 0 ? 'checked' : '' }}></td>
 
-                    
-
-                    
                     <td class="border border-gray-200 table-cell-text">Alarma</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="alarma" value="1" {{ old('alarma', $checkoutData->alarma ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="alarma" value="0" {{ old('alarma', $checkoutData->alarma ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="alarma" value="1" {{ old('alarma', $checkoutData->alarma ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="alarma" value="0" {{ old('alarma', $checkoutData->alarma ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Freno de mano</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="freno_mano" value="1" {{ old('freno_mano', $checkoutData->freno_mano ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="freno_mano" value="0" {{ old('freno_mano', $checkoutData->freno_mano ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="freno_mano" value="1" {{ old('freno_mano', $checkoutData->freno_mano ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="freno_mano" value="0" {{ old('freno_mano', $checkoutData->freno_mano ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Llave de ruedas</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llave_ruedas" value="1" {{ old('llave_ruedas', $checkoutData->llave_ruedas ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llave_ruedas" value="0" {{ old('llave_ruedas', $checkoutData->llave_ruedas ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llave_ruedas" value="1" {{ old('llave_ruedas', $checkoutData->llave_ruedas ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llave_ruedas" value="0" {{ old('llave_ruedas', $checkoutData->llave_ruedas ?? 1) == 0 ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text">Direccional Izquierda</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="direccional_izquierda" value="1" {{ old('direccional_izquierda', $checkoutData->direccional_izquierda ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="direccional_izquierda" value="0" {{ old('direccional_izquierda', $checkoutData->direccional_izquierda ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="direccional_izquierda" value="1" {{ old('direccional_izquierda', $checkoutData->direccional_izquierda ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="direccional_izquierda" value="0" {{ old('direccional_izquierda', $checkoutData->direccional_izquierda ?? 1) == 0 ? 'checked' : '' }}></td>
 
-                    
-
-                    
                     <td class="border border-gray-200 table-cell-text">Extintor</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="extintor" value="1" {{ old('extintor', $checkoutData->extintor ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="extintor" value="0" {{ old('extintor', $checkoutData->extintor ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="extintor" value="1" {{ old('extintor', $checkoutData->extintor ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="extintor" value="0" {{ old('extintor', $checkoutData->extintor ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Encendedor</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="encendedor" value="1" {{ old('encendedor', $checkoutData->encendedor ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="encendedor" value="0" {{ old('encendedor', $checkoutData->encendedor ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="encendedor" value="1" {{ old('encendedor', $checkoutData->encendedor ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="encendedor" value="0" {{ old('encendedor', $checkoutData->encendedor ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Cables pasa corrientes</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="cables_pasa_corriente" value="1" {{ old('cables_pasa_corriente', $checkoutData->cables_pasa_corriente ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="cables_pasa_corriente" value="0" {{ old('cables_pasa_corriente', $checkoutData->cables_pasa_corriente ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="cables_pasa_corriente" value="1" {{ old('cables_pasa_corriente', $checkoutData->cables_pasa_corriente ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="cables_pasa_corriente" value="0" {{ old('cables_pasa_corriente', $checkoutData->cables_pasa_corriente ?? 1) == 0 ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text">Luz stop</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="luz_stop" value="1" {{ old('luz_stop', $checkoutData->luz_stop ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="luz_stop" value="0" {{ old('luz_stop', $checkoutData->luz_stop ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="luz_stop" value="1" {{ old('luz_stop', $checkoutData->luz_stop ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="luz_stop" value="0" {{ old('luz_stop', $checkoutData->luz_stop ?? 1) == 0 ? 'checked' : '' }}></td>
 
-                    
-
-                    
                     <td class="border border-gray-200 table-cell-text">Botiquin</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="botiquin" value="1" {{ old('botiquin', $checkoutData->botiquin ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="botiquin" value="0" {{ old('botiquin', $checkoutData->botiquin ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="botiquin" value="1" {{ old('botiquin', $checkoutData->botiquin ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="botiquin" value="0" {{ old('botiquin', $checkoutData->botiquin ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Guantera</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="guantera" value="1" {{ old('guantera', $checkoutData->guantera ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="guantera" value="0" {{ old('guantera', $checkoutData->guantera ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="guantera" value="1" {{ old('guantera', $checkoutData->guantera ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="guantera" value="0" {{ old('guantera', $checkoutData->guantera ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Caja o bolsa herramientas</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="caja_bolsa_herramientas" value="1" {{ old('caja_bolsa_herramientas', $checkoutData->caja_bolsa_herramientas ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="caja_bolsa_herramientas" value="0" {{ old('caja_bolsa_herramientas', $checkoutData->caja_bolsa_herramientas ?? 1) == '0' ? 'checked' : '' }}></td>
-                </tr>
-
-                <tr>
-                    <td class="border border-gray-200 table-cell-text">Presión Adecuada</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="presion_adecuada" value="1" {{ old('presion_adecuada', $checkoutData->presion_adecuada ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="presion_adecuada" value="0" {{ old('presion_adecuada', $checkoutData->presion_adecuada ?? 1) == '0' ? 'checked' : '' }}></td>
-                    
-                    <td class="border border-gray-200 table-cell-text">Antena</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="antena" value="1" {{ old('antena', $checkoutData->antena ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="antena" value="0" {{ old('antena', $checkoutData->antena ?? 1) == '0' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text">Cinturón de seguridad</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="cinturon_seguridad" value="1" {{ old('cinturon_seguridad', $checkoutData->cinturon_seguridad ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="cinturon_seguridad" value="0" {{ old('cinturon_seguridad', $checkoutData->cinturon_seguridad ?? 1) == '0' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text">Radiador</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="radiador" value="1" {{ old('radiador', $checkoutData->radiador ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="radiador" value="0" {{ old('radiador', $checkoutData->radiador ?? 1) == '0' ? 'checked' : '' }}></td>
-                </tr>
-
-                <tr>
-                    <td class="border border-gray-200 table-cell-text title-yellow">Luces</td>
-                    <td class="border border-gray-200 table-cell-text title-red">Si</td>
-                    <td class="border border-gray-200 table-cell-text title-red">No</td>
-                    
-
-                    <td class="border border-gray-200 table-cell-text title-yellow">Otros (Seguridad)</td>
-                    <td class="border border-gray-200 table-cell-text title-red">Si</td>
-                    <td class="border border-gray-200 table-cell-text title-red">No</td>
-                    <td class="border border-gray-200 table-cell-text">Coderas</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="coderas" value="1" {{ old('coderas', $checkoutData->coderas ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="coderas" value="0" {{ old('coderas', $checkoutData->coderas ?? 1) == '0' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text title-yellow">Herramienta</td>
-                    <td class="border border-gray-200 table-cell-text title-red">Si</td>
-                    <td class="border border-gray-200 table-cell-text title-red">No</td>
-                </tr>
-
-                <tr>
-                                        <td class="border border-gray-200 table-cell-text">Intermitentes</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="intermitentes" value="1" {{ old('intermitentes', $checkoutData->intermitentes ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="intermitentes" value="0" {{ old('intermitentes', $checkoutData->intermitentes ?? 1) == '0' ? 'checked' : '' }}></td>
-
-                    
-
-                    
-                    <td class="border border-gray-200 table-cell-text">Mata Chispas</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="mata_chispas" value="1" {{ old('mata_chispas', $checkoutData->mata_chispas ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="mata_chispas" value="0" {{ old('mata_chispas', $checkoutData->mata_chispas ?? 1) == '0' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text">Espejo interior</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="espejo_interior" value="1" {{ old('espejo_interior', $checkoutData->espejo_interior ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="espejo_interior" value="0" {{ old('espejo_interior', $checkoutData->espejo_interior ?? 1) == '0' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text">Gato</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="gato" value="1" {{ old('gato', $checkoutData->gato ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="gato" value="0" {{ old('gato', $checkoutData->gato ?? 1) == '0' ? 'checked' : '' }}></td>
-                </tr>
-
-                <tr>
-                    <td class="border border-gray-200 table-cell-text">Direccional Derecha</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="direccional_derecha" value="1" {{ old('direccional_derecha', $checkoutData->direccional_derecha ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="direccional_derecha" value="0" {{ old('direccional_derecha', $checkoutData->direccional_derecha ?? 1) == '0' ? 'checked' : '' }}></td>
-
-                    
-
-                    
-                    <td class="border border-gray-200 table-cell-text">Alarma</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="alarma" value="1" {{ old('alarma', $checkoutData->alarma ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="alarma" value="0" {{ old('alarma', $checkoutData->alarma ?? 1) == '0' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text">Freno de mano</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="freno_mano" value="1" {{ old('freno_mano', $checkoutData->freno_mano ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="freno_mano" value="0" {{ old('freno_mano', $checkoutData->freno_mano ?? 1) == '0' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text">Llave de ruedas</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llave_ruedas" value="1" {{ old('llave_ruedas', $checkoutData->llave_ruedas ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llave_ruedas" value="0" {{ old('llave_ruedas', $checkoutData->llave_ruedas ?? 1) == '0' ? 'checked' : '' }}></td>
-                </tr>
-
-                <tr>
-                    <td class="border border-gray-200 table-cell-text">Direccional Izquierda</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="direccional_izquierda" value="1" {{ old('direccional_izquierda', $checkoutData->direccional_izquierda ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="direccional_izquierda" value="0" {{ old('direccional_izquierda', $checkoutData->direccional_izquierda ?? 1) == '0' ? 'checked' : '' }}></td>
-
-                    
-
-                    
-                    <td class="border border-gray-200 table-cell-text">Extintor</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="extintor" value="1" {{ old('extintor', $checkoutData->extintor ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="extintor" value="0" {{ old('extintor', $checkoutData->extintor ?? 1) == '0' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text">Encendedor</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="encendedor" value="1" {{ old('encendedor', $checkoutData->encendedor ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="encendedor" value="0" {{ old('encendedor', $checkoutData->encendedor ?? 1) == '0' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text">Cables pasa corrientes</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="cables_pasa_corriente" value="1" {{ old('cables_pasa_corriente', $checkoutData->cables_pasa_corriente ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="cables_pasa_corriente" value="0" {{ old('cables_pasa_corriente', $checkoutData->cables_pasa_corriente ?? 1) == '0' ? 'checked' : '' }}></td>
-                </tr>
-
-                <tr>
-                    <td class="border border-gray-200 table-cell-text">Luz stop</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="luz_stop" value="1" {{ old('luz_stop', $checkoutData->luz_stop ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="luz_stop" value="0" {{ old('luz_stop', $checkoutData->luz_stop ?? 1) == '0' ? 'checked' : '' }}></td>
-
-                    
-
-                    
-                    <td class="border border-gray-200 table-cell-text">Botiquin</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="botiquin" value="1" {{ old('botiquin', $checkoutData->botiquin ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="botiquin" value="0" {{ old('botiquin', $checkoutData->botiquin ?? 1) == '0' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text">Guantera</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="guantera" value="1" {{ old('guantera', $checkoutData->guantera ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="guantera" value="0" {{ old('guantera', $checkoutData->guantera ?? 1) == '0' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text">Caja o bolsa herramientas</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="caja_bolsa_herramientas" value="1" {{ old('caja_bolsa_herramientas', $checkoutData->caja_bolsa_herramientas ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="caja_bolsa_herramientas" value="0" {{ old('caja_bolsa_herramientas', $checkoutData->caja_bolsa_herramientas ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="caja_bolsa_herramientas" value="1" {{ old('caja_bolsa_herramientas', $checkoutData->caja_bolsa_herramientas ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="caja_bolsa_herramientas" value="0" {{ old('caja_bolsa_herramientas', $checkoutData->caja_bolsa_herramientas ?? 1) == 0 ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text">Faros</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="faros" value="1" {{ old('faros', $checkoutData->faros ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="faros" value="0" {{ old('faros', $checkoutData->faros ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="faros" value="1" {{ old('faros', $checkoutData->faros ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="faros" value="0" {{ old('faros', $checkoutData->faros ?? 1) == 0 ? 'checked' : '' }}></td>
 
-                    
-
-                    
                     <td class="border border-gray-200 table-cell-text">Tarjeta de circulación</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="tarjeta_circulacion" value="1" {{ old('tarjeta_circulacion', $checkoutData->tarjeta_circulacion ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="tarjeta_circulacion" value="0" {{ old('tarjeta_circulacion', $checkoutData->tarjeta_circulacion ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="tarjeta_circulacion" value="1" {{ old('tarjeta_circulacion', $checkoutData->tarjeta_circulacion ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="tarjeta_circulacion" value="0" {{ old('tarjeta_circulacion', $checkoutData->tarjeta_circulacion ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Manijas interiores</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="manijas_interiores" value="1" {{ old('manijas_interiores', $checkoutData->manijas_interiores ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="manijas_interiores" value="0" {{ old('manijas_interiores', $checkoutData->manijas_interiores ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="manijas_interiores" value="1" {{ old('manijas_interiores', $checkoutData->manijas_interiores ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="manijas_interiores" value="0" {{ old('manijas_interiores', $checkoutData->manijas_interiores ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Dado o birlo seguridad</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="dado_birlo_seguridad" value="1" {{ old('dado_birlo_seguridad', $checkoutData->dado_birlo_seguridad ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="dado_birlo_seguridad" value="0" {{ old('dado_birlo_seguridad', $checkoutData->dado_birlo_seguridad ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="dado_birlo_seguridad" value="1" {{ old('dado_birlo_seguridad', $checkoutData->dado_birlo_seguridad ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="dado_birlo_seguridad" value="0" {{ old('dado_birlo_seguridad', $checkoutData->dado_birlo_seguridad ?? 1) == 0 ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text">Luces Altas</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="luces_altas" value="1" {{ old('luces_altas', $checkoutData->luces_altas ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="luces_altas" value="0" {{ old('luces_altas', $checkoutData->luces_altas ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="luces_altas" value="1" {{ old('luces_altas', $checkoutData->luces_altas ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="luces_altas" value="0" {{ old('luces_altas', $checkoutData->luces_altas ?? 1) == 0 ? 'checked' : '' }}></td>
 
-                    
-
-                    
                     <td class="border border-gray-200 table-cell-text">Licencia Conductor Vigente</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="licencia_conducir_vigente" value="1" {{ old('licencia_conducir_vigente', $checkoutData->licencia_conducir_vigente ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="licencia_conducir_vigente" value="0" {{ old('licencia_conducir_vigente', $checkoutData->licencia_conducir_vigente ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="licencia_conducir_vigente" value="1" {{ old('licencia_conducir_vigente', $checkoutData->licencia_conducir_vigente ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="licencia_conducir_vigente" value="0" {{ old('licencia_conducir_vigente', $checkoutData->licencia_conducir_vigente ?? 1) == 0 ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text">Seguros</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="seguros" value="1" {{ old('seguros', $checkoutData->seguros ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="seguros" value="0" {{ old('seguros', $checkoutData->seguros ?? 1) == '0' ? 'checked' : '' }}></td>
-                    
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="seguros" value="1" {{ old('seguros', $checkoutData->seguros ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="seguros" value="0" {{ old('seguros', $checkoutData->seguros ?? 1) == 0 ? 'checked' : '' }}></td>
                     
                     <td class="border border-gray-200 table-cell-text title-yellow">Calcomanías</td>
                     <td class="border border-gray-200 table-cell-text title-red">Si</td>
@@ -622,42 +519,39 @@
                 </tr>
 
                 <tr>
-                    
                     <td class="border border-gray-200 table-cell-text">Luz Interior</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="luz_interior" value="1" {{ old('luz_interior', $checkoutData->luz_interior ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="luz_interior" value="0" {{ old('luz_interior', $checkoutData->luz_interior ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="luz_interior" value="1" {{ old('luz_interior', $checkoutData->luz_interior ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="luz_interior" value="0" {{ old('luz_interior', $checkoutData->luz_interior ?? 1) == 0 ? 'checked' : '' }}></td>
 
                     <td class="border border-gray-200 table-cell-text">Póliza de seguro</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="poliza_seguro" value="1" {{ old('poliza_seguro', $checkoutData->poliza_seguro ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="poliza_seguro" value="0" {{ old('poliza_seguro', $checkoutData->poliza_seguro ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="poliza_seguro" value="1" {{ old('poliza_seguro', $checkoutData->poliza_seguro ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="poliza_seguro" value="0" {{ old('poliza_seguro', $checkoutData->poliza_seguro ?? 1) == 0 ? 'checked' : '' }}></td>
 
                     <td class="border border-gray-200 table-cell-text">Asientos</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="asientos" value="1" {{ old('asientos', $checkoutData->asientos ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="asientos" value="0" {{ old('asientos', $checkoutData->asientos ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="asientos" value="1" {{ old('asientos', $checkoutData->asientos ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="asientos" value="0" {{ old('asientos', $checkoutData->asientos ?? 1) == 0 ? 'checked' : '' }}></td>
                     
                     <td class="border border-gray-200 table-cell-text">Calcomanías de permisos</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="calcomanias_permisos" value="1" {{ old('calcomanias_permisos', $checkoutData->calcomanias_permisos ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="calcomanias_permisos" value="0" {{ old('calcomanias_permisos', $checkoutData->calcomanias_permisos ?? 1) == '0' ? 'checked' : '' }}></td>
-
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="calcomanias_permisos" value="1" {{ old('calcomanias_permisos', $checkoutData->calcomanias_permisos ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="calcomanias_permisos" value="0" {{ old('calcomanias_permisos', $checkoutData->calcomanias_permisos ?? 1) == 0 ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text">Calaveras buen estado</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="calaveras_buen_estado" value="1" {{ old('calaveras_buen_estado', $checkoutData->calaveras_buen_estado ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="calaveras_buen_estado" value="0" {{ old('calaveras_buen_estado', $checkoutData->calaveras_buen_estado ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="calaveras_buen_estado" value="1" {{ old('calaveras_buen_estado', $checkoutData->calaveras_buen_estado ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="calaveras_buen_estado" value="0" {{ old('calaveras_buen_estado', $checkoutData->calaveras_buen_estado ?? 1) == 0 ? 'checked' : '' }}></td>
                     
                     <td class="border border-gray-200 table-cell-text">Triángulo de Emergencia</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="triangulo_emergencia" value="1" {{ old('triangulo_emergencia', $checkoutData->triangulo_emergencia ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="triangulo_emergencia" value="0" {{ old('triangulo_emergencia', $checkoutData->triangulo_emergencia ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="triangulo_emergencia" value="1" {{ old('triangulo_emergencia', $checkoutData->triangulo_emergencia ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="triangulo_emergencia" value="0" {{ old('triangulo_emergencia', $checkoutData->triangulo_emergencia ?? 1) == 0 ? 'checked' : '' }}></td>
 
                     <td class="border border-gray-200 table-cell-text">Tapetes delanteros y traseros</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="tapetes_delanteros_traseros" value="1" {{ old('tapetes_delanteros_traseros', $checkoutData->tapetes_delanteros_traseros ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="tapetes_delanteros_traseros" value="0" {{ old('tapetes_delanteros_traseros', $checkoutData->tapetes_delanteros_traseros ?? 1) == '0' ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="tapetes_delanteros_traseros" value="1" {{ old('tapetes_delanteros_traseros', $checkoutData->tapetes_delanteros_traseros ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="tapetes_delanteros_traseros" value="0" {{ old('tapetes_delanteros_traseros', $checkoutData->tapetes_delanteros_traseros ?? 1) == 0 ? 'checked' : '' }}></td>
 
                     <td class="border border-gray-200 table-cell-text">Calcomanías velocidad máxima</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="calcomania_velocidad_maxima" value="1" {{ old('calcomania_velocidad_maxima', $checkoutData->calcomania_velocidad_maxima ?? 1) == '1' ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="calcomania_velocidad_maxima" value="0" {{ old('calcomania_velocidad_maxima', $checkoutData->calcomania_velocidad_maxima ?? 1) == '0' ? 'checked' : '' }}></td>
-
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="calcomania_velocidad_maxima" value="1" {{ old('calcomania_velocidad_maxima', $checkoutData->calcomania_velocidad_maxima ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="calcomania_velocidad_maxima" value="0" {{ old('calcomania_velocidad_maxima', $checkoutData->calcomania_velocidad_maxima ?? 1) == 0 ? 'checked' : '' }}></td>
                 </tr>
 
                 <tr>
@@ -682,7 +576,6 @@
                     <td class="border border-gray-200 p-2 font-semibold text-center" colspan="12">
                         <p>Condición de Carrocería</p> 
                     </td>
-                </tr>
                 </tr>
                 <tr>
                     <td class="border border-gray-200 table-cell-text" colspan="12">
