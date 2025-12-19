@@ -33,12 +33,13 @@ class ChecklistController extends Controller
      */
     public function processCheckout(Request $request, Ticket $ticket): RedirectResponse
     {
+
         if (!$ticket->canCheckout()) {
             return back()->with('error', 'No se puede realizar checkout en este ticket.');
         }
 
         $validated = $this->validateChecklist($request, 'salida');
-
+     
         // Guardar imagen del canvas si existe
         $imagePath = null;
         if ($request->has('condicion_carroceria_imagen') && !empty($request->input('condicion_carroceria_imagen'))) {
@@ -47,7 +48,7 @@ class ChecklistController extends Controller
             // Decodificar la imagen base64
             if (preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) {
                 $imageData = substr($imageData, strpos($imageData, ',') + 1);
-                $type = strtolower($type[1]); // jpg, png, gif
+                $type = strtolower($type[1]); 
                 
                 $imageData = base64_decode($imageData);
                 
@@ -57,6 +58,8 @@ class ChecklistController extends Controller
                     
                     Storage::disk('public')->put($path, $imageData);
                     $imagePath = $path;
+                    
+                    
                 }
             }
         }

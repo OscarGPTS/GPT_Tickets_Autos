@@ -175,103 +175,52 @@
             <input type="hidden" id="kmInicial" value="{{ $checkoutChecklist->kilometraje_inicial }}">
             <input type="hidden" id="combustibleInicial" value="{{ $checkoutChecklist->nivel_combustible_inicial }}">
             
-            <!-- Comparación con Checkout -->
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-4">
-                <h3 class="text-xs sm:text-sm font-semibold text-blue-800 mb-2">
-                    <i class="fas fa-info-circle mr-2"></i>Información del Checkout (Salida)
-                </h3>
-                <div class="text-xs sm:text-sm text-blue-700 grid grid-cols-2 md:grid-cols-4 gap-2">
-                    <div>
-                        <strong>Fecha Salida:</strong> {{ $checkoutChecklist->fecha->format('d/m/Y') }}
-                    </div>
-                    <div>
-                        <strong>Hora Salida:</strong> {{ $checkoutChecklist->hora_salida }}
-                    </div>
-                    <div>
-                        <strong>Km Inicial:</strong> {{ number_format($checkoutChecklist->kilometraje_inicial, 2) }}
-                    </div>
-                    <div>
-                        <strong>Combustible Inicial:</strong> {{ $checkoutChecklist->nivel_combustible_inicial }}
-                    </div>
-                </div>
-                
-                
-            </div>
             @endif
 
             <div class="scroll-indicator">
                 <i class="fas fa-arrows-alt-h"></i> Desliza horizontalmente para ver toda la tabla
             </div>
 
-            <!-- Información del Ticket y Vehículo (solo lectura) -->
-            <div class="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700">Folio</label>
-                        <p class="text-gray-900 font-medium">{{ $ticket->folio }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700">Destino</label>
-                        <p class="text-gray-900 font-medium">{{ $ticket->destination }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700">Fecha</label>
-                        <p class="text-gray-900 font-medium">{{ now()->format('d/m/Y') }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700">Vehículo</label>
-                        <p class="text-gray-900 font-medium">{{ $ticket->vehicle->brand }} {{ $ticket->vehicle->model }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700">Placas</label>
-                        <p class="text-gray-900 font-medium">{{ $ticket->vehicle->plates }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700">Código Interno</label>
-                        <p class="text-gray-900 font-medium">{{ $ticket->vehicle->internal_code }}</p>
-                    </div>
-                </div>
-            </div>
 
             <div class="overflow-x-auto overflow-y-visible -mx-3 sm:mx-0 table-scroll-container relative rounded-lg shadow-sm">
             <table class="w-full mb-6 border border-black rounded-lg text-xs sm:text-sm" style="min-width: 800px;">
                 
                 <tr>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Hora de salida</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="5">
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="time" name="hora_salida" value="{{ old('hora_salida', $checkoutChecklist->hora_salida ?? '') }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Hora de entrada</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="5">
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="time" name="hora_entrada" value="{{ old('hora_entrada', now()->format('H:i')) }}" class="w-full border-gray-300 rounded table-input" required>
                     </td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Fecha</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="5">
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="date" name="fecha" value="{{ old('fecha', now()->format('Y-m-d')) }}" class="w-full border-gray-300 rounded table-input" required>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje inicial (checkout)</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="5">
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="number" step="0.01" name="kilometraje_inicial" value="{{ old('kilometraje_inicial', $checkoutChecklist->kilometraje_inicial ?? '') }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
                     </td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Nivel combustible inicial (checkout)</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="5">
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="text" name="nivel_combustible_inicial" value="{{ old('nivel_combustible_inicial', $checkoutChecklist->nivel_combustible_inicial ?? 'N/A') }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje final</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="5">
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="number" step="0.01" name="kilometraje_final" value="{{ old('kilometraje_final') }}" class="w-full border-gray-300 rounded table-input" required>
                     </td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Nivel de combustible final</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="11">
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
                         <select name="nivel_combustible_final" class="w-full border-gray-300 rounded table-input" required>
                             <option value="">Seleccionar...</option>
                             <option value="1/4" {{ old('nivel_combustible_final') == '1/4' ? 'selected' : '' }}>1/4</option>

@@ -173,64 +173,51 @@
                 <i class="fas fa-arrows-alt-h"></i> Desliza horizontalmente para ver toda la tabla
             </div>
 
-            <!-- Información del Ticket y Vehículo (solo lectura) -->
-            <div class="bg-gray-50 p-4 rounded-lg mb-6 border border-gray-200">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700">Folio</label>
-                        <p class="text-gray-900 font-medium">{{ $ticket->folio }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700">Destino</label>
-                        <p class="text-gray-900 font-medium">{{ $ticket->destination }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700">Fecha</label>
-                        <p class="text-gray-900 font-medium">{{ now()->format('d/m/Y') }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700">Vehículo</label>
-                        <p class="text-gray-900 font-medium">{{ $ticket->vehicle->brand }} {{ $ticket->vehicle->model }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700">Placas</label>
-                        <p class="text-gray-900 font-medium">{{ $ticket->vehicle->plates }}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700">Código Interno</label>
-                        <p class="text-gray-900 font-medium">{{ $ticket->vehicle->internal_code }}</p>
-                    </div>
-                </div>
-            </div>
 
             <div class="overflow-x-auto overflow-y-visible -mx-3 sm:mx-0 table-scroll-container relative rounded-lg shadow-sm">
             <table class="w-full mb-6 border border-black rounded-lg text-xs sm:text-sm" style="min-width: 800px;">
                 
+
+                <tr>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Destino</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="text" name="destino" value="{{ $ticket->destination }}" title="No disponible hasta realizar el check-in" class="w-full border-gray-300 rounded table-input" readonly>
+                    </td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Modelo</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="text" name="modelo" value="{{ $ticket->vehicle->model }}" title="No disponible hasta realizar el check-in" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
+                    </td>
+
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Folio</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="text" name="folio" value="{{ $ticket->folio  }}" title="No disponible hasta realizar el check-in" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
+                    </td>
+                </tr>
+
+
                 <tr>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Hora de salida</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="5">
-                        <input type="time" name="hora_salida" value="{{ old('hora_salida', now()->format('H:i')) }}" class="w-full border-gray-300 rounded table-input" required>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="time" name="hora_salida" value="{{ $ticket->requested_time_start  }}" class="w-full border-gray-300 rounded table-input" required>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Hora de entrada</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="5">
-                        <input type="time" name="hora_entrada" value="{{ old('hora_entrada') }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="time" name="hora_entrada" title="No disponible hasta realizar el check-in" title="No disponible hasta realizar el check-in" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
+                    </td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Fecha</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="date" name="fecha" title="No disponible hasta realizar el check-in" value="{{ \Carbon\Carbon::parse($ticket->request_date)->format('Y-m-d') }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
                     </td>
                 </tr>
 
                 <tr>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Fecha</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="5">
-                        <input type="date" name="fecha" value="{{ old('fecha', now()->format('Y-m-d')) }}" class="w-full border-gray-300 rounded table-input" required>
-                    </td>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje inicial</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="5">
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje Inicial</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
                         <input type="number" step="0.01" name="kilometraje_inicial" value="{{ old('kilometraje_inicial', $ticket->vehicle->current_mileage) }}" class="w-full border-gray-300 rounded table-input" required>
                     </td>
-                </tr>
 
-                <tr>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Nivel de combustible inicial</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="5">
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Nivel de combustible Inicial</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
                         <select name="nivel_combustible_inicial" class="w-full border-gray-300 rounded table-input" required>
                             <option value="">Seleccionar...</option>
                             <option value="1/4" {{ old('nivel_combustible_inicial') == '1/4' ? 'selected' : '' }}>1/4</option>
@@ -239,32 +226,40 @@
                             <option value="Lleno" {{ old('nivel_combustible_inicial') == 'Lleno' ? 'selected' : '' }}>Lleno</option>
                         </select>
                     </td>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje final</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="5">
-                        <input type="number" step="0.01" name="kilometraje_final" value="{{ old('kilometraje_final') }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
+
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Placas</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="text" name="placas" title="No disponible hasta realizar el check-in" value="{{ $ticket->vehicle->plates }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
                     </td>
                 </tr>
 
                 <tr>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje Final</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="number" step="0.01" name="kilometraje_final" title="No disponible hasta realizar el check-in" value="{{ old('kilometraje_final') }}" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
+                    </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Nivel de combustible final</td>
-                    <td class="border border-gray-200 table-cell-text" colspan="11">
-                        <select name="nivel_combustible_final" class="w-full border-gray-300 rounded table-input bg-gray-100" disabled>
-                            <option value="">N/A (Solo para checkin)</option>
+                    <td class="border border-gray-200 table-cell-text" colspan="3" >
+                        <select name="nivel_combustible_final" class="w-full border-gray-300 rounded table-input bg-gray-100" readonly>
+                            <option value="">No disponible hasta checkin</option>
                         </select>
                     </td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Marca</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="text" name="marca" value="{{ $ticket->vehicle->brand }}" class="w-full border-gray-300 rounded table-input bg-gray-100 " readonly>
                     </td>
                 </tr>
 
                 <tr>
                     <td class="border border-gray-200 table-cell-text title-yellow" >Llantas</td>
-                    <td class="border border-gray-200 table-cell-text title-red" style="width: 60px;">Si</td>
-                    <td class="border border-gray-200 table-cell-text title-red" style="width: 60px;">No</td>
+                    <td class="border border-gray-200 table-cell-text title-red">Si</td>
+                    <td class="border border-gray-200 table-cell-text title-red">No</td>
                     <td class="border border-gray-200 table-cell-text title-yellow">Frontal</td>
                     <td class="border border-gray-200 table-cell-text title-red" >Si</td>
                     <td class="border border-gray-200 table-cell-text title-red">No</td>
                     <td class="border border-gray-200 table-cell-text title-yellow">Interior</td>
-                    <td class="border border-gray-200 table-cell-text title-red" style="width: 60px;">Si</td>
-                    <td class="border border-gray-200 table-cell-text title-red" style="width: 60px;">No</td>
+                    <td class="border border-gray-200 table-cell-text title-red">Si</td>
+                    <td class="border border-gray-200 table-cell-text title-red">No</td>
                     <td class="border border-gray-200 table-cell-text title-yellow">Motor</td>
                     <td class="border border-gray-200 table-cell-text title-red">Si</td>
                     <td class="border border-gray-200 table-cell-text title-red">No</td>
@@ -417,7 +412,7 @@
                 </tr>
 
                 <tr>
-                                        <td class="border border-gray-200 table-cell-text">Intermitentes</td>
+                    <td class="border border-gray-200 table-cell-text">Intermitentes</td>
                     <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="intermitentes" value="1" {{ old('intermitentes', 1) == '1' ? 'checked' : '' }}></td>
                     <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="intermitentes" value="0" {{ old('intermitentes') == '0' ? 'checked' : '' }}></td>
 
@@ -675,19 +670,6 @@
         </form>
     </div>
 
-    <!-- Información Adicional -->
-    <div class="mt-4 sm:mt-6 bg-purple-50 border border-purple-200 rounded-lg p-3 sm:p-4">
-        <h3 class="text-xs sm:text-sm font-semibold text-purple-800 mb-2">
-            <i class="fas fa-info-circle mr-2"></i>Información del Checkout
-        </h3>
-        <ul class="text-xs sm:text-sm text-purple-700 space-y-1">
-            <li>• Verifica cuidadosamente el estado del vehículo antes de salir</li>
-            <li>• Los campos marcados con <span class="text-red-500">*</span> son obligatorios</li>
-            <li>• El folio se generará automáticamente al completar el checkout</li>
-            <li>• Asegúrate de revisar todos los items del checklist</li>
-            <li>• Al completar, se enviará notificación al solicitante y encargados</li>
-        </ul>
-    </div>
 </div>
 
 <script>
