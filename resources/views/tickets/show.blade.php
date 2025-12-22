@@ -329,16 +329,19 @@
 
                 {{-- Botones para revisar checklists completados --}}
                 @if($ticket->checkoutChecklist)
-                <a href="{{ route('checklists.checkout.view', $ticket) }}" class="bg-purple-100 hover:bg-purple-200 text-purple-800 font-semibold py-2 px-4 rounded-lg transition duration-200 border border-purple-300">
-                    <i class="fas fa-eye mr-2"></i>Ver Checkout
-                </a>
+                    @if($ticket->checkinChecklist)
+                        <a href="{{ route('checklists.checkin.view', $ticket) }}" class="bg-orange-100 hover:bg-orange-200 text-orange-800 font-semibold py-2 px-4 rounded-lg transition duration-200 border border-orange-300">
+                            <i class="fas fa-eye mr-2"></i>Ver Avance
+                        </a>
+                    @else
+                        <a href="{{ route('checklists.checkout.view', $ticket) }}" class="bg-purple-100 hover:bg-purple-200 text-purple-800 font-semibold py-2 px-4 rounded-lg transition duration-200 border border-purple-300">
+                            <i class="fas fa-eye mr-2"></i>Ver Avance
+                        </a>
+                    @endif
+              
                 @endif
 
-                @if($ticket->checkinChecklist)
-                <a href="{{ route('checklists.checkin.view', $ticket) }}" class="bg-orange-100 hover:bg-orange-200 text-orange-800 font-semibold py-2 px-4 rounded-lg transition duration-200 border border-orange-300">
-                    <i class="fas fa-eye mr-2"></i>Ver Checkin
-                </a>
-                @endif
+               
 
                 @if($ticket->status === 'completado' && $ticket->user_id === auth()->id() && !$ticket->service_rating)
                 <button onclick="openRatingModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 shadow-lg">

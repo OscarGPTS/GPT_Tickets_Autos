@@ -198,23 +198,6 @@
                                                 <i class="fas fa-eye mr-2"></i>
                                                 Ver
                                             </a>
-
-                                            @if ($ticket->status === 'aprobado' && auth()->user()->hasRole('despachador'))
-                                                <a href="{{ route('checklists.checkout', $ticket) }}"
-                                                    class="text-purple-600 hover:text-purple-900 p-2 hover:bg-purple-50 rounded-lg transition-colors"
-                                                    title="Checkout">
-                                                    <i class="fas fa-clipboard-check"></i>
-                                                </a>
-                                            @endif
-
-                                            @if ($ticket->status === 'en_uso' && auth()->user()->hasRole('despachador'))
-                                                <a href="{{ route('checklists.checkin', $ticket) }}"
-                                                    class="text-orange-600 hover:text-orange-900 p-2 hover:bg-orange-50 rounded-lg transition-colors"
-                                                    title="Checkin">
-                                                    <i class="fas fa-clipboard-check"></i>
-                                                </a>
-                                            @endif
-
                                         </div>
                                     </td>
                                 </tr>

@@ -141,10 +141,10 @@
                                             <i class="fas fa-sign-in-alt mr-1.5"></i> Checkin
                                         </a>
                                     @endif
-                                    <a href="{{ route('tickets.show', $ticket) }}"
+                                    {{-- <a href="{{ route('tickets.show', $ticket) }}"
                                         class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                                         <i class="fas fa-eye mr-1"></i> Ver
-                                    </a>
+                                    </a> --}}
                                 </td>
                             </tr>
                         @empty

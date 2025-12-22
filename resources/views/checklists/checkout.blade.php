@@ -167,7 +167,7 @@
         @endif
 
         <form action="{{ route('checklists.checkout.store', $ticket) }}" method="POST" id="checkoutForm" onsubmit="return validateForm()">
-            @csrf
+            @csrf  
 
             <div class="scroll-indicator">
                 <i class="fas fa-arrows-alt-h"></i> Desliza horizontalmente para ver toda la tabla

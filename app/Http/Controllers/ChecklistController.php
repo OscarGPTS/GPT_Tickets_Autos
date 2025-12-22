@@ -33,12 +33,10 @@ class ChecklistController extends Controller
      */
     public function processCheckout(Request $request, Ticket $ticket): RedirectResponse
     {
-
-        if (!$ticket->canCheckout()) {
-            return back()->with('error', 'No se puede realizar checkout en este ticket.');
-        }
-
+ 
         $validated = $this->validateChecklist($request, 'salida');
+        // Excluir la imagen del canvas ya que se procesa por separado como archivo
+        unset($validated['condicion_carroceria_imagen']);
      
         // Guardar imagen del canvas si existe
         $imagePath = null;
@@ -53,16 +51,16 @@ class ChecklistController extends Controller
                 $imageData = base64_decode($imageData);
                 
                 if ($imageData !== false) {
-                    $fileName = 'checklist_' . $ticket->id . '_' . time() . '.' . $type;
+                    // Generar nombre único con timestamp y ID del ticket
+                    $fileName = 'checkout_' . $ticket->id . '_' . time() . '_' . uniqid() . '.' . $type;
                     $path = 'checklists/' . $fileName;
                     
                     Storage::disk('public')->put($path, $imageData);
                     $imagePath = $path;
-                    
-                    
                 }
             }
         }
+
 
         $checklist = CheckoutChecklist::create([
             'ticket_id' => $ticket->id,
@@ -116,11 +114,10 @@ class ChecklistController extends Controller
      */
     public function processCheckin(Request $request, Ticket $ticket): RedirectResponse
     {
-        if (!$ticket->canCheckin()) {
-            return back()->with('error', 'No se puede realizar checkin en este ticket.');
-        }
-
+      
         $validated = $this->validateChecklist($request, 'entrada');
+        // Excluir la imagen del canvas ya que se procesa por separado como archivo
+        unset($validated['condicion_carroceria_imagen']);
 
         // El folio se obtiene de la relación con el ticket
         $checkoutChecklist = $ticket->checkoutChecklist;
@@ -138,7 +135,8 @@ class ChecklistController extends Controller
                 $imageData = base64_decode($imageData);
                 
                 if ($imageData !== false) {
-                    $fileName = 'checklist_checkin_' . $ticket->id . '_' . time() . '.' . $type;
+                    // Generar nombre único con timestamp y ID del ticket
+                    $fileName = 'checkin_' . $ticket->id . '_' . time() . '_' . uniqid() . '.' . $type;
                     $path = 'checklists/' . $fileName;
                     
                     Storage::disk('public')->put($path, $imageData);
@@ -275,7 +273,7 @@ class ChecklistController extends Controller
             'mantenimiento_preventivo' => 'nullable|string',
             'mantenimiento_correctivo' => 'nullable|string',
             'condicion_carroceria_log' => 'nullable|string',
-            'condicion_carroceria_imagen' => 'nullable|string',
+            // condicion_carroceria_imagen se maneja manualmente como archivo
         ];
 
         if ($tipo === 'entrada') {
@@ -292,7 +290,11 @@ class ChecklistController extends Controller
     private function notifyChecklistCompletado(Ticket $ticket, $checklist, string $tipo): void
     {
         // Enviar correo al solicitante
-        Mail::to($ticket->user->email)->send(new ChecklistCompletado($ticket, $checklist, $tipo));
+        try {
+            Mail::to($ticket->user->email)->send(new ChecklistCompletado($ticket, $checklist, $tipo));
+        } catch (\Exception $e) {
+            \Log::warning('Error al enviar notificación de checklist al solicitante: ' . $e->getMessage());
+        }
 
         // Enviar correo a encargados
         $encargados = User::whereHas('roles', function ($query) {
@@ -300,7 +302,11 @@ class ChecklistController extends Controller
         })->get();
 
         foreach ($encargados as $encargado) {
-            Mail::to($encargado->email)->send(new ChecklistCompletado($ticket, $checklist, $tipo));
+            try {
+                Mail::to($encargado->email)->send(new ChecklistCompletado($ticket, $checklist, $tipo));
+            } catch (\Exception $e) {
+                \Log::warning('Error al enviar notificación de checklist a encargado ' . $encargado->email . ': ' . $e->getMessage());
+            }
         }
     }
 
