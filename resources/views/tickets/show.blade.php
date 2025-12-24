@@ -5,7 +5,7 @@
 @section('content')
 <div class="max-w-5xl mx-auto">
     <div class="mb-6">
-        <a href="{{ route('tickets.index') }}" class="text-blue-600 hover:text-blue-800 font-medium">
+        <a href="/dashboard" class="text-blue-600 hover:text-blue-800 font-medium">
             <i class="fas fa-arrow-left mr-2"></i>Volver a Solicitudes
         </a>
     </div>
@@ -307,13 +307,12 @@
 
             <!-- Acciones -->
             <div class="flex flex-wrap gap-3 pt-6 border-t">
-                @can('update', $ticket)
-                @if($ticket->status === 'pendiente')
+                
+                @if(auth()->user()->hasRole('usuario'))
                 <a href="{{ route('tickets.edit', $ticket) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                     <i class="fas fa-edit mr-2"></i>Editar
                 </a>
                 @endif
-                @endcan
 
                 @if($ticket->status === 'aprobado' && auth()->user()->hasRole('despachador'))
                 <a href="{{ route('checklists.checkout', $ticket) }}" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">

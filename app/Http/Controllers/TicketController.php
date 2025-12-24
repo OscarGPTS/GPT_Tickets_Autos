@@ -26,19 +26,32 @@ class TicketController extends Controller
     use AuthorizesRequests;
     
     /**
-     * Listar tickets
+     * Listar tickets (historial del usuario)
+     * 
+     * Para usuarios: muestra TODOS los tickets donde es solicitante O conductor (sin filtros de status)
+     * Para despachadores: muestra todos los tickets asignados
+     * Para encargados: muestra tickets pendientes por defecto o todos si se solicita
      */
     public function index(Request $request): View
     {
         $user = Auth::user();
         
-        $query = Ticket::with(['user', 'vehicle', 'dispatcher']);
-
+        $query = Ticket::query();
+        
         // Filtrar según rol
         if ($user->isUsuario()) {
-            $query->forUser($user->id);
+            // Mostrar TODOS los tickets donde el usuario es solicitante O conductor (sin filtro de status)
+            $query->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                  ->orWhere('conductor_id', $user->id);
+            });
         } elseif ($user->isDespachador()) {
             $query->forDispatcher($user->id);
+            
+            // Aplicar filtros de status para despachador
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
         } elseif ($user->isEncargado()) {
             // Para encargado: mostrar solo pendientes por defecto, a menos que pida "todas"
             if (!$request->has('view') || $request->view !== 'todas') {
@@ -46,11 +59,7 @@ class TicketController extends Controller
             }
         }
 
-        // Aplicar filtros
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
+        // Aplicar filtros de fechas (para todos)
         if ($request->filled('date_from')) {
             $query->whereDate('requested_date', '>=', $request->date_from);
         }

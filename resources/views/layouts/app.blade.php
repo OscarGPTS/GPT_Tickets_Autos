@@ -57,7 +57,7 @@
 
                             <a href="{{ route('tickets.index') }}"
                                 class="@if (request()->routeIs('tickets.*')) border-blue-500 text-blue-600 @else border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 @endif inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200">
-                                <i class="fas fa-ticket-alt mr-2"></i>Requisiciones
+                                <i class="fas fa-ticket-alt mr-2"></i>Historial de Requisiciones
                             </a>
 
                             @if (Auth::user()->hasRole('encargado'))

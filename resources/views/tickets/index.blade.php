@@ -167,17 +167,30 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @php
-                                            $statusColors = [
-                                                'pendiente' => 'bg-amber-100 text-amber-800 border border-amber-200',
-                                                'aprobado' => 'bg-blue-100 text-blue-800 border border-blue-200',
-                                                'rechazado' => 'bg-red-100 text-red-800 border border-red-200',
-                                                'en_uso' => 'bg-indigo-100 text-indigo-800 border border-indigo-200',
-                                                'completado' => 'bg-green-100 text-green-800 border border-green-200',
+                                            $statusKey = strtolower(trim($ticket->status));
+                                            // Inline styles to avoid Tailwind config issues
+                                            $statusStyles = [
+                                                'pendiente'  => 'background-color:#FEF3C7;color:#92400E;border:1px solid #FDE68A;', // amber-100/800/200
+                                                'aprobado'   => 'background-color:#DBEAFE;color:#1E40AF;border:1px solid #BFDBFE;', // blue-100/800/200
+                                                'rechazado'  => 'background-color:#FEE2E2;color:#991B1B;border:1px solid #FECACA;', // red-100/800/200
+                                                'en_curso'   => 'background-color:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE;', // indigo-100/800/200
+                                                'en_uso'     => 'background-color:#E0E7FF;color:#3730A3;border:1px solid #C7D2FE;', // indigo-100/800/200
+                                                'finalizado' => 'background-color:#DCFCE7;color:#166534;border:1px solid #BBF7D0;', // green-100/800/200
+                                                'completado' => 'background-color:#DCFCE7;color:#166534;border:1px solid #BBF7D0;', // green-100/800/200
                                             ];
+                                            $statusStyle = $statusStyles[$statusKey] ?? 'background-color:#F3F4F6;color:#1F2937;border:1px solid #D1D5DB;'; // gray-100/800/300
                                         @endphp
-                                        <span
-                                            class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusColors[$ticket->status] ?? 'bg-gray-100 text-gray-800' }}">
-                                            {{ ucfirst($ticket->status) }}
+                                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full" style="{{ $statusStyle }}">
+                                            @switch($statusKey)
+                                                @case('en_curso')
+                                                    En Curso
+                                                    @break
+                                                @case('en_uso')
+                                                    En Uso
+                                                    @break
+                                                @default
+                                                    {{ ucfirst(str_replace('_', ' ', $statusKey)) }}
+                                            @endswitch
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

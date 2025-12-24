@@ -157,7 +157,7 @@
 </style>
 <div class="form-wrapper">
     <div class="mb-4 sm:mb-6">
-        <a href="{{ route('tickets.index') }}" class="text-blue-600 hover:text-blue-800 font-medium text-sm sm:text-base">
+        <a href="/dashboard" class="text-blue-600 hover:text-blue-800 font-medium text-sm sm:text-base">
             <i class="fas fa-arrow-left mr-2"></i>Volver a Solicitudes
         </a>
     </div>
