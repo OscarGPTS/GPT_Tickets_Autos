@@ -289,7 +289,11 @@ class TicketController extends Controller
         ]);
 
         // Enviar correo al despachador notificando la asignación
-        Mail::to($dispatcher->email)->send(new DespachadorAsignado($ticket->fresh()));
+        try {
+            Mail::to($dispatcher->email)->send(new DespachadorAsignado($ticket->fresh()));
+        } catch (\Exception $e) {
+            Log::warning('No se pudo enviar correo al despachador: ' . $e->getMessage());
+        }
 
         return redirect()->route('tickets.show', $ticket)
             ->with('success', 'Despachador asignado exitosamente. Se ha enviado una notificación por correo.');
@@ -313,6 +317,9 @@ class TicketController extends Controller
             'service_rating' => $validated['service_rating'],
             'rating_comments' => $validated['rating_comments'] ?? null,
         ]);
+
+        // Notificar a Ana Lilia y José sobre la calificación
+        $this->notifyEncargadosSatisfaccion($ticket);
 
         return redirect()->route('tickets.show', $ticket)
             ->with('success', '¡Gracias por tu calificación! Tu opinión nos ayuda a mejorar.');
@@ -359,34 +366,74 @@ class TicketController extends Controller
     }
 
     /**
+     * Notificar a los encargados sobre encuesta de satisfacción
+     */
+    private function notifyEncargadosSatisfaccion(Ticket $ticket): void
+    {
+        // Obtener los emails de los encargados desde config
+        $toEmails = array_filter(
+            array_map('trim', explode(',', config('mail.encargados_emails', ''))),
+            fn($email) => !empty($email)
+        );
+
+        // Enviar notificación de calificación
+        if (!empty($toEmails)) {
+            try {
+                foreach ($toEmails as $email) {
+                    \Mail::to($email)->send(
+                        new \App\Mail\EncuestaSatisfaccion($ticket)
+                    );
+                }
+            } catch (\Exception $e) {
+                \Log::warning('Error al enviar encuesta de satisfacción: ' . $e->getMessage());
+            }
+        }
+    }
+
+    /**
      * Notificar a los encargados sobre nueva solicitud
      */
     private function notifyEncargados(Ticket $ticket): void
     {
-        $encargados = User::whereHas('roles', function ($query) {
-            $query->where('name', 'encargado');
-        })->get();
+        // Obtener los emails de los encargados desde config (destinatarios principales)
+        $toEmails = array_filter(
+            array_map('trim', explode(',', config('mail.encargados_emails', ''))),
+            fn($email) => !empty($email)
+        );
 
-        // Enviar correo a cada encargado
-        foreach ($encargados as $encargado) {
-            try {
-                Mail::to($encargado->email)->send(new SolicitudCreada($ticket));
-            } catch (\Exception $e) {
-                Log::error('Error al enviar correo a encargado: ' . $e->getMessage());
+        // Obtener los emails de copia
+        $ccEmails = array_filter(
+            array_map('trim', explode(',', config('mail.cc_emails', ''))),
+            fn($email) => !empty($email)
+        );
+
+        // Agregar email del usuario solicitante al CC
+        $ccEmails[] = $ticket->user->email;
+
+        // Obtener email del jefe directo del solicitante desde la API
+        try {
+            $rhService = new \App\Services\RHService();
+            $jefeDirectoEmail = $rhService->obtenerEmailJefeDirecto($ticket->user->email);
+            
+            if ($jefeDirectoEmail && !in_array(trim($jefeDirectoEmail), $ccEmails)) {
+                $ccEmails[] = trim($jefeDirectoEmail);
             }
+        } catch (\Exception $e) {
+            \Log::warning('No se pudo obtener el jefe directo: ' . $e->getMessage());
         }
 
-        // También usar el sistema de notificaciones interno (opcional)
-        Notification::send($encargados, new TicketCreated($ticket));
+        // Eliminar duplicados
+        $ccEmails = array_unique($ccEmails);
 
-        // También notificar al jefe inmediato si existe
-        if ($ticket->user->immediateBoss) {
+        // Enviar un único correo a los encargados con todos en CC
+        if (!empty($toEmails)) {
             try {
-                Mail::to($ticket->user->immediateBoss->email)->send(new SolicitudCreada($ticket));
+                \Mail::send(
+                    new \App\Mail\SolicitudCreada($ticket, $toEmails, $ccEmails)
+                );
             } catch (\Exception $e) {
-                Log::error('Error al enviar correo al jefe inmediato: ' . $e->getMessage());
+                \Log::error('Error al enviar correo de solicitud: ' . $e->getMessage());
             }
-            $ticket->user->immediateBoss->notify(new TicketCreated($ticket));
         }
     }
 }

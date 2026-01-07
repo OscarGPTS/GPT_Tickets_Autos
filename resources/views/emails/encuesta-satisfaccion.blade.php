@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nueva Solicitud de Vehículo</title>
+    <title>Encuesta de Satisfacción</title>
     <style>
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -68,6 +68,25 @@
             display: inline-block;
             min-width: 140px;
         }
+        .rating-display {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #fafafa;
+            border-left: 3px solid #CF0A2C;
+            border-radius: 0;
+        }
+        .rating-stars {
+            font-size: 32px;
+            color: #F9BE00;
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+        }
+        .rating-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #CF0A2C;
+        }
         .button {
             display: inline-block;
             padding: 14px 35px;
@@ -113,7 +132,7 @@
                 <svg width="140" height="57" viewBox="0 0 93.133331 37.835415" xmlns="http://www.w3.org/2000/svg">
                     <g transform="translate(-58.223892,-108.28795)">
                         <path style="fill:#ffffff" d="m 66.454435,117.49915 c -2.816387,1.1181 -5.310212,2.71303 -6.619458,6.05908 1.47735,3.71076 4.619124,6.10255 9.596462,7.03974 l 16.706249,0.1401 -0.07004,-12.81864 -13.27394,5e-5 -3.607429,4.41296 10.577123,0.1401 v 3.01203 l -10.787264,-0.17512 c -2.92795,-1.95664 -4.271273,-4.40429 -2.521703,-7.8103 z"/>
-                        <path style="fill:#ffffff" d="M 89.815165,119.98583 V 130.633 l 6.33927,0.035 0.03503,-5.14847 13.168855,-0.14009 c 13.10808,-2.6908 8.64852,-14.21576 0.035,-15.51545 l -39.751761,0.17507 c -7.9867,1.18021 -10.636765,6.50987 -10.121816,11.24257 2.429541,-4.16438 6.111582,-5.10007 9.911674,-5.84894 l 39.436553,-0.21014 c 2.65766,0.99397 3.35436,4.03851 0,4.9033 z"/>
+                        <path style="fill:#ffffff" d="M 89.815165,119.98583 V 130.633 l 6.33927,0.035 0.03503,-5.14847 13.168855,-0.14009 c 13.10808,-2.6908 8.64852-14.21576 0.035,-15.51545 l -39.751761,0.17507 c -7.9867,1.18021 -10.636765,6.50987 -10.121816,11.24257 2.429541,-4.16438 6.111582,-5.10007 9.911674,-5.84894 l 39.436553,-0.21014 c 2.65766,0.99397 3.35436,4.03851 0,4.9033 z"/>
                         <path style="fill:#ffffff" d="m 124.89239,115.32133 0.19812,15.30502 6.33995,0.0495 -0.1486,-15.35455 7.67728,-0.0495 4.012,-5.10168 -29.02507,-0.0495 c 2.30505,1.31576 3.96832,2.96117 4.32069,5.25328 z"/>
                         <ellipse style="fill:none;stroke:#ffffff;stroke-width:0.429953" cx="146.76024" cy="112.72095" rx="2.5674231" ry="2.5178928"/>
                         <text style="font-weight:bold;font-size:4.23333px;font-family:Helvetica;fill:#ffffff" x="145.24956" y="114.18214"><tspan x="145.24956" y="114.18214">R</tspan></text>
@@ -121,13 +140,13 @@
                     </g>
                 </svg>
             </div>
-            <h1>Nueva Solicitud de Vehículo</h1>
+            <h1>Encuesta de Satisfacción</h1>
         </div>
-    
+        
         <div class="content">
-            <p class="greeting">Estimados <strong>Encargados de Vehículos</strong>,</p>
+            <p class="greeting">Estimados,</p>
             
-            <p>Se ha recibido una nueva solicitud de vehículo que requiere su revisión y aprobación.</p>
+            <p>El usuario <strong>{{ $ticket->user->name }}</strong> ha completado la encuesta de satisfacción para su solicitud de vehículo.</p>
             
             <div class="info-box">
                 <h3>Información de la Solicitud</h3>
@@ -153,35 +172,32 @@
                     <span class="info-label">Fecha:</span> 
                     {{ \Carbon\Carbon::parse($ticket->requested_date)->format('d/m/Y') }}
                 </div>
-                <div class="info-row">
-                    <span class="info-label">Hora de Salida:</span> 
-                    {{ $ticket->requested_time_start ? \Carbon\Carbon::parse($ticket->requested_time_start)->format('H:i') : 'No especificada' }}
+            </div>
+
+            <div class="rating-display">
+                <div class="rating-stars">
+                    @for($i = 0; $i < $ticket->service_rating; $i++)★@endfor
                 </div>
-                @if($ticket->requested_time_end)
-                <div class="info-row">
-                    <span class="info-label">Hora de Regreso:</span> 
-                    {{ \Carbon\Carbon::parse($ticket->requested_time_end)->format('H:i') }}
-                </div>
-                @endif
-                <div class="info-row">
-                    <span class="info-label">Estado:</span> 
-                    <span class="badge">PENDIENTE DE APROBACIÓN</span>
+                <div class="rating-text">
+                    Calificación: {{ $ticket->service_rating }}/5
                 </div>
             </div>
 
+            @if($ticket->rating_comments)
             <div class="info-box">
-                <h3>Motivo del Viaje</h3>
-                <p style="margin: 0; color: #555555;">{{ $ticket->purpose }}</p>
+                <h3>Comentarios del Usuario</h3>
+                <p style="margin: 0; color: #555555; font-style: italic;">{{ $ticket->rating_comments }}</p>
             </div>
+            @endif
 
             <p style="text-align: center;">
                 <a href="{{ route('tickets.show', $ticket->id) }}" class="button">
-                    REVISAR SOLICITUD
+                    VER SOLICITUD COMPLETA
                 </a>
             </p>
 
             <p style="color: #666666; font-size: 14px;">
-                Por favor revise y procese esta solicitud a la brevedad posible a través del sistema SIGEV.
+                Esta calificación es importante para mejorar nuestro servicio. Revisa los comentarios del usuario y toma las acciones necesarias.
             </p>
         </div>
         
@@ -190,5 +206,6 @@
             <p style="margin: 0;"><span class="footer-accent">GPT Services</span> | Sistema de Gestión Vehicular (SIGEV)</p>
             <p style="margin: 10px 0 0 0;">&copy; {{ date('Y') }} Todos los derechos reservados.</p>
         </div>
+    </div>
 </body>
 </html>

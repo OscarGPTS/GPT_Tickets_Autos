@@ -115,4 +115,18 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Email Recipients Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for email recipients in the notification system.
+    | All email addresses are stored in environment variables for security.
+    |
+    */
+
+    'encargados_emails' => env('ENCARGADOS_EMAILS', ''),
+    'cc_emails' => env('CC_EMAILS', ''),
+    'test_email' => env('TEST_EMAIL', ''),
+
 ];

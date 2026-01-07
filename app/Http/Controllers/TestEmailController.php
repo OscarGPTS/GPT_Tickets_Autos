@@ -1,9 +1,77 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
+
+class TestEmailController extends Controller
+{
+    /**
+     * Envía un correo de prueba a ochavez@gptservices.com
+     * Usado para validar que el sistema de correos funciona correctamente en producción
+     * 
+     * @return Response
+     */
+    public function sendTestEmail()
+    {
+        try {
+            $testEmail = config('mail.test_email');
+            
+            // Obtener los emails de CC desde la configuración
+            $ccEmails = explode(',', config('mail.encargados_emails'));
+            $ccEmails = array_map('trim', $ccEmails);
+            
+            // Enviar el correo de prueba
+            Mail::html($this->getTestEmailContent(), function ($mail) use ($testEmail, $ccEmails) {
+                $mail->to($testEmail)
+                     ->cc($ccEmails)
+                     ->subject('Prueba de Correo - SIGEV Sistema');
+            });
+
+            Log::info('Correo de prueba enviado exitosamente', [
+                'to' => $testEmail,
+                'cc' => $ccEmails,
+                'timestamp' => now()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Correo de prueba enviado exitosamente',
+                'details' => [
+                    'to' => $testEmail,
+                    'cc' => $ccEmails,
+                    'timestamp' => now()
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error al enviar correo de prueba', [
+                'error' => $e->getMessage(),
+                'timestamp' => now()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al enviar el correo de prueba',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Retorna el contenido HTML del correo de prueba
+     */
+    private function getTestEmailContent(): string
+    {
+        return <<<'HTML'
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nueva Solicitud de Vehículo</title>
+    <title>Prueba de Correo</title>
     <style>
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -68,20 +136,15 @@
             display: inline-block;
             min-width: 140px;
         }
-        .button {
+        .badge {
             display: inline-block;
-            padding: 14px 35px;
-            background: #CF0A2C;
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 4px;
-            margin: 25px 0;
+            padding: 6px 12px;
+            background: #F9BE00;
+            color: #333333;
+            border-radius: 3px;
+            font-size: 12px;
             font-weight: 600;
-            font-size: 14px;
-            letter-spacing: 0.5px;
-        }
-        .button:hover {
-            background: #a50823;
+            letter-spacing: 0.3px;
         }
         .footer {
             background: #2c2c2c;
@@ -93,16 +156,6 @@
         .footer-accent {
             color: #F9BE00;
             font-weight: 600;
-        }
-        .badge {
-            display: inline-block;
-            padding: 6px 12px;
-            background: #F9BE00;
-            color: #333333;
-            border-radius: 3px;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
         }
     </style>
 </head>
@@ -121,74 +174,47 @@
                     </g>
                 </svg>
             </div>
-            <h1>Nueva Solicitud de Vehículo</h1>
+            <h1>Prueba de Correo</h1>
         </div>
-    
+        
         <div class="content">
-            <p class="greeting">Estimados <strong>Encargados de Vehículos</strong>,</p>
+            <p class="greeting">Estimado,</p>
             
-            <p>Se ha recibido una nueva solicitud de vehículo que requiere su revisión y aprobación.</p>
+            <p>Este es un correo de prueba para validar que el sistema de correos del SIGEV está funcionando correctamente en el ambiente actual.</p>
             
             <div class="info-box">
-                <h3>Información de la Solicitud</h3>
+                <h3>Detalles de la Prueba</h3>
                 <div class="info-row">
-                    <span class="info-label">Requisición:</span> 
-                    {{ $ticket->requisicion }}
+                    <span class="info-label">Tipo:</span> 
+                    Prueba de Funcionalidad
                 </div>
-                <div class="info-row">
-                    <span class="info-label">Solicitante:</span> 
-                    {{ $ticket->user->name }}
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Destino:</span> 
-                    {{ $ticket->destination }}
-                </div>
-                @if($ticket->cliente)
-                <div class="info-row">
-                    <span class="info-label">Cliente:</span> 
-                    {{ $ticket->cliente }}
-                </div>
-                @endif
                 <div class="info-row">
                     <span class="info-label">Fecha:</span> 
-                    {{ \Carbon\Carbon::parse($ticket->requested_date)->format('d/m/Y') }}
+                    <?php echo date('d/m/Y H:i:s'); ?>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">Hora de Salida:</span> 
-                    {{ $ticket->requested_time_start ? \Carbon\Carbon::parse($ticket->requested_time_start)->format('H:i') : 'No especificada' }}
+                    <span class="info-label">Sistema:</span> 
+                    SIGEV - Gestión Vehicular
                 </div>
-                @if($ticket->requested_time_end)
-                <div class="info-row">
-                    <span class="info-label">Hora de Regreso:</span> 
-                    {{ \Carbon\Carbon::parse($ticket->requested_time_end)->format('H:i') }}
-                </div>
-                @endif
                 <div class="info-row">
                     <span class="info-label">Estado:</span> 
-                    <span class="badge">PENDIENTE DE APROBACIÓN</span>
+                    <span class="badge">EXITOSO</span>
                 </div>
             </div>
 
-            <div class="info-box">
-                <h3>Motivo del Viaje</h3>
-                <p style="margin: 0; color: #555555;">{{ $ticket->purpose }}</p>
-            </div>
-
-            <p style="text-align: center;">
-                <a href="{{ route('tickets.show', $ticket->id) }}" class="button">
-                    REVISAR SOLICITUD
-                </a>
-            </p>
-
             <p style="color: #666666; font-size: 14px;">
-                Por favor revise y procese esta solicitud a la brevedad posible a través del sistema SIGEV.
+                Si recibiste este correo, significa que el sistema de notificaciones está funcionando correctamente y los correos se están entregando como se espera.
             </p>
         </div>
         
         <div class="footer">
-            <p style="margin: 0 0 10px 0;">Este es un correo automático generado por el sistema.</p>
+            <p style="margin: 0 0 10px 0;">Este es un correo automático de prueba generado por el sistema.</p>
             <p style="margin: 0;"><span class="footer-accent">GPT Services</span> | Sistema de Gestión Vehicular (SIGEV)</p>
-            <p style="margin: 10px 0 0 0;">&copy; {{ date('Y') }} Todos los derechos reservados.</p>
+            <p style="margin: 10px 0 0 0;">&copy; 2025 Todos los derechos reservados.</p>
         </div>
+    </div>
 </body>
 </html>
+HTML;
+    }
+}

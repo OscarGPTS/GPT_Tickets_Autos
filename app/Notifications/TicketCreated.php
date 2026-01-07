@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Ticket;
+use App\Services\RHService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -23,10 +24,23 @@ class TicketCreated extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
+        // Obtener emails de encargados
         $encargadosEmails = explode(',', config('mail.encargados_emails', ''));
         $ccEmails = explode(',', config('mail.cc_emails', ''));
 
-        return (new MailMessage)
+        // Obtener email del jefe directo del solicitante
+        $rhService = new RHService();
+        $jefeDirectoEmail = $rhService->obtenerEmailJefeDirecto($this->ticket->user->email);
+
+        // Agregar email del jefe directo a los CC si existe
+        if ($jefeDirectoEmail && !in_array($jefeDirectoEmail, $ccEmails)) {
+            $ccEmails[] = $jefeDirectoEmail;
+        }
+
+        // Filtrar emails vacíos
+        $ccEmails = array_filter($ccEmails, fn($email) => trim($email) !== '');
+
+        $message = (new MailMessage)
             ->subject('Nueva Solicitud de Vehículo - GPT Services')
             ->greeting('¡Hola!')
             ->line('Se ha recibido una nueva solicitud de vehículo.')
@@ -36,8 +50,14 @@ class TicketCreated extends Notification implements ShouldQueue
             ->line('**Hora:** ' . $this->ticket->requested_time_start)
             ->line('**Motivo:** ' . $this->ticket->purpose)
             ->action('Ver Solicitud', route('tickets.show', $this->ticket))
-            ->line('Por favor, revisa y procesa esta solicitud lo antes posible.')
-            ->cc($ccEmails);
+            ->line('Por favor, revisa y procesa esta solicitud lo antes posible.');
+
+        // Agregar CC si existen
+        if (!empty($ccEmails)) {
+            $message->cc($ccEmails);
+        }
+
+        return $message;
     }
 
     public function toArray(object $notifiable): array

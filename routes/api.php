@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\DispatcherController;
+use App\Http\Controllers\TestEmailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,9 @@ use App\Http\Controllers\API\DispatcherController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+// Ruta para enviar correo de prueba (solo para validación en producción)
+Route::get('/test-email', [TestEmailController::class, 'sendTestEmail']);
 
 Route::prefix('dispatcher')->group(function () {
     // Ruta de prueba (test)

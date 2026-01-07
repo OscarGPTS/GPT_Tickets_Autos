@@ -10,22 +10,18 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class SolicitudCreada extends Mailable
+class EncuestaSatisfaccion extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $ticket;
-    public $toEmails = [];
-    public $ccEmails = [];
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Ticket $ticket, array $toEmails = [], array $ccEmails = [])
+    public function __construct(Ticket $ticket)
     {
         $this->ticket = $ticket;
-        $this->toEmails = $toEmails;
-        $this->ccEmails = $ccEmails;
     }
 
     /**
@@ -34,9 +30,7 @@ class SolicitudCreada extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            to: !empty($this->toEmails) ? $this->toEmails : [],
-            cc: !empty($this->ccEmails) ? $this->ccEmails : [],
-            subject: 'Nueva Solicitud de Vehículo - ' . $this->ticket->requisicion,
+            subject: 'Encuesta de Satisfacción - Solicitud ' . $this->ticket->requisicion,
         );
     }
 
@@ -46,7 +40,7 @@ class SolicitudCreada extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.solicitud-creada',
+            view: 'emails.encuesta-satisfaccion',
         );
     }
 

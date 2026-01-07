@@ -289,21 +289,29 @@ class ChecklistController extends Controller
      */
     private function notifyChecklistCompletado(Ticket $ticket, $checklist, string $tipo): void
     {
-        // Enviar correo al solicitante
+        // Obtener los emails de los encargados para CC
+        $ccEmails = array_filter(
+            array_map('trim', explode(',', config('mail.encargados_emails', ''))),
+            fn($email) => !empty($email)
+        );
+
+        // Enviar correo al solicitante con CC a Ana Lilia y José
         try {
-            Mail::to($ticket->user->email)->send(new ChecklistCompletado($ticket, $checklist, $tipo));
+            \Mail::to($ticket->user->email)
+                ->cc($ccEmails)
+                ->send(new ChecklistCompletado($ticket, $checklist, $tipo));
         } catch (\Exception $e) {
             \Log::warning('Error al enviar notificación de checklist al solicitante: ' . $e->getMessage());
         }
 
-        // Enviar correo a encargados
+        // Enviar correo a encargados (Ana Lilia y José)
         $encargados = User::whereHas('roles', function ($query) {
             $query->where('name', 'encargado');
         })->get();
 
         foreach ($encargados as $encargado) {
             try {
-                Mail::to($encargado->email)->send(new ChecklistCompletado($ticket, $checklist, $tipo));
+                \Mail::to($encargado->email)->send(new ChecklistCompletado($ticket, $checklist, $tipo));
             } catch (\Exception $e) {
                 \Log::warning('Error al enviar notificación de checklist a encargado ' . $encargado->email . ': ' . $e->getMessage());
             }
