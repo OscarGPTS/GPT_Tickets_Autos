@@ -162,23 +162,25 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-auto">
+    <footer class="bg-gray-900 border-t border-gray-800 mt-auto">
         <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="flex items-center mb-4 md:mb-0">
-                    <div class="bg-gray-100 p-2 rounded-lg mr-3">
-                        <i class="fas fa-car-side text-gray-600"></i>
+                    <div class="bg-gray-800 p-2 rounded-lg mr-3">
+                        <i class="fas fa-car-side text-yellow-400"></i>
                     </div>
                     <div>
-                        <p class="text-sm font-semibold text-gray-800">GPT Services - SIGEV</p>
-                        <p class="text-xs text-gray-500">Sistema Integral de Gestión Vehicular</p>
+                        <p class="text-sm font-semibold text-white">
+                            <span class="text-yellow-400">GPT</span> Services - SIGEV
+                        </p>
+                        <p class="text-xs text-gray-400">Sistema Integral de Gestión Vehicular</p>
                     </div>
                 </div>
                 <div class="text-center md:text-right">
-                    <p class="text-sm text-gray-500">
-                        &copy; {{ date('Y') }} GPT Services. Todos los derechos reservados.
+                    <p class="text-sm text-gray-400">
+                        &copy; {{ date('Y') }} <span class="text-yellow-400 font-semibold">GPT Services</span>. Todos los derechos reservados.
                     </p>
-                    <p class="text-xs text-gray-400 mt-1">Versión 1.0.0</p>
+                    <p class="text-xs text-gray-500 mt-1">Versión 1.0.0</p>
                 </div>
             </div>
         </div>
