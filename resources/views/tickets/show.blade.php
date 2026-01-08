@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detalle de Solicitud #' . $ticket->id)
+@section('title', 'Detalle de Solicitud #' . $ticket->folio)
 
 @section('content')
 <div class="max-w-5xl mx-auto">
@@ -308,7 +308,7 @@
             <!-- Acciones -->
             <div class="flex flex-wrap gap-3 pt-6 border-t">
                 
-                @if(auth()->user()->hasRole('usuario'))
+                @if(auth()->user()->hasRole('usuario') && $ticket->status !== 'completado')
                 <a href="{{ route('tickets.edit', $ticket) }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">
                     <i class="fas fa-edit mr-2"></i>Editar
                 </a>
@@ -342,7 +342,16 @@
 
                
 
-                @if($ticket->status === 'completado' && $ticket->user_id === auth()->id() && !$ticket->service_rating)
+                @if(
+                    $ticket->status === 'completado'
+                    && !$ticket->service_rating
+                    && (
+                        $ticket->user_id === auth()->id()
+                        || auth()->user()->isDespachador()
+                        || auth()->user()->isEncargado()
+                        || auth()->user()->hasRole('admin')
+                    )
+                )
                 <button onclick="openRatingModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 shadow-lg">
                     <i class="fas fa-star mr-2"></i>Calificar Servicio
                 </button>
@@ -353,7 +362,16 @@
 </div>
 
 <!-- Modal de Calificación -->
-@if($ticket->status === 'completado' && $ticket->user_id === auth()->id() && !$ticket->service_rating)
+@if(
+    $ticket->status === 'completado'
+    && !$ticket->service_rating
+    && (
+        $ticket->user_id === auth()->id()
+        || auth()->user()->isDespachador()
+        || auth()->user()->isEncargado()
+        || auth()->user()->hasRole('admin')
+    )
+)
 <div id="ratingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4 transition-opacity duration-300">
     <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full transform transition-all duration-300 scale-95" id="modalContent">
         <!-- Header -->

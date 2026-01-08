@@ -143,7 +143,7 @@
                 <h3>Información de la Requisición</h3>
                 <div class="info-row">
                     <span class="info-label">Requisición:</span> 
-                    {{ $ticket->requisicion }}
+                    #{{ $ticket->folio }}
                 </div>
                 <div class="info-row">
                     <span class="info-label">Solicitante:</span> 

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Calificar Servicio - Solicitud #' .  $ticket->folio)
+@section('title', 'Calificar Servicio - Solicitud #' . ($ticket->folio ?? 'Calificar Servicio'))
 
 @section('content')
 <div class="max-w-2xl mx-auto">
@@ -12,7 +12,7 @@
 
     <div class="bg-white rounded-lg shadow-md p-6">
         <h1 class="text-3xl font-bold text-gray-800 mb-2">Calificar Servicio</h1>
-        <p class="text-gray-600 mb-6">Solicitud #{{ $ticket->id }}</p>
+        <p class="text-gray-600 mb-6">Solicitud #{{ $ticket->folio }}</p>
 
         @if($errors->any())
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">

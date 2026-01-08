@@ -54,7 +54,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{ticket}/assign-dispatcher', [TicketController::class, 'assignDispatcher'])->name('assign.dispatcher');
         
         // Calificación del servicio (solo usuarios)
-        Route::get('/{ticket}/rate', function ($ticket) {
+        Route::get('/{ticket}/rate', function (\App\Models\Ticket $ticket) {
             return view('tickets.rate', compact('ticket'));
         })->name('rate');
         Route::post('/{ticket}/rate', [TicketController::class, 'rate'])->name('rate.store');

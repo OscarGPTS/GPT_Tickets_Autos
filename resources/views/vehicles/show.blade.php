@@ -161,7 +161,7 @@
                             <div class="p-4 hover:bg-gray-50 transition-colors">
                                 <div class="flex justify-between items-start mb-1">
                                     <span
-                                        class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">#{{ $ticket->id }}</span>
+                                        class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">#{{ $ticket->folio }}</span>
                                     <span class="text-xs text-gray-500">{{ $ticket->created_at->format('d/m/Y') }}</span>
                                 </div>
                                 <p class="text-sm font-medium text-gray-900 mb-1">{{ $ticket->user->name }}</p>

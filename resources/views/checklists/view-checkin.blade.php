@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Ver Checkin - Ticket #' . $ticket->id)
+@section('title', 'Ver Checin - Ticket #' . $ticket->folio)
 
 @section('content')
 
@@ -155,7 +155,7 @@
 
     <div class="bg-white rounded-lg shadow-md p-3 sm:p-6 main-container">
         <div class="flex items-center justify-between mb-3 sm:mb-4 md:mb-6">
-            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">Ticket #{{ $ticket->id }}</h1>
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">Ticket #{{ $ticket->folio }}</h1>
             <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">✓ Completado</span>
         </div>
         <div class="mb-4 bg-orange-50 border border-orange-200 rounded p-3">

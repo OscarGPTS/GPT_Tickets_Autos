@@ -61,9 +61,9 @@ class ChecklistController extends Controller
             }
         }
 
-
-        $checklist = CheckoutChecklist::create([
-            'ticket_id' => $ticket->id,
+        // Upsert: si ya existe checklist de salida para el ticket, actualiza; si no, crea uno nuevo
+        $checklist = CheckoutChecklist::firstOrNew(['ticket_id' => $ticket->id]);
+        $checklist->fill([
             'fecha' => $request->input('fecha', now()->toDateString()),
             'hora_salida' => $request->input('hora_salida'),
             'kilometraje_inicial' => $request->input('kilometraje_inicial'),
@@ -76,6 +76,8 @@ class ChecklistController extends Controller
             'condicion_carroceria_imagen' => $imagePath,
             ...$validated,
         ]);
+        $checklist->ticket_id = $ticket->id;
+        $checklist->save();
 
         $ticket->update([
             'status' => 'en_curso',

@@ -198,11 +198,18 @@
                                         {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                                     <a href="{{ route('tickets.show', $ticket) }}"
-                                        class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors duration-200">
+                                        class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors duration-200 inline-flex items-center">
                                         <i class="fas fa-eye mr-1"></i> Ver
                                     </a>
+
+                                    @if($ticket->status === 'completado' && !$ticket->service_rating)
+                                        <a href="{{ route('tickets.rate', $ticket) }}"
+                                            class="text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-lg transition-colors duration-200 inline-flex items-center">
+                                            <i class="fas fa-star mr-1"></i> Calificar
+                                        </a>
+                                    @endif
                                 </td>
                             </tr>
                         @empty

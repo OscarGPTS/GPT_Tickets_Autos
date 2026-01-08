@@ -138,7 +138,7 @@
                                 <tr class="hover:bg-gray-50 transition-colors duration-150">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="text-sm font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded-md">
-                                            #{{ $ticket->id }}
+                                            #{{ $ticket->folio }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">

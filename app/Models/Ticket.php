@@ -166,7 +166,7 @@ class Ticket extends Model
      */
     public function canBeRated(): bool
     {
-        return $this->status === 'finalizado' && !$this->service_rating;
+        return $this->status === 'completado' && !$this->service_rating;
     }
 
     /**

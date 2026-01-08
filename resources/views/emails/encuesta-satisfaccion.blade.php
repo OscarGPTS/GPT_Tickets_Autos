@@ -151,8 +151,8 @@
             <div class="info-box">
                 <h3>Información de la Solicitud</h3>
                 <div class="info-row">
-                    <span class="info-label">Requisición:</span> 
-                    {{ $ticket->requisicion }}
+                    <span class="info-label">Folio:</span> 
+                    #{{ $ticket->folio }}
                 </div>
                 <div class="info-row">
                     <span class="info-label">Solicitante:</span> 

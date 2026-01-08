@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Checkin Vehículo - Ticket #' . $ticket->id)
+@section('title', 'Checkin Vehículo - Ticket #' . $ticket->folio)
 
 @section('content')
 
@@ -154,7 +154,7 @@
     </div>
 
     <div class="bg-white rounded-lg shadow-md p-3 sm:p-6 main-container">
-        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-3 sm:mb-4 md:mb-6">Checklist de Entrada (Checkin) - Ticket #{{ $ticket->id }}</h1>
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-3 sm:mb-4 md:mb-6">Checklist de Entrada (Checkin) - Ticket #{{ $ticket->folio }}</h1>
 
         @if($errors->any())
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">

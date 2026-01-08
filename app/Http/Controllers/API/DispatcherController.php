@@ -645,7 +645,7 @@ class DispatcherController extends Controller
             // Si es nuevo, actualizar el ticket
             if ($isNew) {
                 $ticket->checkin_at = now();
-                $ticket->status = 'finalizado';
+                $ticket->status = 'completado';
                 $ticket->save();
             }
 

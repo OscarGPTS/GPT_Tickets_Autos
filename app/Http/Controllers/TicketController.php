@@ -40,11 +40,8 @@ class TicketController extends Controller
         
         // Filtrar según rol
         if ($user->isUsuario()) {
-            // Mostrar TODOS los tickets donde el usuario es solicitante O conductor (sin filtro de status)
-            $query->where(function ($q) use ($user) {
-                $q->where('user_id', $user->id)
-                  ->orWhere('conductor_id', $user->id);
-            });
+            // Mostrar tickets donde el usuario es solicitante
+            $query->where('user_id', $user->id);
         } elseif ($user->isDespachador()) {
             $query->forDispatcher($user->id);
             
@@ -306,6 +303,16 @@ class TicketController extends Controller
     {
         if (!$ticket->canBeRated()) {
             return back()->with('error', 'Este ticket no puede ser calificado aún.');
+        }
+
+        $user = $request->user();
+        $isAllowedRater = $user->id === $ticket->user_id
+            || $user->isDespachador()
+            || $user->isEncargado()
+            || $user->hasRole('admin');
+
+        if (!$isAllowedRater) {
+            return back()->with('error', 'No tienes permiso para calificar este servicio.');
         }
 
         $validated = $request->validate([
