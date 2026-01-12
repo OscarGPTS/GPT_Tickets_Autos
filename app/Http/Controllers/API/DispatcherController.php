@@ -281,11 +281,6 @@ class DispatcherController extends Controller
             ], 422);
         }
         
-        // Corregir typo común de Flutter
-        if ($request->has('cintulon_seguridad')) {
-            $request->merge(['cinturon_seguridad' => $request->cintulon_seguridad]);
-        }
-        
         try {
             DB::beginTransaction();
 
@@ -480,11 +475,6 @@ class DispatcherController extends Controller
                 'message' => 'El ticket_id es requerido',
                 'errors' => $validator->errors()
             ], 422);
-        }
-        
-        // Corregir typo común de Flutter
-        if ($request->has('cintulon_seguridad')) {
-            $request->merge(['cinturon_seguridad' => $request->cintulon_seguridad]);
         }
 
         try {
