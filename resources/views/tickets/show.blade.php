@@ -292,12 +292,12 @@
                         <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg shadow-sm transition duration-200">
                             <i class="fas fa-check-circle mr-2"></i>Aprobar y Asignar
                         </button>
-                        <button type="button" onclick="if(confirm('¿Está seguro que desea rechazar esta requisición?')) document.getElementById('rejectForm').submit()" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-sm transition duration-200">
+                        <button data-modal-target="reject-modal" data-modal-toggle="reject-modal" type="button" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-sm transition duration-200">
                             <i class="fas fa-times-circle mr-2"></i>Rechazar
                         </button>
                     </div>
                 </form>
-                <form id="rejectForm" action="{{ route('tickets.reject', $ticket) }}" method="POST" class="hidden" onsubmit="return handleReject(event)">
+                <form id="rejectForm" action="{{ route('tickets.reject', $ticket) }}" method="POST" class="hidden">
                     @csrf
                     <input type="hidden" name="rejection_reason" id="rejection_reason">
                 </form>
@@ -357,6 +357,90 @@
                 </button>
                 @endif
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Rechazo -->
+<div id="reject-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-2xl max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white border border-gray-300 rounded-lg shadow-lg p-4 md:p-6">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between border-b border-gray-200 pb-4 md:pb-5">
+                <div class="flex items-center gap-3">
+                    <div class="bg-red-100 rounded-full p-2">
+                        <i class="fas fa-times-circle text-red-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900">
+                            Rechazar Solicitud
+                        </h3>
+                        <p class="text-sm text-gray-600">Folio #{{ $ticket->folio }}</p>
+                    </div>
+                </div>
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-100 hover:text-gray-900 rounded-lg text-sm w-9 h-9 ms-auto inline-flex justify-center items-center" data-modal-hide="reject-modal">
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/></svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+
+            <!-- Modal body -->
+            <form id="rejectForm" action="{{ route('tickets.reject', $ticket) }}" method="POST" class="space-y-4 md:space-y-6 py-4 md:py-6">
+                @csrf
+                
+                <!-- Advertencia -->
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div class="flex gap-3">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-lg mt-0.5"></i>
+                        <p class="text-red-800 text-sm">
+                            Esta acción notificará al solicitante que su solicitud ha sido rechazada.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Información del Ticket -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600 text-sm font-medium">Destino:</span>
+                        <span class="text-gray-900 font-semibold">{{ $ticket->destination }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600 text-sm font-medium">Fecha Solicitada:</span>
+                        <span class="text-gray-900 font-semibold">{{ $ticket->requested_date->format('d/m/Y') }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600 text-sm font-medium">Solicitante:</span>
+                        <span class="text-gray-900 font-semibold">{{ $ticket->user->name }}</span>
+                    </div>
+                </div>
+
+                <!-- Motivo del Rechazo -->
+                <div>
+                    <label for="rejection_reason" class="block text-sm font-semibold text-gray-900 mb-2">
+                        <i class="fas fa-comment mr-2 text-red-600"></i>Motivo del Rechazo
+                    </label>
+                    <textarea
+                        id="rejection_reason"
+                        name="rejection_reason"
+                        rows="4"
+                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-200 transition duration-200 resize-none text-gray-900"
+                        placeholder="Explica el motivo por el cual se rechaza esta solicitud..."
+                        required
+                    ></textarea>
+                    <p class="text-gray-500 text-xs mt-1">Este mensaje será enviado al solicitante</p>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="flex items-center gap-3 border-t border-gray-200 pt-4 md:pt-5">
+                    <button data-modal-hide="reject-modal" type="button" class="px-6 py-2.5 bg-white border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition duration-200">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition duration-200">
+                        <i class="fas fa-check mr-2"></i>Confirmar Rechazo
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -493,17 +577,7 @@
 @endif
 
 <script>
-function handleReject(event) {
-    event.preventDefault();
-    const reason = prompt('Por favor ingresa el motivo del rechazo:');
-    if (reason && reason.trim()) {
-        document.getElementById('rejection_reason').value = reason.trim();
-        event.target.submit();
-    } else if (reason !== null) {
-        alert('Debes proporcionar un motivo para el rechazo');
-    }
-    return false;
-}
+// El modal de rechazo se maneja automáticamente con Flowbite
 
 // Modal de Calificación
 function openRatingModal() {

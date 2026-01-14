@@ -28,18 +28,6 @@
                         Información Básica
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Código Interno -->
-                        <div>
-                            <label for="internal_code" class="block text-sm font-medium text-gray-700 mb-1">Código Interno
-                                <span class="text-red-500">*</span></label>
-                            <input type="text" name="internal_code" id="internal_code" value="{{ old('internal_code') }}"
-                                class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2.5 px-3"
-                                placeholder="Ej. VH-001" required>
-                            @error('internal_code')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
                         <!-- Tipo de Vehículo -->
                         <div>
                             <label for="vehicle_type" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Vehículo
@@ -50,13 +38,18 @@
                                 <option value="">Seleccione un tipo</option>
                                 <option value="sedan" {{ old('vehicle_type') == 'sedan' ? 'selected' : '' }}>Sedán</option>
                                 <option value="suv" {{ old('vehicle_type') == 'suv' ? 'selected' : '' }}>SUV</option>
-                                <option value="pickup" {{ old('vehicle_type') == 'pickup' ? 'selected' : '' }}>Pickup
-                                </option>
+                                <option value="pickup" {{ old('vehicle_type') == 'pickup' ? 'selected' : '' }}>Pickup</option>
                                 <option value="van" {{ old('vehicle_type') == 'van' ? 'selected' : '' }}>Van</option>
-                                <option value="camioneta" {{ old('vehicle_type') == 'camioneta' ? 'selected' : '' }}>
-                                    Camioneta</option>
-                                <option value="motocicleta" {{ old('vehicle_type') == 'motocicleta' ? 'selected' : '' }}>
-                                    Motocicleta</option>
+                                <option value="camioneta" {{ old('vehicle_type') == 'camioneta' ? 'selected' : '' }}>Camioneta</option>
+                                <option value="camion" {{ old('vehicle_type') == 'camion' ? 'selected' : '' }}>Camión</option>
+                                <option value="motocicleta" {{ old('vehicle_type') == 'motocicleta' ? 'selected' : '' }}>Motocicleta</option>
+                                <option value="autobus" {{ old('vehicle_type') == 'autobus' ? 'selected' : '' }}>Autobús</option>
+                                <option value="coupe" {{ old('vehicle_type') == 'coupe' ? 'selected' : '' }}>Coupé</option>
+                                <option value="hatchback" {{ old('vehicle_type') == 'hatchback' ? 'selected' : '' }}>Hatchback</option>
+                                <option value="convertible" {{ old('vehicle_type') == 'convertible' ? 'selected' : '' }}>Convertible</option>
+                                <option value="minivan" {{ old('vehicle_type') == 'minivan' ? 'selected' : '' }}>Minivan</option>
+                                <option value="crossover" {{ old('vehicle_type') == 'crossover' ? 'selected' : '' }}>Crossover</option>
+                                <option value="otro" {{ old('vehicle_type') == 'otro' ? 'selected' : '' }}>Otro</option>
                             </select>
                             @error('vehicle_type')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

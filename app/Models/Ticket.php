@@ -146,6 +146,14 @@ class Ticket extends Model
     }
 
     /**
+     * Verificar si el ticket puede ser rechazado
+     */
+    public function canBeRejected(): bool
+    {
+        return $this->status === 'pendiente';
+    }
+
+    /**
      * Verificar si se puede hacer checkout
      */
     public function canCheckout(): bool

@@ -54,20 +54,22 @@ class VehicleController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'internal_code' => 'required|string|unique:vehicles,internal_code',
             'brand' => 'required|string|max:255',
             'model' => 'required|string|max:255',
             'year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
             'plates' => 'required|string|unique:vehicles,plates',
             'serial_number' => 'nullable|string|unique:vehicles,serial_number',
             'color' => 'nullable|string|max:50',
-            'vehicle_type' => 'required|in:sedan,suv,pickup,van,camioneta',
+            'vehicle_type' => 'required|in:sedan,suv,pickup,van,camioneta,camion,motocicleta,autobus,coupe,hatchback,convertible,minivan,crossover,otro',
             'capacity_passengers' => 'required|integer|min:1',
             'capacity_cargo' => 'nullable|numeric|min:0',
             'fuel_type' => 'required|in:gasolina,diesel,electrico,hibrido',
             'current_mileage' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
         ]);
+
+        // Generar código interno automáticamente
+        $validated['internal_code'] = $this->generateInternalCode();
 
         $vehicle = Vehicle::create($validated);
 
@@ -106,7 +108,7 @@ class VehicleController extends Controller
             'plates' => 'required|string|unique:vehicles,plates,' . $vehicle->id,
             'serial_number' => 'nullable|string|unique:vehicles,serial_number,' . $vehicle->id,
             'color' => 'nullable|string|max:50',
-            'vehicle_type' => 'required|in:sedan,suv,pickup,van,camioneta',
+            'vehicle_type' => 'required|in:sedan,suv,pickup,van,camioneta,camion,motocicleta,autobus,coupe,hatchback,convertible,minivan,crossover,otro',
             'capacity_passengers' => 'required|integer|min:1',
             'capacity_cargo' => 'nullable|numeric|min:0',
             'fuel_type' => 'required|in:gasolina,diesel,electrico,hibrido',
@@ -130,5 +132,31 @@ class VehicleController extends Controller
 
         return redirect()->route('vehicles.index')
             ->with('success', 'Vehículo eliminado exitosamente.');
+    }
+
+    /**
+     * Generar código interno único automáticamente
+     */
+    private function generateInternalCode(): string
+    {
+        $year = date('Y');
+        $prefix = 'VH-' . $year . '-';
+        
+        // Obtener el último vehículo del año actual
+        $lastVehicle = Vehicle::where('internal_code', 'like', $prefix . '%')
+            ->orderBy('internal_code', 'desc')
+            ->first();
+        
+        if ($lastVehicle) {
+            // Extraer el número secuencial del último código
+            $lastNumber = (int) str_replace($prefix, '', $lastVehicle->internal_code);
+            $newNumber = $lastNumber + 1;
+        } else {
+            // Primer vehículo del año
+            $newNumber = 1;
+        }
+        
+        // Formatear con 4 dígitos (0001, 0002, etc.)
+        return $prefix . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Ticket;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Mail\SolicitudCreada;
+use App\Mail\SolicitudRechazada;
 use App\Mail\DespachadorAsignado;
 use App\Notifications\TicketCreated;
 use App\Notifications\TicketApproved;
@@ -247,10 +248,10 @@ class TicketController extends Controller
             'approved_by' => Auth::id(),
         ]);
 
-        // Notificar al solicitante
-        $ticket->user->notify(new TicketRejected($ticket));
+        // Enviar correo de forma asincrónica
+        Mail::to($ticket->user->email)->queue(new SolicitudRechazada($ticket));
 
-        return redirect()->route('tickets.show', $ticket)
+        return redirect()->route('dashboard')
             ->with('success', 'Ticket rechazado exitosamente.');
     }
 
