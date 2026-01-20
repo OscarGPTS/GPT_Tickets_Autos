@@ -226,32 +226,47 @@
                 </tr>
 
                 <tr>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Marca</td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Hora de salida</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="text" value="{{ $checklist->marca }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
+                        <input type="text" value="{{ $checkoutChecklist->hora_salida ?? 'N/A' }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
                     </td>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Placas</td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Hora de entrada</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="text" value="{{ $checklist->placas }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
+                        <input type="text" value="{{ $checklist->hora_entrada ?? 'N/A' }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Fecha</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="text" value="{{ $checklist->fecha->format('d/m/Y') }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
+                        <input type="text" value="{{ optional($checklist->fecha)->format('d/m/Y') ?? 'N/A' }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
                     </td>
                 </tr>
 
                 <tr>
-                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Hora de Entrada</td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje Inicial</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="text" value="{{ $checklist->hora_entrada }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
+                        <input type="text" value="{{ isset($checkoutChecklist) ? number_format($checkoutChecklist->kilometraje_inicial, 2) : ($checklist->kilometraje_inicial ?? 'N/A') }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
                     </td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Nivel de combustible Inicial</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="text" value="{{ $checkoutChecklist->nivel_combustible_inicial ?? $checklist->nivel_combustible_inicial ?? 'N/A' }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
+                    </td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Placas</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="text" value="{{ $checklist->placas ?? ($checklist->vehicle->plates ?? $ticket->vehicle->plates ?? 'N/A') }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
+                    </td>
+                </tr>
+
+                <tr>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Kilometraje Final</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="text" value="{{ number_format($checklist->kilometraje_final, 2) }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
+                        <input type="text" value="{{ $checklist->kilometraje_final ? number_format($checklist->kilometraje_final, 2) : 'N/A' }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
                     </td>
                     <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Nivel de Combustible Final</td>
                     <td class="border border-gray-200 table-cell-text" colspan="3">
-                        <input type="text" value="{{ $checklist->nivel_combustible_final }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
+                        <input type="text" value="{{ $checklist->nivel_combustible_final ?? 'N/A' }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
+                    </td>
+                    <td class="border border-gray-200 table-cell-text font-semibold title-yellow">Marca</td>
+                    <td class="border border-gray-200 table-cell-text" colspan="3">
+                        <input type="text" value="{{ $checklist->marca ?? ($checklist->vehicle->brand ?? $ticket->vehicle->brand ?? 'N/A') }}" class="w-full border-gray-300 rounded table-input bg-gray-50" readonly>
                     </td>
                 </tr>
 
@@ -302,8 +317,8 @@
 
                 <tr>
                      <td class="border border-gray-200 table-cell-text">Vida</td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_delantera_vida" value="1" {{ old('llanta_delantera_vida', 1) == 1 ? 'checked' : '' }}></td>
-                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_delantera_vida" value="0" {{ old('llanta_delantera_vida', 1) == 0 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_delantera_vida" value="1" {{ old('llanta_delantera_vida', $checklist->llanta_delantera_vida ?? 1) == 1 ? 'checked' : '' }}></td>
+                    <td class="border border-gray-200 table-cell-text text-center"><input type="radio" name="llanta_delantera_vida" value="0" {{ old('llanta_delantera_vida', $checklist->llanta_delantera_vida ?? 1) == 0 ? 'checked' : '' }}></td>
 
                     
                     <td class="border border-gray-200 table-cell-text">Parrilla</td>
