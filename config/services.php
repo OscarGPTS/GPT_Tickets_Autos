@@ -41,4 +41,8 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'rh_api' => [
+        'token' => env('RH_API_TOKEN'),
+    ],
+
 ];

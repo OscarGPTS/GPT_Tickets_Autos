@@ -112,6 +112,21 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Usuarios Registrados -->
+            <div
+                class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 p-6 border border-gray-100">
+                <a href="{{ route('admin.users.index') }}" class="flex items-center h-full hover:opacity-75 transition-opacity">
+                    <div class="p-3 rounded-xl bg-indigo-50 text-indigo-600">
+                        <i class="fas fa-users text-2xl"></i>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <p class="text-sm font-medium text-gray-500">Usuarios</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $stats['totalUsers'] ?? 0 }}</p>
+                    </div>
+                    <i class="fas fa-arrow-right text-indigo-600"></i>
+                </a>
+            </div>
         </div>
 
         <!-- Tiempos de Respuesta -->

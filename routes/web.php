@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ChecklistController;
@@ -119,9 +120,16 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/export', [AdminDashboardController::class, 'export'])->name('dashboard.export');
         
-        Route::get('/users', function () {
-            return view('admin.users.index');
-        })->name('users.index');
+        // Rutas de administración de usuarios
+        Route::prefix('users')->name('users.')->group(function () {
+            Route::get('/', [UserManagementController::class, 'index'])->name('index');
+            Route::get('/create', [UserManagementController::class, 'create'])->name('create');
+            Route::post('/', [UserManagementController::class, 'store'])->name('store');
+            Route::get('/{user}/edit', [UserManagementController::class, 'edit'])->name('edit');
+            Route::put('/{user}', [UserManagementController::class, 'update'])->name('update');
+            Route::delete('/{user}', [UserManagementController::class, 'destroy'])->name('destroy');
+            Route::get('/rh-data/{rhUserId}', [UserManagementController::class, 'getRHUserData'])->name('rh-data');
+        });
         
         Route::get('/reports', function () {
             return view('admin.reports.index');

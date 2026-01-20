@@ -345,12 +345,8 @@
                 @if(
                     $ticket->status === 'completado'
                     && !$ticket->service_rating
-                    && (
-                        $ticket->user_id === auth()->id()
-                        || auth()->user()->isDespachador()
-                        || auth()->user()->isEncargado()
-                        || auth()->user()->hasRole('admin')
-                    )
+                    && auth()->check()
+                    && auth()->user()->isUsuario() // Solo rol usuario (id=1)
                 )
                 <button onclick="openRatingModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 shadow-lg">
                     <i class="fas fa-star mr-2"></i>Calificar Servicio

@@ -31,6 +31,8 @@ class User extends Authenticatable
         'department',
         'immediate_boss_id',
         'is_active',
+        'rh_user_id',
+        'rh_uuid',
     ];
 
     /**
